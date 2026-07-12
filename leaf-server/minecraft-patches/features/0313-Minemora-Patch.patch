@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alejandro <62246450+Tehin@users.noreply.github.com>
+Date: Sun, 12 Jul 2026 16:09:15 -0500
+Subject: [PATCH] Minemora Patch
+
+
+diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
+index ad5c46db4bbb42aca73831d8865d6b196886ad21..e72802b0cb434f1e56b33e0441bdfb7a593421af 100644
+--- a/net/minecraft/server/level/ServerPlayer.java
++++ b/net/minecraft/server/level/ServerPlayer.java
+@@ -452,6 +452,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+     private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
+     private final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder viewDistanceHolder = new ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder();
+ 
++    // MoraPaper - Completely disable chat
++    public boolean chatDisabled = false;
++
+     @Override
+     public final boolean moonrise$isRealPlayer() {
+         return this.isRealPlayer;
+@@ -2534,6 +2537,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+     }
+ 
+     public void sendSystemMessage(final Component message, final boolean overlay) {
++        // MoraPaper
++        if (chatDisabled) return;
++
+         if (this.acceptsSystemMessages(overlay)) {
+             this.connection
+                 .send(

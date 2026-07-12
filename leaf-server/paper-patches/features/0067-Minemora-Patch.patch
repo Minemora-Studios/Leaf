@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alejandro <62246450+Tehin@users.noreply.github.com>
+Date: Sun, 12 Jul 2026 16:25:07 -0500
+Subject: [PATCH] Minemora Patch
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 508ef876b8e9f99ddf23bcb3241f5d9e21f417ad..69e14a0e3b44434c0a359cb84fef820d609a4d6e 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -3491,4 +3491,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+         super.knockback(strength, directionX, directionZ);
+         this.entity.hurtMarked = true;
+     }
++
++    // MoraPaper
++    @Override
++    public void setChatDisabled(final boolean value) {
++        getHandle().chatDisabled = value;
++    }
++
+ }
