@@ -29,7 +29,7 @@ index 259cbcbdd3cd47907629772dc7565212bb434729..61b03a0a05179591a91d7768a068e174
              this.sendToPlayer(player, filtered, chatType, null);
          }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index ad5c46db4bbb42aca73831d8865d6b196886ad21..5512b65abb3f37b1009f0b71a79d9003e91a7519 100644
+index ad5c46db4bbb42aca73831d8865d6b196886ad21..9c88b7e23a1b8e9096d506c86f67737fb70f7435 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -452,6 +452,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -42,7 +42,31 @@ index ad5c46db4bbb42aca73831d8865d6b196886ad21..5512b65abb3f37b1009f0b71a79d9003
      @Override
      public final boolean moonrise$isRealPlayer() {
          return this.isRealPlayer;
-@@ -2534,6 +2537,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -499,6 +502,23 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+         // CraftBukkit end
+     }
+ 
++    // MoraPaper - optimized constructor for NPCs
++    public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile) {
++        super(level, gameProfile);
++        this.textFilter = server.createTextFilterForPlayer(this);
++        this.gameMode = server.createGameModeForPlayer(this);
++        this.server = server;
++        this.object = null;
++        // CraftBukkit start
++        this.displayName = this.getScoreboardName();
++        this.adventure$displayName = net.kyori.adventure.text.Component.text(this.getScoreboardName()); // Paper
++        this.bukkitPickUpLoot = true;
++        this.maxHealthCache = this.getMaxHealth();
++        this.recipeBook = null;
++        this.stats = null;
++        this.advancements = null;
++    }
++
+     @Override
+     public BlockPos adjustSpawnLocation(final ServerLevel level, final BlockPos spawnSuggestion) {
+         CompletableFuture<Vec3> future = PlayerSpawnFinder.findSpawn(level, spawnSuggestion);
+@@ -2534,6 +2554,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
  
      public void sendSystemMessage(final Component message, final boolean overlay) {
@@ -52,7 +76,7 @@ index ad5c46db4bbb42aca73831d8865d6b196886ad21..5512b65abb3f37b1009f0b71a79d9003
          if (this.acceptsSystemMessages(overlay)) {
              this.connection
                  .send(
-@@ -2561,6 +2567,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2561,6 +2584,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.sendChatMessage(message, filtered, chatType, null);
      }
      public void sendChatMessage(final OutgoingChatMessage message, final boolean filtered, final ChatType.Bound chatType, @Nullable Component unsigned) {
