@@ -4,8 +4,32 @@ Date: Sun, 12 Jul 2026 16:09:15 -0500
 Subject: [PATCH] Minemora Patch
 
 
+diff --git a/net/minecraft/network/chat/OutgoingChatMessage.java b/net/minecraft/network/chat/OutgoingChatMessage.java
+index 259cbcbdd3cd47907629772dc7565212bb434729..61b03a0a05179591a91d7768a068e174f0b81cbf 100644
+--- a/net/minecraft/network/chat/OutgoingChatMessage.java
++++ b/net/minecraft/network/chat/OutgoingChatMessage.java
+@@ -25,6 +25,9 @@ public interface OutgoingChatMessage {
+         }
+         @Override
+         public void sendToPlayer(final ServerPlayer player, final boolean filtered, final ChatType.Bound chatType, final @org.jspecify.annotations.Nullable Component unsigned) {
++            // MoraPaper
++            if (player.chatDisabled) return;
++
+             player.connection.sendDisguisedChatMessage(unsigned != null ? unsigned : this.content, chatType);
+             // Paper end
+         }
+@@ -38,6 +41,9 @@ public interface OutgoingChatMessage {
+ 
+         @Override
+         public void sendToPlayer(final ServerPlayer player, final boolean filtered, final ChatType.Bound chatType) {
++            // MoraPaper
++            if (player.chatDisabled) return;
++
+             // Paper start
+             this.sendToPlayer(player, filtered, chatType, null);
+         }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index ad5c46db4bbb42aca73831d8865d6b196886ad21..e72802b0cb434f1e56b33e0441bdfb7a593421af 100644
+index ad5c46db4bbb42aca73831d8865d6b196886ad21..5512b65abb3f37b1009f0b71a79d9003e91a7519 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -452,6 +452,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -28,3 +52,28 @@ index ad5c46db4bbb42aca73831d8865d6b196886ad21..e72802b0cb434f1e56b33e0441bdfb7a
          if (this.acceptsSystemMessages(overlay)) {
              this.connection
                  .send(
+@@ -2561,6 +2567,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+         this.sendChatMessage(message, filtered, chatType, null);
+     }
+     public void sendChatMessage(final OutgoingChatMessage message, final boolean filtered, final ChatType.Bound chatType, @Nullable Component unsigned) {
++        // MoraPaper
++        if (chatDisabled) return;
++
+         // Paper end
+         if (this.acceptsChatMessages()) {
+             message.sendToPlayer(this, filtered, chatType, unsigned); // Paper
+diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index c521b3e2a5990455ffc8d491c7464a5ecab76656..81c52b1a2fae4e315c436e55f0a05aad613b40af 100644
+--- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -2902,6 +2902,10 @@ public class ServerGamePacketListenerImpl
+             return;
+         }
+         // CraftBukkit end
++
++        // MoraPaper
++        if (player.chatDisabled) return;
++
+         // Paper start - Ensure that client receives chat packets in the same order that we add into the message signature cache
+         synchronized (this.messageSignatureCache) {
+         this.send(
