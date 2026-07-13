@@ -114,3 +114,21 @@ index 484348e23b8710d07a6a33817cb80293ee905646..18446c801e0137544813105f13f94f75
      public net.minecraft.world.entity.ai.goal.@Nullable FloatGoal goalFloat; // Paper - Allow nerfed mobs to jump and float
      public GoalSelector targetSelector;
      private @Nullable LivingEntity target;
+diff --git a/net/minecraft/world/entity/vehicle/minecart/NewMinecartBehavior.java b/net/minecraft/world/entity/vehicle/minecart/NewMinecartBehavior.java
+index 683a71943a04047ab88c948ee80416c3236dc466..e9ff5cdb34d6e6502764f7d0e12c9964155324bf 100644
+--- a/net/minecraft/world/entity/vehicle/minecart/NewMinecartBehavior.java
++++ b/net/minecraft/world/entity/vehicle/minecart/NewMinecartBehavior.java
+@@ -379,6 +379,13 @@ public class NewMinecartBehavior extends MinecartBehavior {
+         if (this.minecart.getFirstPassenger() instanceof ServerPlayer player) {
+             Vec3 moveIntent = player.getLastClientMoveIntent();
+             if (moveIntent.lengthSqr() > 0.0) {
++                // MoraPaper Start - Steer minecart event
++                final org.bukkit.event.player.PlayerSteerMinecartEvent event = new org.bukkit.event.player.PlayerSteerMinecartEvent(player.getBukkitEntity(), (org.bukkit.entity.Minecart) this.minecart.getBukkitEntity());
++                event.callEvent();
++
++                if (event.isCancelled()) return deltaMovement;
++                // MoraPaper End
++
+                 Vec3 riderMovement = moveIntent.normalize();
+                 double ownDist = deltaMovement.horizontalDistanceSqr();
+                 if (riderMovement.lengthSqr() > 0.0 && ownDist < 0.01) {
