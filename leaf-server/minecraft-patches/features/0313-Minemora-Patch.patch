@@ -101,3 +101,16 @@ index c521b3e2a5990455ffc8d491c7464a5ecab76656..81c52b1a2fae4e315c436e55f0a05aad
          // Paper start - Ensure that client receives chat packets in the same order that we add into the message signature cache
          synchronized (this.messageSignatureCache) {
          this.send(
+diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
+index 484348e23b8710d07a6a33817cb80293ee905646..18446c801e0137544813105f13f94f75926c748b 100644
+--- a/net/minecraft/world/entity/Mob.java
++++ b/net/minecraft/world/entity/Mob.java
+@@ -139,7 +139,7 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
+     protected JumpControl jumpControl;
+     private final BodyRotationControl bodyRotationControl;
+     protected PathNavigation navigation;
+-    protected final GoalSelector goalSelector;
++    protected GoalSelector goalSelector;
+     public net.minecraft.world.entity.ai.goal.@Nullable FloatGoal goalFloat; // Paper - Allow nerfed mobs to jump and float
+     public GoalSelector targetSelector;
+     private @Nullable LivingEntity target;
