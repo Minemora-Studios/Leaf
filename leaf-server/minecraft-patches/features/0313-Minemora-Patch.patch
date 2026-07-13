@@ -28,21 +28,53 @@ index 259cbcbdd3cd47907629772dc7565212bb434729..61b03a0a05179591a91d7768a068e174
              // Paper start
              this.sendToPlayer(player, filtered, chatType, null);
          }
+diff --git a/net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket.java b/net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket.java
+index aaa497096f07f2ef9da62b9760f5c9aa0b0263d3..58cfca970db9b2f045e00cc012741208fbdab5b1 100644
+--- a/net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket.java
++++ b/net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket.java
+@@ -226,7 +226,7 @@ public class ClientboundPlayerInfoUpdatePacket implements Packet<ClientGamePacke
+                 player.getUUID(),
+                 player.getGameProfile(),
+                 listed, // Paper - Add Listing API for Player
+-                player.connection.latency(),
++                player.connection == null ? player.fakePing : player.connection.latency(),
+                 player.gameMode(),
+                 player.getTabListDisplayName(),
+                 player.isModelPartShown(PlayerModelPart.HAT),
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index a7caa1280abef05f4bcecd3dd94843f0d16b0ef0..f7cb7dd5ad6e26e579002cd33c89733e6ed7af3c 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -3370,4 +3370,11 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+         return globalTemptationLookup;
+     }
+     // Paper end - optimise temptation lookups
++
++    // MoraPaper - Disable dragon
++    public void disableDragon() {
++        this.dragonFight = null;
++        this.paperConfig().entities.spawning.scanForLegacyEnderDragon = false;
++    }
++
+ }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index ad5c46db4bbb42aca73831d8865d6b196886ad21..9c88b7e23a1b8e9096d506c86f67737fb70f7435 100644
+index ad5c46db4bbb42aca73831d8865d6b196886ad21..2583a1b9bdad2a789868e3c3fd4b95c192a4d38f 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -452,6 +452,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -452,6 +452,12 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
      private final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder viewDistanceHolder = new ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder();
  
 +    // MoraPaper - Completely disable chat
 +    public boolean chatDisabled = false;
 +
++    // MoraPaper - Fake ping
++    public int fakePing;
++
      @Override
      public final boolean moonrise$isRealPlayer() {
          return this.isRealPlayer;
-@@ -499,6 +502,23 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -499,6 +505,23 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          // CraftBukkit end
      }
  
@@ -66,7 +98,7 @@ index ad5c46db4bbb42aca73831d8865d6b196886ad21..9c88b7e23a1b8e9096d506c86f67737f
      @Override
      public BlockPos adjustSpawnLocation(final ServerLevel level, final BlockPos spawnSuggestion) {
          CompletableFuture<Vec3> future = PlayerSpawnFinder.findSpawn(level, spawnSuggestion);
-@@ -2534,6 +2554,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2534,6 +2557,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
  
      public void sendSystemMessage(final Component message, final boolean overlay) {
@@ -76,7 +108,7 @@ index ad5c46db4bbb42aca73831d8865d6b196886ad21..9c88b7e23a1b8e9096d506c86f67737f
          if (this.acceptsSystemMessages(overlay)) {
              this.connection
                  .send(
-@@ -2561,6 +2584,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2561,6 +2587,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.sendChatMessage(message, filtered, chatType, null);
      }
      public void sendChatMessage(final OutgoingChatMessage message, final boolean filtered, final ChatType.Bound chatType, @Nullable Component unsigned) {
@@ -101,6 +133,22 @@ index c521b3e2a5990455ffc8d491c7464a5ecab76656..81c52b1a2fae4e315c436e55f0a05aad
          // Paper start - Ensure that client receives chat packets in the same order that we add into the message signature cache
          synchronized (this.messageSignatureCache) {
          this.send(
+diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
+index e074c9a362588fe46e47e599c7b81fdac69c91aa..962135512caf41849cdc0186059316730f2fa302 100644
+--- a/net/minecraft/world/entity/LivingEntity.java
++++ b/net/minecraft/world/entity/LivingEntity.java
+@@ -3015,6 +3015,11 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+         return this.equipment.get(slot);
+     }
+ 
++    // MoraPaper - Get all items
++    public net.minecraft.world.entity.EntityEquipment getEquipment() {
++        return this.equipment;
++    }
++
+     // Leaf start - Multithreaded tracker
+     public boolean hasItemInSlots() {
+         return !this.equipment.isEmpty();
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
 index 484348e23b8710d07a6a33817cb80293ee905646..18446c801e0137544813105f13f94f75926c748b 100644
 --- a/net/minecraft/world/entity/Mob.java
