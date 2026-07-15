@@ -180,3 +180,46 @@ index 683a71943a04047ab88c948ee80416c3236dc466..e9ff5cdb34d6e6502764f7d0e12c9964
                  Vec3 riderMovement = moveIntent.normalize();
                  double ownDist = deltaMovement.horizontalDistanceSqr();
                  if (riderMovement.lengthSqr() > 0.0 && ownDist < 0.01) {
+diff --git a/net/minecraft/world/level/levelgen/feature/OreFeature.java b/net/minecraft/world/level/levelgen/feature/OreFeature.java
+index f38bdffd7734fab297979d38abd168b2b82e16e3..bb764a3ecc4e93bb566d1e7c6a07fc69638b8193 100644
+--- a/net/minecraft/world/level/levelgen/feature/OreFeature.java
++++ b/net/minecraft/world/level/levelgen/feature/OreFeature.java
+@@ -19,6 +19,26 @@ public class OreFeature extends Feature<OreConfiguration> {
+         super(codec);
+     }
+ 
++    public class PlacedOre {
++        private final BlockPos pos;
++        private final BlockState state;
++
++        public PlacedOre(final BlockPos pos, final BlockState state) {
++            this.pos = pos;
++            this.state = state;
++        }
++
++        public BlockPos getPos() {
++            return pos;
++        }
++
++        public BlockState getState() {
++            return state;
++        }
++    }
++
++    public static java.util.function.Consumer<PlacedOre> LISTENER;
++
+     @Override
+     public boolean place(final FeaturePlaceContext<OreConfiguration> context) {
+         RandomSource random = context.random();
+@@ -148,6 +168,11 @@ public class OreFeature extends Feature<OreConfiguration> {
+                                                                     sectionRelativeX, sectionRelativeY, sectionRelativeZ, targetState.state, false
+                                                                 );
+                                                                 placed++;
++
++                                                                if (LISTENER != null) {
++                                                                    LISTENER.accept(new PlacedOre(orePos, targetState.state));
++                                                                }
++
+                                                                 break;
+                                                             }
+                                                         }
