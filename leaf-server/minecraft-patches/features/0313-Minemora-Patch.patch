@@ -148,10 +148,34 @@ index ad5c46db4bbb42aca73831d8865d6b196886ad21..2583a1b9bdad2a789868e3c3fd4b95c1
          if (this.acceptsChatMessages()) {
              message.sendToPlayer(this, filtered, chatType, unsigned); // Paper
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index c521b3e2a5990455ffc8d491c7464a5ecab76656..81c52b1a2fae4e315c436e55f0a05aad613b40af 100644
+index c521b3e2a5990455ffc8d491c7464a5ecab76656..7cf9133374b1efe37a5d474ed9310b774aa1aa0e 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2902,6 +2902,10 @@ public class ServerGamePacketListenerImpl
+@@ -2681,8 +2681,9 @@ public class ServerGamePacketListenerImpl
+                 LastSeenMessages result = this.lastSeenMessages.applyUpdate(update);
+                 var10000 = Optional.of(result);
+             } catch (LastSeenMessagesValidator.ValidationException e) {
+-                LOGGER.error("Failed to validate message acknowledgements from {}: {}", this.player.getPlainTextName(), e.getMessage());
+-                this.disconnectAsync(CHAT_VALIDATION_FAILED, org.bukkit.event.player.PlayerKickEvent.Cause.CHAT_VALIDATION_FAILED); // Paper - kick event causes & add proper async disconnect
++                // MoraPaper - Ignore kicks for invalid messages
++                // LOGGER.error("Failed to validate message acknowledgements from {}: {}", this.player.getPlainTextName(), e.getMessage());
++                // this.disconnectAsync(CHAT_VALIDATION_FAILED, org.bukkit.event.player.PlayerKickEvent.Cause.CHAT_VALIDATION_FAILED); // Paper - kick event causes & add proper async disconnect
+                 return Optional.empty();
+             }
+ 
+@@ -2793,8 +2794,9 @@ public class ServerGamePacketListenerImpl
+             try {
+                 this.lastSeenMessages.applyOffset(packet.offset());
+             } catch (LastSeenMessagesValidator.ValidationException e) {
+-                LOGGER.error("Failed to validate message acknowledgement offset from {}: {}", this.player.getPlainTextName(), e.getMessage());
+-                this.disconnectAsync(ServerGamePacketListenerImpl.CHAT_VALIDATION_FAILED, org.bukkit.event.player.PlayerKickEvent.Cause.CHAT_VALIDATION_FAILED); // Paper - kick event causes & add proper async disconnect
++                // MoraPaper - Ignore kicks for invalid messages
++                // LOGGER.error("Failed to validate message acknowledgement offset from {}: {}", this.player.getPlainTextName(), e.getMessage());
++                // this.disconnectAsync(ServerGamePacketListenerImpl.CHAT_VALIDATION_FAILED, org.bukkit.event.player.PlayerKickEvent.Cause.CHAT_VALIDATION_FAILED); // Paper - kick event causes & add proper async disconnect
+             }
+         }
+     }
+@@ -2902,6 +2904,10 @@ public class ServerGamePacketListenerImpl
              return;
          }
          // CraftBukkit end
