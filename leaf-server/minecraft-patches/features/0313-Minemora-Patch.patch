@@ -4,6 +4,35 @@ Date: Sun, 12 Jul 2026 16:09:15 -0500
 Subject: [PATCH] Minemora Patch
 
 
+diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java b/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
+index a692eff5e6a72e60961317975dca85f0eef94882..58cfd5a8903c2d6e92593a276649e780f6990615 100644
+--- a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
++++ b/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
+@@ -111,6 +111,9 @@ public final class ChunkHolderManager {
+     // mapping of counter id -> (mapping of pos->count)
+     private final ConcurrentChainedLong2ReferenceHashTable<ConcurrentChainedLong2LongHashTable> ticketCounters = new ConcurrentChainedLong2ReferenceHashTable<>();
+ 
++    // MoraPaper - Limit chunk unloads per tick
++    private static final int MAX_CHUNK_UNLOADS_PER_TICK = 180;
++
+     public ChunkHolderManager(final ServerLevel world, final ChunkTaskScheduler taskScheduler) {
+         this.world = world;
+         this.taskScheduler = taskScheduler;
+@@ -1208,10 +1211,10 @@ public final class ChunkHolderManager {
+         // We do need to process updates here so that any addTicket that is synchronised before this call does not go missed.
+         this.processTicketUpdates();
+ 
+-        final int toUnloadCount = Math.max(
+-            PlatformHooks.get().configMinChunkUnloadCount(this.world),
+-            (int)Math.round(unloadCountTentative * Math.clamp(PlatformHooks.get().configMinChunkUnloadFraction(this.world), 0.0, 1.0))
+-        );
++        // MoraPaper - Limit chunk unload to prevent RAM overuse
++        int minToUnload = PlatformHooks.get().configMinChunkUnloadCount(this.world);
++        final int toUnloadCount = Math.max(minToUnload, Math.min(MAX_CHUNK_UNLOADS_PER_TICK, (int) (unloadCountTentative * 0.05)));
++
+         int processedCount = 0;
+ 
+         for (final ChunkUnloadQueue.SectionToUnload sectionRef : unloadSectionsForRegion) {
 diff --git a/net/minecraft/network/chat/OutgoingChatMessage.java b/net/minecraft/network/chat/OutgoingChatMessage.java
 index 259cbcbdd3cd47907629772dc7565212bb434729..61b03a0a05179591a91d7768a068e174f0b81cbf 100644
 --- a/net/minecraft/network/chat/OutgoingChatMessage.java
