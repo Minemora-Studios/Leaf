@@ -234,20 +234,31 @@ index 683a71943a04047ab88c948ee80416c3236dc466..e9ff5cdb34d6e6502764f7d0e12c9964
                  double ownDist = deltaMovement.horizontalDistanceSqr();
                  if (riderMovement.lengthSqr() > 0.0 && ownDist < 0.01) {
 diff --git a/net/minecraft/world/level/levelgen/feature/OreFeature.java b/net/minecraft/world/level/levelgen/feature/OreFeature.java
-index f38bdffd7734fab297979d38abd168b2b82e16e3..bb764a3ecc4e93bb566d1e7c6a07fc69638b8193 100644
+index f38bdffd7734fab297979d38abd168b2b82e16e3..e0826cf81445cce436b74c9c68166abd0e70e05a 100644
 --- a/net/minecraft/world/level/levelgen/feature/OreFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/OreFeature.java
-@@ -19,6 +19,26 @@ public class OreFeature extends Feature<OreConfiguration> {
+@@ -19,6 +19,49 @@ public class OreFeature extends Feature<OreConfiguration> {
          super(codec);
      }
  
 +    public class PlacedOre {
++
++        private final WorldGenLevel level;
 +        private final BlockPos pos;
 +        private final BlockState state;
++        private final boolean exposed;
 +
-+        public PlacedOre(final BlockPos pos, final BlockState state) {
++        private BlockState blockToBePlaced;
++
++        public PlacedOre(WorldGenLevel level, BlockPos pos, BlockState state, final boolean exposed) {
++            this.level = level;
 +            this.pos = pos;
 +            this.state = state;
++            this.exposed = exposed;
++        }
++
++        public WorldGenLevel getLevel() {
++            return level;
 +        }
 +
 +        public BlockPos getPos() {
@@ -257,6 +268,18 @@ index f38bdffd7734fab297979d38abd168b2b82e16e3..bb764a3ecc4e93bb566d1e7c6a07fc69
 +        public BlockState getState() {
 +            return state;
 +        }
++
++        public boolean isExposed() {
++            return exposed;
++        }
++
++        public void setBlockToBePlaced(final net.minecraft.world.level.block.state.BlockState blockToBePlaced) {
++            this.blockToBePlaced = blockToBePlaced;
++        }
++
++        public net.minecraft.world.level.block.state.BlockState getBlockToBePlaced() {
++            return blockToBePlaced;
++        }
 +    }
 +
 +    public static java.util.function.Consumer<PlacedOre> LISTENER;
@@ -264,15 +287,63 @@ index f38bdffd7734fab297979d38abd168b2b82e16e3..bb764a3ecc4e93bb566d1e7c6a07fc69
      @Override
      public boolean place(final FeaturePlaceContext<OreConfiguration> context) {
          RandomSource random = context.random();
-@@ -148,6 +168,11 @@ public class OreFeature extends Feature<OreConfiguration> {
-                                                                     sectionRelativeX, sectionRelativeY, sectionRelativeZ, targetState.state, false
+@@ -144,10 +187,31 @@ public class OreFeature extends Feature<OreConfiguration> {
+ 
+                                                         for (OreConfiguration.TargetBlockState targetState : config.targetStates) {
+                                                             if (canPlaceOre(blockState, sectionGetter::getBlockState, random, config, targetState, orePos)) {
++                                                                BlockState toPlace = targetState.state;
++
++                                                                if (LISTENER != null) {
++                                                                    boolean exposed = isExposed(level, orePos);
++
++                                                                    final net.minecraft.world.level.levelgen.feature.OreFeature.PlacedOre placedOre = new net.minecraft.world.level.levelgen.feature.OreFeature.PlacedOre(
++                                                                        level,
++                                                                        orePos.immutable(),
++                                                                        targetState.state,
++                                                                        exposed
++                                                                    );
++
++                                                                    LISTENER.accept(placedOre);
++
++                                                                    if (placedOre.getBlockToBePlaced() != null) {
++                                                                        toPlace = placedOre.getBlockToBePlaced();
++                                                                    }
++                                                                }
++
+                                                                 section.setBlockState(
+-                                                                    sectionRelativeX, sectionRelativeY, sectionRelativeZ, targetState.state, false
++                                                                    sectionRelativeX, sectionRelativeY, sectionRelativeZ, toPlace, false
                                                                  );
                                                                  placed++;
 +
-+                                                                if (LISTENER != null) {
-+                                                                    LISTENER.accept(new PlacedOre(orePos, targetState.state));
-+                                                                }
 +
                                                                  break;
                                                              }
                                                          }
+@@ -182,4 +246,26 @@ public class OreFeature extends Feature<OreConfiguration> {
+     protected static boolean shouldSkipAirCheck(final RandomSource random, final float discardChanceOnAirExposure) {
+         return discardChanceOnAirExposure <= 0.0F || !(discardChanceOnAirExposure >= 1.0F) && random.nextFloat() >= discardChanceOnAirExposure;
+     }
++
++
++    private static final net.minecraft.core.Direction[] DIRECTIONS = {
++        net.minecraft.core.Direction.UP,
++        net.minecraft.core.Direction.DOWN,
++        net.minecraft.core.Direction.NORTH,
++        net.minecraft.core.Direction.SOUTH,
++        net.minecraft.core.Direction.EAST,
++        net.minecraft.core.Direction.WEST
++    };
++
++    public static boolean isExposed(WorldGenLevel level, BlockPos pos) {
++        for (net.minecraft.core.Direction dir : DIRECTIONS) {
++            final net.minecraft.world.level.block.state.BlockState blockState = level.getBlockState(pos.relative(dir));
++            if (blockState.isAir() || blockState.liquid()) {
++                return true;
++            }
++        }
++
++        return false;
++    }
++
+ }
