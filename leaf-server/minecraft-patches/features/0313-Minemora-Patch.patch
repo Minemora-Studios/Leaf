@@ -233,6 +233,101 @@ index 683a71943a04047ab88c948ee80416c3236dc466..e9ff5cdb34d6e6502764f7d0e12c9964
                  Vec3 riderMovement = moveIntent.normalize();
                  double ownDist = deltaMovement.horizontalDistanceSqr();
                  if (riderMovement.lengthSqr() > 0.0 && ownDist < 0.01) {
+diff --git a/net/minecraft/world/level/biome/MultiNoiseBiomeSource.java b/net/minecraft/world/level/biome/MultiNoiseBiomeSource.java
+index eb177fcef92d9bc1d1a2268b5c5ace566f57b1d2..255b995167f06d36f1b7c6af317de3ccbbb07cd7 100644
+--- a/net/minecraft/world/level/biome/MultiNoiseBiomeSource.java
++++ b/net/minecraft/world/level/biome/MultiNoiseBiomeSource.java
+@@ -16,6 +16,45 @@ import net.minecraft.util.VisibleForDebug;
+ import net.minecraft.world.level.levelgen.NoiseRouterData;
+ 
+ public class MultiNoiseBiomeSource extends BiomeSource {
++
++    // MoraPaper Start - Biome Generation Data
++    public class GenerationData {
++
++        private final int x, z;
++        private final Holder<Biome> originalBiome;
++        private ResourceKey<Biome> newBiome;
++
++        public GenerationData(final int x, final int z, final Holder<net.minecraft.world.level.biome.Biome> originalBiome) {
++            this.x = x;
++            this.z = z;
++            this.originalBiome = originalBiome;
++        }
++
++        public int getX() {
++            return this.x;
++        }
++
++        public int getZ() {
++            return this.z;
++        }
++
++        public Holder<Biome>  getOriginalBiome() {
++            return originalBiome;
++        }
++
++        public net.minecraft.resources.ResourceKey<net.minecraft.world.level.biome.Biome> getNewBiome() {
++            return newBiome;
++        }
++
++        public void setNewBiome(final net.minecraft.resources.ResourceKey<net.minecraft.world.level.biome.Biome> newBiome) {
++            this.newBiome = newBiome;
++        }
++    }
++
++    public static java.util.function.Consumer<GenerationData> INTERCEPTOR;
++    private java.util.Map<ResourceKey<Biome>, Holder<Biome>> BIOMES_CACHE = new java.util.HashMap<>();
++    // MoraPaper Ends
++
+     private static final MapCodec<Holder<Biome>> ENTRY_CODEC = Biome.CODEC.fieldOf("biome");
+     public static final MapCodec<Climate.ParameterList<Holder<Biome>>> DIRECT_CODEC = Climate.ParameterList.codec(ENTRY_CODEC).fieldOf("biomes");
+     private static final MapCodec<Holder<MultiNoiseBiomeSourceParameterList>> PRESET_CODEC = MultiNoiseBiomeSourceParameterList.CODEC
+@@ -57,8 +96,43 @@ public class MultiNoiseBiomeSource extends BiomeSource {
+ 
+     @Override
+     public Holder<Biome> getNoiseBiome(final int quartX, final int quartY, final int quartZ, final Climate.Sampler sampler) {
+-        return this.getNoiseBiome(sampler.sample(quartX, quartY, quartZ));
++        Holder<Biome> biome = this.getNoiseBiome(sampler.sample(quartX, quartY, quartZ));
++
++        // MoraSpigot Starts - Add interceptor for biome modification
++        int blockX = quartX << 2;
++        int blockZ = quartZ << 2;
++
++        if (INTERCEPTOR != null) {
++            final net.minecraft.world.level.biome.MultiNoiseBiomeSource.GenerationData data = new net.minecraft.world.level.biome.MultiNoiseBiomeSource.GenerationData(blockX, blockZ, biome);
++            INTERCEPTOR.accept(data);
++
++            if (data.getNewBiome() != null) {
++                biome = findBiome(data.getNewBiome());
++            }
++        }
++
++        return biome;
++    }
++
++    private Holder<Biome> findBiome(ResourceKey<Biome> key) {
++        if (BIOMES_CACHE.isEmpty()) {
++            for (Pair<Climate.ParameterPoint, Holder<Biome>> pair : this.parameters().values()) {
++                Holder<Biome> otherHolder = pair.getSecond();
++                final java.util.Optional<net.minecraft.resources.ResourceKey<Biome>> otherKey = otherHolder.unwrapKey();
++                if (otherKey.isEmpty()) continue;
++
++                BIOMES_CACHE.put(otherKey.get(), otherHolder);
++            }
++        }
++
++        final net.minecraft.core.Holder<net.minecraft.world.level.biome.Biome> cachedBiome = BIOMES_CACHE.get(key);
++        if (cachedBiome != null) {
++            return cachedBiome;
++        }
++
++        throw new IllegalStateException("Couldn't find biome " + key);
+     }
++    // MoraSpigot Ends
+ 
+     @VisibleForDebug
+     public Holder<Biome> getNoiseBiome(final Climate.TargetPoint target) {
 diff --git a/net/minecraft/world/level/levelgen/feature/OreFeature.java b/net/minecraft/world/level/levelgen/feature/OreFeature.java
 index f38bdffd7734fab297979d38abd168b2b82e16e3..e0826cf81445cce436b74c9c68166abd0e70e05a 100644
 --- a/net/minecraft/world/level/levelgen/feature/OreFeature.java
