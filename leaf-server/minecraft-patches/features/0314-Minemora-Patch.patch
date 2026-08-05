@@ -5,7 +5,7 @@ Subject: [PATCH] Minemora Patch
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java b/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
-index a692eff5e6a72e60961317975dca85f0eef94882..58cfd5a8903c2d6e92593a276649e780f6990615 100644
+index c6f85843300a914ea5ca210f0fd4198a3bc67b23..77e43733ea2fbf1220abc79702390518f7c9405e 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
 @@ -111,6 +111,9 @@ public final class ChunkHolderManager {
@@ -71,7 +71,7 @@ index aaa497096f07f2ef9da62b9760f5c9aa0b0263d3..58cfca970db9b2f045e00cc012741208
                  player.getTabListDisplayName(),
                  player.isModelPartShown(PlayerModelPart.HAT),
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index a7caa1280abef05f4bcecd3dd94843f0d16b0ef0..f7cb7dd5ad6e26e579002cd33c89733e6ed7af3c 100644
+index 56ca424d2f6615c2b4c95f5314c1159932c64d11..1d60d54f19222fa942e9474822a862c23fb41d09 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -3370,4 +3370,11 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -87,7 +87,7 @@ index a7caa1280abef05f4bcecd3dd94843f0d16b0ef0..f7cb7dd5ad6e26e579002cd33c89733e
 +
  }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index ad5c46db4bbb42aca73831d8865d6b196886ad21..2583a1b9bdad2a789868e3c3fd4b95c192a4d38f 100644
+index 4030776c3d12f8e797720180e141322b5d2cc548..703bb24fea1df09f04326c2b4976313c4641a760 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -452,6 +452,12 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -127,7 +127,7 @@ index ad5c46db4bbb42aca73831d8865d6b196886ad21..2583a1b9bdad2a789868e3c3fd4b95c1
      @Override
      public BlockPos adjustSpawnLocation(final ServerLevel level, final BlockPos spawnSuggestion) {
          CompletableFuture<Vec3> future = PlayerSpawnFinder.findSpawn(level, spawnSuggestion);
-@@ -2534,6 +2557,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2513,6 +2536,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
  
      public void sendSystemMessage(final Component message, final boolean overlay) {
@@ -137,7 +137,7 @@ index ad5c46db4bbb42aca73831d8865d6b196886ad21..2583a1b9bdad2a789868e3c3fd4b95c1
          if (this.acceptsSystemMessages(overlay)) {
              this.connection
                  .send(
-@@ -2561,6 +2587,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2540,6 +2566,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.sendChatMessage(message, filtered, chatType, null);
      }
      public void sendChatMessage(final OutgoingChatMessage message, final boolean filtered, final ChatType.Bound chatType, @Nullable Component unsigned) {
@@ -148,7 +148,7 @@ index ad5c46db4bbb42aca73831d8865d6b196886ad21..2583a1b9bdad2a789868e3c3fd4b95c1
          if (this.acceptsChatMessages()) {
              message.sendToPlayer(this, filtered, chatType, unsigned); // Paper
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index c521b3e2a5990455ffc8d491c7464a5ecab76656..7cf9133374b1efe37a5d474ed9310b774aa1aa0e 100644
+index d1d7e606f76375bdfe227952db3b6edee09efbc0..5e9606da5f39520d7a5deae6325bb2121770d935 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2681,8 +2681,9 @@ public class ServerGamePacketListenerImpl
@@ -187,7 +187,7 @@ index c521b3e2a5990455ffc8d491c7464a5ecab76656..7cf9133374b1efe37a5d474ed9310b77
          synchronized (this.messageSignatureCache) {
          this.send(
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index e074c9a362588fe46e47e599c7b81fdac69c91aa..962135512caf41849cdc0186059316730f2fa302 100644
+index af775113bebde3b49ded7d870e75419514b6e361..1ec81c50dfe680ca09fe7180cf171f48e5b8e940 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -3015,6 +3015,11 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

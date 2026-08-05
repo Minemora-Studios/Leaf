@@ -5,7 +5,7 @@ Subject: [PATCH] Replace entity tracker by fluid map
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 0ff4b81c38d56590881040d235b1b3ee7142c1c6..0de0fdce2948120ebad914f165cb49827948bada 100644
+index 0ba32e08e210a438457d7621047d0489fb8f02f5..9a12b3ff9ef554a3b02cb71b5d72b22477bd3977 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -305,7 +305,7 @@ public abstract class Entity
