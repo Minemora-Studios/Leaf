@@ -5,7 +5,7 @@ Subject: [PATCH] Minemora Patch
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java b/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
-index c6f85843300a914ea5ca210f0fd4198a3bc67b23..77e43733ea2fbf1220abc79702390518f7c9405e 100644
+index a2bccd6a339a5faf64f2b5d47b7aacc3f848e541..8017cdec1bd5493546ac90d84622f9ee08b0ac0f 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
 @@ -111,6 +111,9 @@ public final class ChunkHolderManager {
@@ -148,10 +148,10 @@ index 4030776c3d12f8e797720180e141322b5d2cc548..703bb24fea1df09f04326c2b4976313c
          if (this.acceptsChatMessages()) {
              message.sendToPlayer(this, filtered, chatType, unsigned); // Paper
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index d1d7e606f76375bdfe227952db3b6edee09efbc0..5e9606da5f39520d7a5deae6325bb2121770d935 100644
+index 43b2d4584ffb255bdb1ca0070b386d90e910d381..627f8a9e353cc3d9e6261b4694fd6590f7d4cc64 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2681,8 +2681,9 @@ public class ServerGamePacketListenerImpl
+@@ -2682,8 +2682,9 @@ public class ServerGamePacketListenerImpl
                  LastSeenMessages result = this.lastSeenMessages.applyUpdate(update);
                  var10000 = Optional.of(result);
              } catch (LastSeenMessagesValidator.ValidationException e) {
@@ -163,7 +163,7 @@ index d1d7e606f76375bdfe227952db3b6edee09efbc0..5e9606da5f39520d7a5deae6325bb212
                  return Optional.empty();
              }
  
-@@ -2793,8 +2794,9 @@ public class ServerGamePacketListenerImpl
+@@ -2794,8 +2795,9 @@ public class ServerGamePacketListenerImpl
              try {
                  this.lastSeenMessages.applyOffset(packet.offset());
              } catch (LastSeenMessagesValidator.ValidationException e) {
@@ -175,7 +175,7 @@ index d1d7e606f76375bdfe227952db3b6edee09efbc0..5e9606da5f39520d7a5deae6325bb212
              }
          }
      }
-@@ -2902,6 +2904,10 @@ public class ServerGamePacketListenerImpl
+@@ -2903,6 +2905,10 @@ public class ServerGamePacketListenerImpl
              return;
          }
          // CraftBukkit end
