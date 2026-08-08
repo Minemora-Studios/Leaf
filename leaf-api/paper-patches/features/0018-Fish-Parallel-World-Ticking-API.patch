@@ -16,10 +16,10 @@ With this approach only new methods are added into already existing Bukkit API, 
   get standarized.
 
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index fbdd1020a9a743f2bd27388a973649f75e7f7ead..100682b567f394ee7d892bd6ca2516eccaadf0e3 100644
+index 9887a346201f838663f0df1363eb3dd4f1e3e64b..0a36a459300e9d91df98be408f3e8e529efcf09b 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2993,4 +2993,15 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2991,4 +2991,15 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
      // Gale end - YAPFA - last tick time - API
  
      @NotNull org.leavesmc.leaves.entity.photographer.PhotographerManager getPhotographerManager(); // Leaves - Photographer API
