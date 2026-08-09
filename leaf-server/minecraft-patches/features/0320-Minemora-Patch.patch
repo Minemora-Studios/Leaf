@@ -186,6 +186,34 @@ index 43b2d4584ffb255bdb1ca0070b386d90e910d381..627f8a9e353cc3d9e6261b4694fd6590
          // Paper start - Ensure that client receives chat packets in the same order that we add into the message signature cache
          synchronized (this.messageSignatureCache) {
          this.send(
+diff --git a/net/minecraft/world/entity/EntityFluidInteraction.java b/net/minecraft/world/entity/EntityFluidInteraction.java
+index d896eac6d9641f87dcd5357bbeaaef535fac4712..56e344ca4e9ecade990062d27840f1ff288bf3f2 100644
+--- a/net/minecraft/world/entity/EntityFluidInteraction.java
++++ b/net/minecraft/world/entity/EntityFluidInteraction.java
+@@ -139,12 +139,22 @@ public class EntityFluidInteraction {
+         return null;
+     }
+ 
++    // MoraPaper Start - Farm Piglin Water Push Multiplier
++    private static final double FARM_PIGLIN_WATER_PUSH_MULTIPLIER = 3.0;
++
+     public void applyCurrentTo(final TagKey<Fluid> fluid, final Entity entity, final double scale) {
+         EntityFluidInteraction.Tracker tracker = this.trackerByFluid.get(fluid);
+         if (tracker != null) {
+-            tracker.applyCurrentTo(entity, scale);
++            double appliedScale = scale;
++            if (fluid == net.minecraft.tags.FluidTags.WATER
++                && entity instanceof net.minecraft.world.entity.monster.zombie.ZombifiedPiglin zombifiedPiglin
++                && !zombifiedPiglin.collides) {
++                appliedScale *= FARM_PIGLIN_WATER_PUSH_MULTIPLIER;
++            }
++            tracker.applyCurrentTo(entity, appliedScale);
+         }
+     }
++    // MoraPaper End - Farm Piglin Water Push Multiplier
+ 
+     public double getFluidHeight(final TagKey<Fluid> fluid) {
+         EntityFluidInteraction.Tracker tracker = this.trackerByFluid.get(fluid);
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
 index af775113bebde3b49ded7d870e75419514b6e361..1ec81c50dfe680ca09fe7180cf171f48e5b8e940 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
