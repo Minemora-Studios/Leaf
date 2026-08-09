@@ -71,10 +71,10 @@ index aaa497096f07f2ef9da62b9760f5c9aa0b0263d3..58cfca970db9b2f045e00cc012741208
                  player.getTabListDisplayName(),
                  player.isModelPartShown(PlayerModelPart.HAT),
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 56ca424d2f6615c2b4c95f5314c1159932c64d11..1d60d54f19222fa942e9474822a862c23fb41d09 100644
+index 556c558dd7aa77fa4318e9879c81b17550aee87c..211d1a96ca8f87dc4b8b0786a26114a2bd9bb1a0 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -3370,4 +3370,11 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -3371,4 +3371,11 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          return globalTemptationLookup;
      }
      // Paper end - optimise temptation lookups
