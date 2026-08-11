@@ -215,7 +215,7 @@ index d896eac6d9641f87dcd5357bbeaaef535fac4712..56e344ca4e9ecade990062d27840f1ff
      public double getFluidHeight(final TagKey<Fluid> fluid) {
          EntityFluidInteraction.Tracker tracker = this.trackerByFluid.get(fluid);
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index af775113bebde3b49ded7d870e75419514b6e361..1ec81c50dfe680ca09fe7180cf171f48e5b8e940 100644
+index 14cf550c114df95fd43a5e002715c34e92be3c2a..e2e8bacd579cdcdc864640a8f717097d16f08758 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -3015,6 +3015,11 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
