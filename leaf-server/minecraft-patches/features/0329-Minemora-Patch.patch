@@ -148,7 +148,7 @@ index 4030776c3d12f8e797720180e141322b5d2cc548..703bb24fea1df09f04326c2b4976313c
          if (this.acceptsChatMessages()) {
              message.sendToPlayer(this, filtered, chatType, unsigned); // Paper
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 43b2d4584ffb255bdb1ca0070b386d90e910d381..627f8a9e353cc3d9e6261b4694fd6590f7d4cc64 100644
+index 118f4df4599768488d5fd86e97b0b024bea00365..9259c78c51dc359d3fd79b32c8a03014f02d8028 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2682,8 +2682,9 @@ public class ServerGamePacketListenerImpl
@@ -175,9 +175,9 @@ index 43b2d4584ffb255bdb1ca0070b386d90e910d381..627f8a9e353cc3d9e6261b4694fd6590
              }
          }
      }
-@@ -2903,6 +2905,10 @@ public class ServerGamePacketListenerImpl
-             return;
+@@ -2915,6 +2917,10 @@ public class ServerGamePacketListenerImpl
          }
+         // Leaf end - Mirai - Configurable chat message signatures
          // CraftBukkit end
 +
 +        // MoraPaper
