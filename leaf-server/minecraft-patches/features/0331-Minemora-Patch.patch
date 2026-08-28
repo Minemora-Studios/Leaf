@@ -357,14 +357,14 @@ index eb177fcef92d9bc1d1a2268b5c5ace566f57b1d2..255b995167f06d36f1b7c6af317de3cc
      @VisibleForDebug
      public Holder<Biome> getNoiseBiome(final Climate.TargetPoint target) {
 diff --git a/net/minecraft/world/level/levelgen/feature/OreFeature.java b/net/minecraft/world/level/levelgen/feature/OreFeature.java
-index f38bdffd7734fab297979d38abd168b2b82e16e3..e0826cf81445cce436b74c9c68166abd0e70e05a 100644
+index f38bdffd7734fab297979d38abd168b2b82e16e3..998e85baf676eb67f7710b91a87958e2be89c59e 100644
 --- a/net/minecraft/world/level/levelgen/feature/OreFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/OreFeature.java
 @@ -19,6 +19,49 @@ public class OreFeature extends Feature<OreConfiguration> {
          super(codec);
      }
  
-+    public class PlacedOre {
++    public static class PlacedOre {
 +
 +        private final WorldGenLevel level;
 +        private final BlockPos pos;
@@ -470,3 +470,35 @@ index f38bdffd7734fab297979d38abd168b2b82e16e3..e0826cf81445cce436b74c9c68166abd
 +    }
 +
  }
+diff --git a/net/minecraft/world/level/levelgen/feature/ScatteredOreFeature.java b/net/minecraft/world/level/levelgen/feature/ScatteredOreFeature.java
+index ecfc483a4e75d8c926cd2727b7021ce9881347ac..08ef68475cd312889afcf5d9ee15efaf82fae07d 100644
+--- a/net/minecraft/world/level/levelgen/feature/ScatteredOreFeature.java
++++ b/net/minecraft/world/level/levelgen/feature/ScatteredOreFeature.java
+@@ -30,7 +30,26 @@ public class ScatteredOreFeature extends Feature<OreConfiguration> {
+ 
+             for (OreConfiguration.TargetBlockState targetState : config.targetStates) {
+                 if (OreFeature.canPlaceOre(blockState, level::getBlockState, random, config, targetState, targetPos)) {
+-                    level.setBlock(targetPos, targetState.state, Block.UPDATE_CLIENTS);
++                    net.minecraft.world.level.block.state.BlockState toPlace = targetState.state;
++
++                    if (net.minecraft.world.level.levelgen.feature.OreFeature.LISTENER != null) {
++                        boolean exposed = OreFeature.isExposed(level, targetPos);
++
++                        final net.minecraft.world.level.levelgen.feature.OreFeature.PlacedOre placedOre = new net.minecraft.world.level.levelgen.feature.OreFeature.PlacedOre(
++                            level,
++                            targetPos.immutable(),
++                            targetState.state,
++                            exposed
++                        );
++
++                        OreFeature.LISTENER.accept(placedOre);
++
++                        if (placedOre.getBlockToBePlaced() != null) {
++                            toPlace = placedOre.getBlockToBePlaced();
++                        }
++                    }
++
++                    level.setBlock(targetPos, toPlace, Block.UPDATE_CLIENTS);
+                     break;
+                 }
+             }
