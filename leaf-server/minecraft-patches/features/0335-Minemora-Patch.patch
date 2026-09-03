@@ -71,7 +71,7 @@ index aaa497096f07f2ef9da62b9760f5c9aa0b0263d3..58cfca970db9b2f045e00cc012741208
                  player.getTabListDisplayName(),
                  player.isModelPartShown(PlayerModelPart.HAT),
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index ba589ac63ebba99679e4d20a5f455da85941a44f..097ddd8a2181ba9d99840d73f3e6b68bac033792 100644
+index 11cb0f12ba1ef598e6ab075fec340cd4bda1aaa6..8152381ecbf2b6be960fda126157a6ccce9784e3 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -3367,4 +3367,11 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -215,7 +215,7 @@ index d896eac6d9641f87dcd5357bbeaaef535fac4712..56e344ca4e9ecade990062d27840f1ff
      public double getFluidHeight(final TagKey<Fluid> fluid) {
          EntityFluidInteraction.Tracker tracker = this.trackerByFluid.get(fluid);
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 14cf550c114df95fd43a5e002715c34e92be3c2a..e2e8bacd579cdcdc864640a8f717097d16f08758 100644
+index 549bd2811ee8a0b46e1aae4409bc3b9d38ed90b1..f61dac983c5e7cfa86173112d9731c26d6769bd5 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -3015,6 +3015,11 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
