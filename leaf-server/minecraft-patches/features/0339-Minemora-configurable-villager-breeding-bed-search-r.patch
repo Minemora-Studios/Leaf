@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ininjagod98 <181880040+ininjagod98@users.noreply.github.com>
+Date: Fri, 4 Sep 2026 12:00:00 -0500
+Subject: [PATCH] Minemora - configurable villager breeding bed search radius
+
+VillagerMakeLove#takeVacantBed searches for a free HOME POI at the hardcoded
+AcquirePoi.SCAN_RANGE of 48 blocks. Defaults to vanilla's 48.
+
+diff --git a/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java b/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
+index 9aefa11fcc336c5c98c63301b7f9a51b397bdc71..f625020b5ad7eef7f2aa3248c9efcac2ff353e2f 100644
+--- a/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
++++ b/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
+@@ -98,7 +98,7 @@ public class VillagerMakeLove extends Behavior<Villager> {
+ 
+     private Optional<BlockPos> takeVacantBed(final ServerLevel level, final Villager body) {
+         return level.getPoiManager()
+-            .take(p -> p.is(PoiTypes.HOME), (poiType, poiPos) -> this.canReach(body, poiPos, poiType), body.blockPosition(), AcquirePoi.SCAN_RANGE);
++            .take(p -> p.is(PoiTypes.HOME), (poiType, poiPos) -> this.canReach(body, poiPos, poiType), body.blockPosition(), org.dreeam.leaf.config.modules.opt.MinemoraTweaks.villagerBreedingBedSearchRadius); // Minemora - configurable villager breeding bed search radius
+     }
+ 
+     private boolean canReach(final Villager body, final BlockPos poiPos, final Holder<PoiType> poiType) {

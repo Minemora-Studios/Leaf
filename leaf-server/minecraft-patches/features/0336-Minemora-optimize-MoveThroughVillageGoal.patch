@@ -1,0 +1,72 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ininjagod98 <181880040+ininjagod98@users.noreply.github.com>
+Date: Fri, 4 Sep 2026 12:00:00 -0500
+Subject: [PATCH] Minemora - optimize MoveThroughVillageGoal
+
+MoveThroughVillageGoal#canUse is one of the most expensive vanilla goal checks:
+RandomPos#generateRandomPos runs ten iterations and each candidate performs a
+radius-10 PoiManager#find, followed by up to three full A* passes through
+PathNavigation#createPath. A mob that cannot reach a village POI re-runs all of
+that on every goal selector tick, forever.
+
+This adds an exponential failure back-off (the situation that makes the check
+fail does not change within a tick) plus an optional fixed interval gate.
+Both are configured through performance.minemora.* and default to vanilla.
+
+Raider$RaiderMoveThroughVillageGoal is a separate class and is not affected,
+so raids keep vanilla behaviour.
+
+diff --git a/net/minecraft/world/entity/ai/goal/MoveThroughVillageGoal.java b/net/minecraft/world/entity/ai/goal/MoveThroughVillageGoal.java
+index 990a48550fc285dfcbaa536c87be781e3c68195f..bfffc698d81ee5ed96fb39d326759a8330e305ea 100644
+--- a/net/minecraft/world/entity/ai/goal/MoveThroughVillageGoal.java
++++ b/net/minecraft/world/entity/ai/goal/MoveThroughVillageGoal.java
+@@ -45,8 +45,49 @@ public class MoveThroughVillageGoal extends Goal {
+         }
+     }
+ 
++    // Minemora start - optimize MoveThroughVillageGoal
++    private final int minemora$interval = Math.max(1, org.dreeam.leaf.config.modules.opt.MinemoraTweaks.moveThroughVillageInterval);
++    private int minemora$counter;
++    private int minemora$retryDelay;
++    private int minemora$nextCheckTick;
++
+     @Override
+     public boolean canUse() {
++        // Back-off: canUse() is one of the most expensive vanilla goal checks (up to ten
++        // radius-10 POI searches plus one to three full A* passes). A mob that fails it
++        // fails for a reason that does not change within a tick, so stop re-running it
++        // every tick and grow the retry delay while it keeps failing.
++        if (this.mob.tickCount < this.minemora$nextCheckTick) {
++            return false;
++        }
++
++        if (this.minemora$interval > 1) {
++            this.minemora$counter++;
++            if (this.minemora$counter < this.minemora$interval) {
++                return false;
++            } else {
++                this.minemora$counter = this.mob.getRandom().nextInt(this.minemora$interval);
++            }
++        }
++
++        final boolean minemora$canUse = this.minemora$canUse();
++        if (minemora$canUse) {
++            this.minemora$retryDelay = 0;
++            this.minemora$nextCheckTick = 0;
++        } else {
++            final int minemora$min = org.dreeam.leaf.config.modules.opt.MinemoraTweaks.moveThroughVillageRetryMin;
++            if (minemora$min > 0) {
++                final int minemora$max = Math.max(minemora$min, org.dreeam.leaf.config.modules.opt.MinemoraTweaks.moveThroughVillageRetryMax);
++                this.minemora$retryDelay = this.minemora$retryDelay <= 0 ? minemora$min : Math.min(minemora$max, this.minemora$retryDelay << 1);
++                this.minemora$nextCheckTick = this.mob.tickCount + this.minemora$retryDelay;
++            }
++        }
++
++        return minemora$canUse;
++    }
++
++    private boolean minemora$canUse() {
++        // Minemora end - optimize MoveThroughVillageGoal
+         if (!GoalUtils.hasGroundPathNavigation(this.mob)) {
+             return false;
+         }

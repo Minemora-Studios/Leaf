@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ininjagod98 <181880040+ininjagod98@users.noreply.github.com>
+Date: Fri, 4 Sep 2026 12:00:00 -0500
+Subject: [PATCH] Minemora - configurable inactive goal selector interval
+
+Paper's EAR hardcodes a 1-in-3 throttle for the goal selector of inactive mobs.
+Pufferfish's Throttle-goal-selector-during-inactive-ticking uses 20 instead.
+This makes the divisor configurable, defaulting to Paper's 3, so behaviour is
+unchanged until the value is raised.
+
+diff --git a/net/minecraft/world/entity/ai/goal/GoalSelector.java b/net/minecraft/world/entity/ai/goal/GoalSelector.java
+index 7bb75f4ff6307190952eb97743497421db9f9d4b..f5a7f1aa5245fa4f46d7d089e67703c46e128feb 100644
+--- a/net/minecraft/world/entity/ai/goal/GoalSelector.java
++++ b/net/minecraft/world/entity/ai/goal/GoalSelector.java
+@@ -51,7 +51,10 @@ public class GoalSelector {
+     // Paper start - EAR 2
+     public boolean inactiveTick() {
+         this.curRate++;
+-        return this.curRate % 3 == 0; // TODO newGoalRate was already unused in 1.20.4, check if this is correct
++        // Minemora start - configurable inactive goal selector interval
++        final int interval = org.dreeam.leaf.config.modules.opt.MinemoraTweaks.inactiveGoalSelectorInterval;
++        return interval <= 1 || this.curRate % interval == 0;
++        // Minemora end - configurable inactive goal selector interval
+     }
+ 
+     public boolean hasTasks() {

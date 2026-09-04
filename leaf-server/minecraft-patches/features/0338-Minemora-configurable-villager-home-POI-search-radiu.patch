@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ininjagod98 <181880040+ininjagod98@users.noreply.github.com>
+Date: Fri, 4 Sep 2026 12:00:00 -0500
+Subject: [PATCH] Minemora - configurable villager home POI search radius
+
+SetClosestHomeAsWalkTarget performs two HOME POI lookups at the hardcoded
+AcquirePoi.SCAN_RANGE of 48 blocks for every villager during the REST activity.
+Purpur's villager search-radius options only cover AcquirePoi and the nearest
+bed sensor, not this behaviour. Defaults to vanilla's 48.
+
+diff --git a/net/minecraft/world/entity/ai/behavior/SetClosestHomeAsWalkTarget.java b/net/minecraft/world/entity/ai/behavior/SetClosestHomeAsWalkTarget.java
+index ed0977bb11067b21fc4efe447a9000f0179d4388..695d2ed104ef342f18610b9d36a84060e63aba79 100644
+--- a/net/minecraft/world/entity/ai/behavior/SetClosestHomeAsWalkTarget.java
++++ b/net/minecraft/world/entity/ai/behavior/SetClosestHomeAsWalkTarget.java
+@@ -65,8 +65,9 @@ public class SetClosestHomeAsWalkTarget {
+                             return false;
+                         } else {
+                         PoiManager poiManager = level.getPoiManager();
++                        final int minemora$homeRadius = org.dreeam.leaf.config.modules.opt.MinemoraTweaks.villagerHomeSearchRadius; // Minemora - configurable villager home search radius
+                         Optional<BlockPos> closest = poiManager.findClosest(
+-                            p -> p.is(PoiTypes.HOME), body.blockPosition(), AcquirePoi.SCAN_RANGE, PoiManager.Occupancy.ANY
++                            p -> p.is(PoiTypes.HOME), body.blockPosition(), minemora$homeRadius, PoiManager.Occupancy.ANY // Minemora - configurable villager home search radius
+                         );
+                         if (!closest.isEmpty() && !(closest.get().distSqr(body.blockPosition()) <= OK_DISTANCE_SQR)) {
+                             MutableInt triedCount = new MutableInt(0);
+@@ -86,7 +87,7 @@ public class SetClosestHomeAsWalkTarget {
+                             };
+                             // Leaf start - Re-route SetClosestHomeAsWalkTarget's poi finding to paper's faster logic
+                             java.util.List<Pair<Holder<PoiType>, BlockPos>> pois = new java.util.ArrayList<>();
+-                            ca.spottedleaf.moonrise.patches.poi_lookup.PoiAccess.findAnyPoiPositions(poiManager, p -> p.is(PoiTypes.HOME), cacheTest, body.blockPosition(), AcquirePoi.SCAN_RANGE, PoiManager.Occupancy.ANY, false, Integer.MAX_VALUE, pois);
++                            ca.spottedleaf.moonrise.patches.poi_lookup.PoiAccess.findAnyPoiPositions(poiManager, p -> p.is(PoiTypes.HOME), cacheTest, body.blockPosition(), minemora$homeRadius, PoiManager.Occupancy.ANY, false, Integer.MAX_VALUE, pois); // Minemora - configurable villager home search radius
+                             Path path = AcquirePoi.findPathToPois(body, new java.util.HashSet<>(pois));
+                             // Leaf end - Re-route SetClosestHomeAsWalkTarget's poi finding to paper's faster logic
+                             // Kaiiju start - petal - Async path processing
