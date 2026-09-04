@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ininjagod98 <181880040+ininjagod98@users.noreply.github.com>
+Date: Fri, 4 Sep 2026 18:05:00 -0500
+Subject: [PATCH] Minemora - cache LivingEntity health
+
+LivingEntity#getHealth reads DATA_HEALTH_ID out of SynchedEntityData on every
+call: a hash lookup plus an unbox. isAlive() calls it, and EAR calls isAlive()
+for every entity every tick, so a survival server profile attributed 1.05% of
+the tick to ActivationRange#checkIfActive -> isAlive -> getHealth alone, and
+2.81% to SynchedEntityData#get overall.
+
+The value only changes through SynchedEntityData#set, which fires
+onSyncedDataUpdated on every actual change, so a mirrored field stays exact.
+The field is initialised to the same 1.0F that defineSynchedData registers, so
+it is still correct for an entity whose max health equals that default and whose
+constructor set() is therefore a no-op. ServerPlayer keeps going through the
+Bukkit scaled-health path untouched.
+
+diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
+index f61dac983c5e7cfa86173112d9731c26d6769bd5..efc35d473dd72a97df0638fa94163a4469d78f53 100644
+--- a/net/minecraft/world/entity/LivingEntity.java
++++ b/net/minecraft/world/entity/LivingEntity.java
+@@ -1437,13 +1437,21 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+         }
+     }
+ 
++    // Minemora start - cache health
++    // Mirrors DATA_HEALTH_ID. Initialised to the exact value defineSynchedData registers,
++    // so the two agree even when the constructor's set(getMaxHealth()) is a no-op because
++    // the entity's max health happens to equal that default. Kept in sync by
++    // onSyncedDataUpdated, which SynchedEntityData#set fires on every actual change.
++    private float minemora$cachedHealth = 1.0F;
++    // Minemora end - cache health
++
+     public float getHealth() {
+         // CraftBukkit start - Use unscaled health
+         if (this instanceof ServerPlayer player) {
+             return (float) player.getBukkitEntity().getHealth();
+         }
+         // CraftBukkit end
+-        return this.entityData.get(DATA_HEALTH_ID);
++        return this.minemora$cachedHealth; // Minemora - cache health
+     }
+ 
+     // Paper start - Check for NaN
+@@ -4505,6 +4513,11 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+     @Override
+     public void onSyncedDataUpdated(final EntityDataAccessor<?> accessor) {
+         super.onSyncedDataUpdated(accessor);
++        // Minemora start - cache health
++        if (DATA_HEALTH_ID.equals(accessor)) {
++            this.minemora$cachedHealth = this.entityData.get(DATA_HEALTH_ID);
++        }
++        // Minemora end - cache health
+         if (SLEEPING_POS_ID.equals(accessor)) {
+             if (this.level().isClientSide()) {
+                 this.getSleepingPos().ifPresent(this::setPosToBed);
