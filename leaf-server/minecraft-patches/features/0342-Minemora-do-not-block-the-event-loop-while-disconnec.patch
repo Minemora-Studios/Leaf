@@ -1,0 +1,53 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ininjagod98 <181880040+ininjagod98@users.noreply.github.com>
+Date: Fri, 11 Sep 2026 10:30:00 -0500
+Subject: [PATCH] Minemora - do not block the event loop while disconnecting
+
+Connection#disconnect waits on the channel close future with
+awaitUninterruptibly(). Seven call sites reach it through
+PacketSendListener#thenRun after sending a disconnect packet
+(ServerLoginPacketListenerImpl, ServerCommonPacketListenerImpl,
+ServerConnectionListener, RateKickingConnection and three inside Connection
+itself). On the io_uring transport the write completion is delivered from the
+completion queue, so those listeners run on the event loop thread and Netty's
+checkDeadLock() throws BlockingOperationException.
+
+Two consequences: a full stack trace per kick, and - because the throw happens
+on the line before it - disconnectionDetails was never assigned, so the reason
+was lost and every kick logged as the generic "Disconnected".
+
+Blocking on the event loop was never valid, which is exactly what Netty is
+reporting, so the wait is skipped there and kept for callers off the loop. The
+close itself is already in flight in both cases. The details are now recorded
+before the close so the reason survives regardless of which path runs.
+
+diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
+index 46bd47d370eee854bb7dcbe40be5488dfc6ef02f..7ced4ce0f9fda5d2b490888ea036892eab0fbf34 100644
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -712,8 +712,24 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+         }
+ 
+         if (this.isConnected()) {
+-            this.channel.close().awaitUninterruptibly();
++            // Minemora start - do not block the event loop while closing
++            // Recorded before the close, not after: the await below used to throw
++            // BlockingOperationException on the io_uring transport and this assignment
++            // was never reached, so the disconnect reason was lost and every kick was
++            // logged as the generic "Disconnected".
+             this.disconnectionDetails = details;
++
++            final io.netty.channel.ChannelFuture minemora$closeFuture = this.channel.close();
++            // Blocking here was only ever valid off the event loop. Every
++            // "send disconnect packet, then close" path in the server registers this
++            // through PacketSendListener#thenRun, and on io_uring the write completion
++            // is delivered from the completion queue, so the listener runs on the event
++            // loop itself and Netty's checkDeadLock() rejects the wait. The close is
++            // already in flight either way; only the wait is skipped.
++            if (!this.channel.eventLoop().inEventLoop()) {
++                minemora$closeFuture.awaitUninterruptibly();
++            }
++            // Minemora end - do not block the event loop while closing
+         }
+     }
+ 
