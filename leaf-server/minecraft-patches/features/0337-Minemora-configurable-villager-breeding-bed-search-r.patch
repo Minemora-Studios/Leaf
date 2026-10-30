@@ -7,7 +7,7 @@ VillagerMakeLove#takeVacantBed searches for a free HOME POI at the hardcoded
 AcquirePoi.SCAN_RANGE of 48 blocks. Defaults to vanilla's 48.
 
 diff --git a/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java b/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
-index 9aefa11fcc336c5c98c63301b7f9a51b397bdc71..f625020b5ad7eef7f2aa3248c9efcac2ff353e2f 100644
+index 350cfa051d0a12d596efd041ff36ad89270b75cf..1262e88a1f3700e38508cb3d28d8f7c7dc1b2519 100644
 --- a/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
 +++ b/net/minecraft/world/entity/ai/behavior/VillagerMakeLove.java
 @@ -98,7 +98,7 @@ public class VillagerMakeLove extends Behavior<Villager> {
