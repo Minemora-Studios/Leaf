@@ -18,10 +18,10 @@ prominent legal notice accompanying the corresponding source:
 Original patch by HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-index aaa30ab2dc639d4b84fa166cc31e5f033451bd5d..498f397b53b7b21f5c95cb0550381cd469cba9b1 100644
+index 2eeb6b8a05d1d214bc781ba70de9ccef58a07edb..fc55f9ad34fab700eede3fc48f1cb4ffe147517a 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-@@ -339,6 +339,12 @@ public final class ChunkEntitySlices {
+@@ -340,6 +340,12 @@ public final class ChunkEntitySlices {
      }
  
  
@@ -34,7 +34,7 @@ index aaa30ab2dc639d4b84fa166cc31e5f033451bd5d..498f397b53b7b21f5c95cb0550381cd4
      public boolean getEntities(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate,
                                 final int maxCount) {
          return this.allEntities.getEntitiesLimited(except, box, into, predicate, maxCount);
-@@ -660,5 +666,59 @@ public final class ChunkEntitySlices {
+@@ -661,5 +667,59 @@ public final class ChunkEntitySlices {
  
              return false;
          }
@@ -95,10 +95,10 @@ index aaa30ab2dc639d4b84fa166cc31e5f033451bd5d..498f397b53b7b21f5c95cb0550381cd4
      }
  }
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
-index 775bea1ff010d3bdd6ea20ad47d9b8c45fbdc95f..2a9032f8fe5424d3795093dfa8bd79ef4534b835 100644
+index d0638c2b5be330385341c46b89992deb8c5a4a0a..86dbcf7cfc7d929748b8acd3cb33ef4dd42e6a2f 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
-@@ -682,6 +682,47 @@ public abstract class EntityLookup implements LevelEntityGetter<Entity> {
+@@ -688,6 +688,47 @@ public abstract class EntityLookup implements LevelEntityGetter<Entity> {
      }
      // Leaf end - optimize entity activation
  
@@ -147,10 +147,10 @@ index 775bea1ff010d3bdd6ea20ad47d9b8c45fbdc95f..2a9032f8fe5424d3795093dfa8bd79ef
          final int minChunkX = (Mth.floor(box.minX) - 2) >> 4;
          final int minChunkZ = (Mth.floor(box.minZ) - 2) >> 4;
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index af775113bebde3b49ded7d870e75419514b6e361..14cf550c114df95fd43a5e002715c34e92be3c2a 100644
+index 58c238c832a38155e6ef18a13cb9c46da46d1175..1fb657e90e7b27d0eb66f369f1711a298489fb1e 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -4101,39 +4101,32 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -4072,39 +4072,32 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              return;
          }
  
@@ -209,7 +209,7 @@ index af775113bebde3b49ded7d870e75419514b6e361..14cf550c114df95fd43a5e002715c34e
                      break;
                  }
  
-@@ -4143,10 +4136,21 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -4114,10 +4107,21 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
                  this.doPush(entity);
              }
          }
@@ -232,7 +232,7 @@ index af775113bebde3b49ded7d870e75419514b6e361..14cf550c114df95fd43a5e002715c34e
          final Vec3 vec = entity.position;
          final net.minecraft.core.BlockPos.MutableBlockPos mutablePos = new net.minecraft.core.BlockPos.MutableBlockPos();
  
-@@ -4156,9 +4160,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -4127,9 +4131,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              mutablePos, ca.spottedleaf.moonrise.common.misc.NearbyPlayers.NearbyMapType.SPAWN_RANGE
          );
  
@@ -243,7 +243,7 @@ index af775113bebde3b49ded7d870e75419514b6e361..14cf550c114df95fd43a5e002715c34e
  
          final ServerPlayer[] raw = players.getRawDataUnchecked();
          final int len = players.size();
-@@ -4167,17 +4169,12 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -4138,17 +4140,12 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
  
          for (int i = 0; i < len; i++) {
              final ServerPlayer player = raw[i];
@@ -266,17 +266,17 @@ index af775113bebde3b49ded7d870e75419514b6e361..14cf550c114df95fd43a5e002715c34e
      // Leaf end - Only player pushable
  
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 6e456da74355646a649473637386a391e98f1cc5..dcc783fe5aa1b4790db5873e22b32ea4517d68df 100644
+index 37a4c1a2c9e2265a697c9450a761a9686f807024..ea25dba6ae1253a5a024b6134f67c4a1753c9266 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1875,6 +1875,29 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1876,6 +1876,29 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          // Paper end - rewrite chunk system
      }
  
 +    // Leaf start - Limit pushable entity queries
 +    public final org.dreeam.leaf.world.EntityPushState pushEntityQueryState = new org.dreeam.leaf.world.EntityPushState();
 +    public boolean forEachEntity(final @Nullable Entity except, final AABB bb, final Predicate<? super Entity> selector,
-+                                 final AbortableIterationConsumer<Entity> consumer) {
++                                 final net.minecraft.util.AbortableIterationConsumer<Entity> consumer) {
 +        if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread(this, bb, "Cannot getEntities asynchronously"); // Leaf - SparklyPaper - parallel world ticking (additional concurrency issues logs)
 +        Profiler.get().incrementCounter("getEntities");
 +

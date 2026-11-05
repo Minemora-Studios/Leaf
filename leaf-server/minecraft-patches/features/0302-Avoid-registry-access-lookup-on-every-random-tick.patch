@@ -5,10 +5,10 @@ Subject: [PATCH] Avoid registry access lookup on every random tick
 
 
 diff --git a/net/minecraft/world/level/block/SpreadingSnowyBlock.java b/net/minecraft/world/level/block/SpreadingSnowyBlock.java
-index 0cd8ac43984acf79e4efed2214a47f8b31dcb09c..9baee897cc10f0e11002c2340c69b63c54bdd6ec 100644
+index 92c84777afd80f00dff5480d892eb5b2aaa888f6..16ee18c44e779bcdf57bb8df5a9177b89eee467a 100644
 --- a/net/minecraft/world/level/block/SpreadingSnowyBlock.java
 +++ b/net/minecraft/world/level/block/SpreadingSnowyBlock.java
-@@ -60,7 +60,7 @@ public abstract class SpreadingSnowyBlock extends SnowyBlock {
+@@ -56,7 +56,7 @@ public abstract class SpreadingSnowyBlock extends SnowyBlock {
      @Override
      protected void randomTick(final BlockState state, final ServerLevel level, final BlockPos pos, final RandomSource random) {
          if (this instanceof GrassBlock && level.paperConfig().tickRates.grassSpread != 1 && (level.paperConfig().tickRates.grassSpread < 1 || (net.minecraft.server.MinecraftServer.currentTick + pos.hashCode()) % level.paperConfig().tickRates.grassSpread != 0)) { return; } // Paper - Configurable random tick rates for blocks

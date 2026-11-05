@@ -17,7 +17,7 @@ As part of: Lithium (https://github.com/CaffeineMC/lithium)
 Licensed under: LGPL-3.0-only (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 // SYNC SOURCE START
-rev: 01597fb879b7a6d17c2420ec4e25a98df3bc8e7b
+rev: 11ea08adce6f94627d3eaaa65506a60e0451c8b6
 branch: develop
 repo: https://github.com/CaffeineMC/lithium.git
 track:
@@ -26,7 +26,7 @@ track:
 // SYNC SOURCE END
 
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
-index 5f84ab70a41c4f30276cd895745ea773e671bea6..d37c01f04f9a7c112ad857fcbeabcbff8bb6c874 100644
+index 5f84ab70a41c4f30276cd895745ea773e671bea6..f576a0a1956e426f7601dc73bd3c13fe3e9e992d 100644
 --- a/net/minecraft/world/entity/ai/Brain.java
 +++ b/net/minecraft/world/entity/ai/Brain.java
 @@ -35,8 +35,9 @@ import net.minecraft.world.entity.schedule.Activity;
@@ -80,7 +80,7 @@ index 5f84ab70a41c4f30276cd895745ea773e671bea6..d37c01f04f9a7c112ad857fcbeabcbff
 +                if (slot.hasValue()) this.lithium$onMemoryModified(); // Leaf - Lithium - Reduce Brain memories lookup
                  slot.clear();
              } else {
-+                if (slot.hasValue() == (value == null)) this.lithium$onMemoryModified(); // Leaf - Lithium - Reduce Brain memories lookup
++                if (!slot.hasValue()) this.lithium$onMemoryModified(); // Leaf - Lithium - Reduce Brain memories lookup
                  slot.set(value);
              }
          }

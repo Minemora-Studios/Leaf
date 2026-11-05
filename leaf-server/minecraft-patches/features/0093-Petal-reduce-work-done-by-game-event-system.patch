@@ -11,10 +11,10 @@ Original project: https://github.com/Bloom-host/Petal
 2. EuclideanGameEventListenerRegistry is not used concurrently so we ban that usage for improved performance with allays
 
 diff --git a/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java b/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java
-index 4aa2d141eba2596e782fc4ab4890c5e2d80eb811..5e9ec23d980c387661d248cccb11ffaa364db8a1 100644
+index a1b0168077b83575f16dd377da2e1ba520d3bd19..4dbd9c425e670e6ff31d70803ba35f8a804459a9 100644
 --- a/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java
-@@ -66,7 +66,7 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
+@@ -65,7 +65,7 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
          return this.catalystListener;
      }
  
@@ -23,7 +23,7 @@ index 4aa2d141eba2596e782fc4ab4890c5e2d80eb811..5e9ec23d980c387661d248cccb11ffaa
          public static final int PULSE_TICKS = 8;
          private final SculkSpreader sculkSpreader;
          private final BlockState blockState;
-@@ -126,6 +126,13 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
+@@ -125,6 +125,13 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
              level.playSound(null, pos, SoundEvents.SCULK_CATALYST_BLOOM, SoundSource.BLOCKS, 2.0F, 0.6F + random.nextFloat() * 0.4F);
          }
  
@@ -38,10 +38,10 @@ index 4aa2d141eba2596e782fc4ab4890c5e2d80eb811..5e9ec23d980c387661d248cccb11ffaa
              if (mob.getLastHurtByMob() instanceof ServerPlayer player) {
                  DamageSource damageSource = mob.getLastDamageSource() == null ? level.damageSources().playerAttack(player) : mob.getLastDamageSource();
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 98bbfdd848f697f4aaba1ebe34b629674a561e7f..997bb3af34ee0c8d99bfe8d0b73adc571b4a4304 100644
+index e33eb42e26ab71b83976c3e24f37c110de979606..707918d8d6ba1df5caf63f94115526cb8043488a 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -90,7 +90,19 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -89,7 +89,19 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
      private final ServerLevel level; // CraftBukkit - type
      private @Nullable Supplier<FullChunkStatus> fullStatus;
      private LevelChunk.@Nullable PostLoadProcessor postLoad;
@@ -62,7 +62,7 @@ index 98bbfdd848f697f4aaba1ebe34b629674a561e7f..997bb3af34ee0c8d99bfe8d0b73adc57
      private final LevelChunkTicks<Block> blockTicks;
      private final LevelChunkTicks<Fluid> fluidTicks;
      private LevelChunk.UnsavedListener unsavedListener = chunkPos -> {};
-@@ -165,7 +177,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -169,7 +181,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
      ) {
          super(pos, upgradeData, level, PalettedContainerFactory.create(net.minecraft.server.MinecraftServer.getServer().registryAccess()), inhabitedTime, sections, blendingData); // Paper - Anti-Xray - The world isn't ready yet, use server singleton for registry
          this.level = (ServerLevel) level; // CraftBukkit - type
@@ -71,7 +71,7 @@ index 98bbfdd848f697f4aaba1ebe34b629674a561e7f..997bb3af34ee0c8d99bfe8d0b73adc57
  
          for (Heightmap.Types type : Heightmap.Types.values()) {
              if (ChunkStatus.FULL.heightmapsAfter().contains(type)) {
-@@ -277,10 +289,27 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -281,10 +293,27 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
  
      @Override
      public GameEventListenerRegistry getListenerRegistry(final int section) {
@@ -103,7 +103,7 @@ index 98bbfdd848f697f4aaba1ebe34b629674a561e7f..997bb3af34ee0c8d99bfe8d0b73adc57
      }
  
      // Paper start - Perf: Reduce instructions and provide final method
-@@ -624,7 +653,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -628,7 +657,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
      }
  
      private void removeGameEventListenerRegistry(final int sectionY) {

@@ -5,10 +5,10 @@ Subject: [PATCH] optimize attribute
 
 
 diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
-index 097ad442a4eed12412f6dbd3e6eb34b983237b4b..3ae5196e0a0fa5b8c8f590b3cf6345993c459e7c 100644
+index c0cae97d81e29911ec7f95a51a6d597604252e40..4f2344b6e4fe6aebdbb7ca2ad65365515d8e2424 100644
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -438,7 +438,7 @@ public class ServerEntity {
+@@ -463,7 +463,7 @@ public class ServerEntity {
                  this.synchronizer.sendToTrackingPlayersAndSelf(new ClientboundUpdateAttributesPacket(this.entity.getId(), attributes));
              }
  
@@ -18,10 +18,10 @@ index 097ad442a4eed12412f6dbd3e6eb34b983237b4b..3ae5196e0a0fa5b8c8f590b3cf634599
      }
  
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index cd87d5ac79fd7c77118a91a73a1218e4c27e2923..98d6d2d6382a22c2a2e33575f562984eb8bfb603 100644
+index 6e33dd3f5ab1acb808df38d444a175393fdd2ec6..34a2a52226349ae8891306640587f427b996f9ef 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -392,7 +392,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -391,7 +391,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              .add(Attributes.NAME_TAG_DISTANCE)
              .add(Attributes.BELOW_NAME_DISTANCE);
      }
@@ -30,7 +30,7 @@ index cd87d5ac79fd7c77118a91a73a1218e4c27e2923..98d6d2d6382a22c2a2e33575f562984e
  
      @Override
      protected void checkFallDamage(final double ya, final boolean onGround, final BlockState onState, final BlockPos pos) {
-@@ -1369,13 +1369,13 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -1360,13 +1360,13 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
      }
  
      private void refreshDirtyAttributes() {

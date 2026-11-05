@@ -5,10 +5,10 @@ Subject: [PATCH] throttle mob spawning
 
 
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index 1eb291e7f92533e67c8eb01707223cc938555608..a9d54673a890e5851854844ad2d0583aa58adbf6 100644
+index c76c1c9780068f0a0c8785354f4a1516dcd303fa..9a8c8a0f361f5e76505e489a31079bee0d8a654a 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -168,6 +168,17 @@ public final class NaturalSpawner {
+@@ -217,6 +217,17 @@ public final class NaturalSpawner {
              // Paper start - Optional per player mob spawns
              final boolean canSpawn;
              int maxSpawns = Integer.MAX_VALUE;

@@ -6,10 +6,10 @@ Subject: [PATCH] Fix MC-223153
 Related MC issue: https://bugs.mojang.com/browse/MC/issues/MC-223153
 
 diff --git a/net/minecraft/world/level/block/Blocks.java b/net/minecraft/world/level/block/Blocks.java
-index 9e48b3836d148129183132fce23b095800ec68a9..21bc42667752f88d00b22f02f08aecfa1a16e0c0 100644
+index 8ea56357240dd25b13f30dd036d4b59453971866..78ce09f82ba09e1897f5df6744d835a51dbe4627 100644
 --- a/net/minecraft/world/level/block/Blocks.java
 +++ b/net/minecraft/world/level/block/Blocks.java
-@@ -5688,6 +5688,7 @@ public class Blocks {
+@@ -5614,6 +5614,7 @@ public class Blocks {
              .mapColor(MapColor.COLOR_ORANGE)
              .instrument(NoteBlockInstrument.BASEDRUM)
              .requiresCorrectToolForDrops()

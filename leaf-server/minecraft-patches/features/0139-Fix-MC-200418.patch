@@ -6,10 +6,10 @@ Subject: [PATCH] Fix MC-200418
 Related MC issue: https://bugs.mojang.com/browse/MC/issues/MC-200418
 
 diff --git a/net/minecraft/world/entity/monster/zombie/ZombieVillager.java b/net/minecraft/world/entity/monster/zombie/ZombieVillager.java
-index 17de81deeb1cc25a60f717a3360bdedcca16409a..5d73c019691bdb1ca2f88a1816de0da23c566777 100644
+index aa019d9bded6641427ee030357ef5d29e6875b0f..cb9e7a437b00f19752745da6937eeacec29dab3c 100644
 --- a/net/minecraft/world/entity/monster/zombie/ZombieVillager.java
 +++ b/net/minecraft/world/entity/monster/zombie/ZombieVillager.java
-@@ -345,6 +345,11 @@ public class ZombieVillager extends Zombie implements VillagerDataHolder {
+@@ -344,6 +344,11 @@ public class ZombieVillager extends Zombie implements VillagerDataHolder {
                  if (!this.isSilent()) {
                      level.levelEvent(null, LevelEvent.SOUND_ZOMBIE_CONVERTED, this.blockPosition(), 0);
                  }

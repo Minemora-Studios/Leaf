@@ -9,10 +9,10 @@ Leaf: ~48ms (-36%)
 This should help drastically on the farms that use actively changing fluids.
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 8ec085406d3457979669406e7f27af5799d1e96c..a1d680c3aa51b4881de857da8338a4b656f0796f 100644
+index e6daefaf020a00dfd3018b997d7542d3c68e8fb6..50d20e313fb002f69017de18883016b13f14fde5 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1599,6 +1599,10 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1605,6 +1605,10 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          this.emptyTime = 0;
      }
  
@@ -24,10 +24,10 @@ index 8ec085406d3457979669406e7f27af5799d1e96c..a1d680c3aa51b4881de857da8338a4b6
          BlockState blockState = this.getBlockState(pos);
          FluidState fluidState = blockState.getFluidState();
 diff --git a/net/minecraft/world/level/material/FlowingFluid.java b/net/minecraft/world/level/material/FlowingFluid.java
-index ae0621d22911927596dba0d52e06868372428be1..b64e60be9cf5856ae90eebd33d38ed2d70056d63 100644
+index 1e4795cad3d5b9e0809d291b928a9c86bd4aa7a3..1ee1181765ecef16b5887aa87dd08b92c19023e9 100644
 --- a/net/minecraft/world/level/material/FlowingFluid.java
 +++ b/net/minecraft/world/level/material/FlowingFluid.java
-@@ -346,25 +346,57 @@ public abstract class FlowingFluid extends Fluid {
+@@ -345,25 +345,57 @@ public abstract class FlowingFluid extends Fluid {
      protected int getSlopeDistance(
          final LevelReader level, final BlockPos pos, final int pass, final Direction from, final BlockState state, final FlowingFluid.SpreadContext context
      ) {
@@ -101,7 +101,7 @@ index ae0621d22911927596dba0d52e06868372428be1..b64e60be9cf5856ae90eebd33d38ed2d
                  }
              }
          }
-@@ -372,6 +404,66 @@ public abstract class FlowingFluid extends Fluid {
+@@ -371,6 +403,66 @@ public abstract class FlowingFluid extends Fluid {
          return lowest;
      }
  

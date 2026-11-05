@@ -5,10 +5,10 @@ Subject: [PATCH] Configurable vanilla username check
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 4fcd74060303f889971c6053dfad961570435418..64c5077f0ec6817d292de16745662bdacbd5f652 100644
+index ea2d18c5f0a941e8af52e301855231968ae10b9f..9d0ccf42e69b41a47affafdf823909238b1f5d25 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -2640,7 +2640,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2698,7 +2698,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          if (this.level().purpurConfig.idleTimeoutUpdateTabList) {
              String scoreboardName = getScoreboardName();
              String playerListName = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().serialize(getBukkitEntity().playerListName());
@@ -18,10 +18,10 @@ index 4fcd74060303f889971c6053dfad961570435418..64c5077f0ec6817d292de16745662bda
              String suffix = (split.length > 1 ? split[1] : "").replace(org.purpurmc.purpur.PurpurConfig.afkTabListSuffix, "");
              if (afk) {
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index c71a416d015c114e72c5127f76a2ab80bf300080..002084531c39b4d886fea89047a3e4dbdb95a890 100644
+index b2b6e85497a495da2c3d33f601d7add2b1318aca..e50ed0fc29826eacf5aa03c05ea6a401fb1420d6 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -172,11 +172,20 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -171,11 +171,20 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
      public void handleHello(final ServerboundHelloPacket packet) {
          Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet");
          // Paper start - Validate usernames
@@ -44,7 +44,7 @@ index c71a416d015c114e72c5127f76a2ab80bf300080..002084531c39b4d886fea89047a3e4db
          this.requestedUuid = packet.profileId();
          // Paper end - Validate usernames
          this.requestedUsername = packet.name();
-@@ -202,6 +211,15 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -201,6 +210,15 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
                  authenticatorPool.execute(() -> {
                      try {
                          GameProfile gameprofile = ServerLoginPacketListenerImpl.this.createOfflineProfile(ServerLoginPacketListenerImpl.this.requestedUsername); // Spigot
@@ -60,7 +60,7 @@ index c71a416d015c114e72c5127f76a2ab80bf300080..002084531c39b4d886fea89047a3e4db
  
                          gameprofile = ServerLoginPacketListenerImpl.this.callPlayerPreLoginEvents(gameprofile); // Paper - Add more fields to AsyncPlayerPreLoginEvent
                          ServerLoginPacketListenerImpl.LOGGER.info("UUID of player {} is {}", gameprofile.name(), gameprofile.id());
-@@ -350,7 +368,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -347,7 +365,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
          server.getPluginManager().callEvent(asyncEvent);
          profile = asyncEvent.getPlayerProfile();
          profile.complete(true); // Paper - setPlayerProfileAPI
@@ -83,10 +83,10 @@ index 7443744e3f256983e52a1cefcaf66082e4a46a7b..b7553611723f7120c66e1f3e51d89df2
          }
  
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index f77557454a7cd5e3ddf98f3a193fdcc31465adb3..c5d258b99c441e5d8fe93200bf57cc7c1ed1ce03 100644
+index 7f1a0b26477d68b9b9994c51e7507f236b38260f..2d6fa3f00fb583030c2b7105cf20aa48f5aa8f16 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -135,6 +135,7 @@ public abstract class PlayerList {
+@@ -137,6 +137,7 @@ public abstract class PlayerList {
      private org.bukkit.craftbukkit.CraftServer cserver;
      private final Map<String,ServerPlayer> playersByName = new java.util.HashMap<>();
      public @Nullable String collideRuleTeamName; // Paper - Configurable player collision
@@ -94,7 +94,7 @@ index f77557454a7cd5e3ddf98f3a193fdcc31465adb3..c5d258b99c441e5d8fe93200bf57cc7c
  
      public PlayerList(
          final MinecraftServer server,
-@@ -516,6 +517,7 @@ public abstract class PlayerList {
+@@ -519,6 +520,7 @@ public abstract class PlayerList {
          player.getAdvancements().clearTriggers();
          this.players.remove(player);
          this.playersByName.remove(player.getScoreboardName().toLowerCase(java.util.Locale.ROOT)); // Spigot

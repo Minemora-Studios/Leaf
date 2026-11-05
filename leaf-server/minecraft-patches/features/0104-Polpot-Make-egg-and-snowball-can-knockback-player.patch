@@ -10,7 +10,7 @@ Set hurtMarked to true to be able to send velocity changes
 under Entity#sendChanges via ClientboundSetEntityMotionPacket
 
 diff --git a/net/minecraft/world/entity/projectile/throwableitemprojectile/Snowball.java b/net/minecraft/world/entity/projectile/throwableitemprojectile/Snowball.java
-index 7735ba697e9f172ebedaae80fe4ad4cd48a8c558..66247ee47ee41f2d78c519cf2538138dbac372b2 100644
+index fdf11fa854b26ee31c862c3c3d9c158539048fb7..d251c3a2372e8ab4bec6baa9f7c1dccf86d2580e 100644
 --- a/net/minecraft/world/entity/projectile/throwableitemprojectile/Snowball.java
 +++ b/net/minecraft/world/entity/projectile/throwableitemprojectile/Snowball.java
 @@ -57,6 +57,12 @@ public class Snowball extends ThrowableItemProjectile {
@@ -27,7 +27,7 @@ index 7735ba697e9f172ebedaae80fe4ad4cd48a8c558..66247ee47ee41f2d78c519cf2538138d
  
      // Purpur start - options to extinguish fire blocks with snowballs - borrowed and modified code from ThrownPotion#onHitBlock and ThrownPotion#dowseFire
 diff --git a/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownEgg.java b/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownEgg.java
-index b844dee92b175ddef4506d96e513e5ca3d27750d..ee598ec55aaddaa6d8dea660a9a20af5263b930f 100644
+index 1d5449090d0649cb03cf87a0175aebedded20132..f299ff73c8c1f27ffca139f2586a6615ec35b6b1 100644
 --- a/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownEgg.java
 +++ b/net/minecraft/world/entity/projectile/throwableitemprojectile/ThrownEgg.java
 @@ -60,7 +60,14 @@ public class ThrownEgg extends ThrowableItemProjectile {

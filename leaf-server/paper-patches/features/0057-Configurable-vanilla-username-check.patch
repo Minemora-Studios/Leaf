@@ -5,10 +5,10 @@ Subject: [PATCH] Configurable vanilla username check
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java b/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
-index ceaf63c76272b2a11b92f877b9828e93ec79d47f..fc18b53eb42448d9701e3b00e2337a96a9d2eef7 100644
+index 310c0917fbae3f632cce9b391cbb02f584c06b70..c9969013edacde98bf82569d658a3ab10a6a9c55 100644
 --- a/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
 +++ b/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
-@@ -67,6 +67,14 @@ public class CraftPlayerProfile implements PlayerProfile, SharedPlayerProfile {
+@@ -73,6 +73,14 @@ public class CraftPlayerProfile implements PlayerProfile, SharedPlayerProfile {
          copyProfileProperties(resolvableProfile.partialProfile(), this.profile);
      }
  
@@ -23,7 +23,7 @@ index ceaf63c76272b2a11b92f877b9828e93ec79d47f..fc18b53eb42448d9701e3b00e2337a96
      @Override
      public boolean hasProperty(String property) {
          return profile.properties().containsKey(property);
-@@ -205,6 +213,14 @@ public class CraftPlayerProfile implements PlayerProfile, SharedPlayerProfile {
+@@ -211,6 +219,14 @@ public class CraftPlayerProfile implements PlayerProfile, SharedPlayerProfile {
          return clone;
      }
  
@@ -38,7 +38,7 @@ index ceaf63c76272b2a11b92f877b9828e93ec79d47f..fc18b53eb42448d9701e3b00e2337a96
      @Override
      public boolean isComplete() {
          return this.getId() != null && StringUtils.isNotBlank(this.getName());
-@@ -324,9 +340,10 @@ public class CraftPlayerProfile implements PlayerProfile, SharedPlayerProfile {
+@@ -330,9 +346,10 @@ public class CraftPlayerProfile implements PlayerProfile, SharedPlayerProfile {
          }
      }
  
@@ -51,7 +51,7 @@ index ceaf63c76272b2a11b92f877b9828e93ec79d47f..fc18b53eb42448d9701e3b00e2337a96
          return new GameProfile(
              uniqueId != null ? uniqueId : Util.NIL_UUID,
              name != null ? name : "",
-@@ -334,6 +351,11 @@ public class CraftPlayerProfile implements PlayerProfile, SharedPlayerProfile {
+@@ -340,6 +357,11 @@ public class CraftPlayerProfile implements PlayerProfile, SharedPlayerProfile {
          );
      }
  
@@ -63,7 +63,7 @@ index ceaf63c76272b2a11b92f877b9828e93ec79d47f..fc18b53eb42448d9701e3b00e2337a96
      private static ProfileProperty toBukkit(Property property) {
          return new ProfileProperty(property.name(), property.value(), property.signature());
      }
-@@ -346,6 +368,13 @@ public class CraftPlayerProfile implements PlayerProfile, SharedPlayerProfile {
+@@ -352,6 +374,13 @@ public class CraftPlayerProfile implements PlayerProfile, SharedPlayerProfile {
          return new Property(property.getName(), property.getValue(), property.getSignature());
      }
  

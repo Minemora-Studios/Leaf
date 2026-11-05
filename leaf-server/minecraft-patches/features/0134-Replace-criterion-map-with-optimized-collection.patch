@@ -5,10 +5,10 @@ Subject: [PATCH] Replace criterion map with optimized collection
 
 
 diff --git a/net/minecraft/server/PlayerAdvancements.java b/net/minecraft/server/PlayerAdvancements.java
-index 48ce4398ae2eeaaec496f1988675cd86012021d9..aa00d3e22fa4c941c124770c50b298301aaadd14 100644
+index 8bd2d78be2f85bb94b14fa25160d861676a743b7..55b1463df92251eb6e17479f7a5ca75276e88f8f 100644
 --- a/net/minecraft/server/PlayerAdvancements.java
 +++ b/net/minecraft/server/PlayerAdvancements.java
-@@ -59,7 +59,7 @@ public class PlayerAdvancements {
+@@ -60,7 +60,7 @@ public class PlayerAdvancements {
      private @Nullable AdvancementHolder lastSelectedTab;
      private boolean isFirstPacket = true;
      private final Codec<PlayerAdvancements.Data> codec;

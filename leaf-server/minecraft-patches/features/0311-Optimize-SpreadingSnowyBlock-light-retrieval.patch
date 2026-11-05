@@ -40,10 +40,10 @@ index e859cc266fe385949a058b85fa6be9c69951d85b..11f4f97b8b3a41d9cc84e7d9a01dbd46
          if (!this.hasSkyLight) {
              return 0;
 diff --git a/net/minecraft/world/level/block/SpreadingSnowyBlock.java b/net/minecraft/world/level/block/SpreadingSnowyBlock.java
-index 9baee897cc10f0e11002c2340c69b63c54bdd6ec..b00c4ccc32406407dcafce92083cc1a7bfa4d03e 100644
+index 16ee18c44e779bcdf57bb8df5a9177b89eee467a..dfdee29e12ab97e478674cc242492ff30fecd3e1 100644
 --- a/net/minecraft/world/level/block/SpreadingSnowyBlock.java
 +++ b/net/minecraft/world/level/block/SpreadingSnowyBlock.java
-@@ -78,7 +78,12 @@ public abstract class SpreadingSnowyBlock extends SnowyBlock {
+@@ -74,7 +74,12 @@ public abstract class SpreadingSnowyBlock extends SnowyBlock {
                  // CraftBukkit end
                  level.setBlockAndUpdate(pos, baseBlock.get().defaultBlockState());
              } else {

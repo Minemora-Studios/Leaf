@@ -18,10 +18,10 @@ Setting the gamerule "doTileDrop" to false was to simulate a server that has chu
 Note: This might increase the item output of a cacti farm, though in theory it should act the same as vanilla.
 
 diff --git a/net/minecraft/world/level/block/CactusBlock.java b/net/minecraft/world/level/block/CactusBlock.java
-index 71be12e2f0dc7cad859b2068755302a7fe38846e..fd91c1b0d3e7764880a3023bf987a5e409df5006 100644
+index a69f54647775dc64bb476e474fb4ed98386a2ef6..e2f183dc52cf69153fdcf692442e182cfecaec31 100644
 --- a/net/minecraft/world/level/block/CactusBlock.java
 +++ b/net/minecraft/world/level/block/CactusBlock.java
-@@ -52,24 +52,45 @@ public class CactusBlock extends Block implements BonemealableBlock { // Purpur
+@@ -45,24 +45,45 @@ public class CactusBlock extends Block implements BonemealableBlock { // Purpur
  
      @Override
      protected void randomTick(final BlockState state, final ServerLevel level, final BlockPos pos, final RandomSource random) {
@@ -72,7 +72,7 @@ index 71be12e2f0dc7cad859b2068755302a7fe38846e..fd91c1b0d3e7764880a3023bf987a5e4
                  BlockState aboveBlock = state.setValue(AGE, 0);
                  level.setBlock(pos, aboveBlock, Block.UPDATE_NONE);
                  level.neighborChanged(aboveBlock, above, this, null, false);
-@@ -111,6 +132,11 @@ public class CactusBlock extends Block implements BonemealableBlock { // Purpur
+@@ -104,6 +125,11 @@ public class CactusBlock extends Block implements BonemealableBlock { // Purpur
  
      @Override
      protected boolean canSurvive(final BlockState state, final LevelReader level, final BlockPos pos) {

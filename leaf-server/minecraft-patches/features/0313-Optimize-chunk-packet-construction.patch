@@ -5,10 +5,10 @@ Subject: [PATCH] Optimize chunk packet construction
 
 
 diff --git a/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java b/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java
-index a52f93d0563f713b1d2b707cdb6ab74e4793a54d..32dff3dfb06645269332b4f524c36c5f967dfb11 100644
+index 06f0088b4bdbd86c5942d523889386a81764a240..18d8d65e8a1d128ce8e737650cb9452c4379773b 100644
 --- a/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java
 +++ b/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java
-@@ -48,10 +48,14 @@ public class ClientboundLevelChunkPacketData {
+@@ -68,10 +68,14 @@ public class ClientboundLevelChunkPacketData {
      }
      public ClientboundLevelChunkPacketData(final LevelChunk levelChunk, final io.papermc.paper.antixray.ChunkPacketInfo<net.minecraft.world.level.block.state.BlockState> chunkPacketInfo) {
          // Paper end - Anti-Xray - Add chunk packet info
@@ -27,7 +27,7 @@ index a52f93d0563f713b1d2b707cdb6ab74e4793a54d..32dff3dfb06645269332b4f524c36c5f
          this.buffer = new byte[calculateChunkSize(levelChunk)];
          // Paper start - Anti-Xray - Add chunk packet info
          if (chunkPacketInfo != null) {
-@@ -61,17 +65,17 @@ public class ClientboundLevelChunkPacketData {
+@@ -81,17 +85,17 @@ public class ClientboundLevelChunkPacketData {
          this.blockEntitiesData = Lists.newArrayList();
          int totalTileEntities = 0; // Paper - Handle oversized block entities in chunks
  

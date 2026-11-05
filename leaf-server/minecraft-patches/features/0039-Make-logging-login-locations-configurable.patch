@@ -13,10 +13,10 @@ As part of: JettPack (https://gitlab.com/Titaniumtown/JettPack)
 Licensed under: GPL-3.0-only (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 3da54c71d72a5403302643a141b3d7d78fda4ee3..d34ed8b9f7ec0cf39fabe2f128c0db0070db44ab 100644
+index b6982da674b95e2e393a9f9d84babdb9e157a00d..74390674a2e1f654c7b713328bc3697f510518fe 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -316,6 +316,7 @@ public abstract class PlayerList {
+@@ -319,6 +319,7 @@ public abstract class PlayerList {
          }
          // Paper end - Configurable player collision
          org.purpurmc.purpur.task.BossBarTask.addToAll(player); // Purpur - Implement TPSBar
@@ -24,7 +24,7 @@ index 3da54c71d72a5403302643a141b3d7d78fda4ee3..d34ed8b9f7ec0cf39fabe2f128c0db00
          // CraftBukkit start - moved down
          LOGGER.info(
              "{}[{}] logged in with entity id {} at ([{}]{}, {}, {})", // Paper - add world identifier
-@@ -328,6 +329,16 @@ public abstract class PlayerList {
+@@ -331,6 +332,16 @@ public abstract class PlayerList {
              player.getZ()
          );
          // CraftBukkit end - moved down

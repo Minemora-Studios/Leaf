@@ -5,10 +5,10 @@ Subject: [PATCH] Replace entity equipment items to array
 
 
 diff --git a/net/minecraft/world/entity/EntityEquipment.java b/net/minecraft/world/entity/EntityEquipment.java
-index 887a513999c3974d02df99201f426133273a9811..d04a0bed160bcb61408c1fac207bec7aeec72cac 100644
+index 222268f81d96712cc14355135e70456dc98c7604..66ee55e5a64371b17b3babb490799d12135df819 100644
 --- a/net/minecraft/world/entity/EntityEquipment.java
 +++ b/net/minecraft/world/entity/EntityEquipment.java
-@@ -13,11 +13,19 @@ public class EntityEquipment implements net.caffeinemc.mods.lithium.common.entit
+@@ -14,11 +14,19 @@ public class EntityEquipment implements net.caffeinemc.mods.lithium.common.entit
          map.putAll((Map<? extends EquipmentSlot, ? extends ItemStack>)items);
          return new EntityEquipment(map);
      }, equipment -> {
@@ -31,7 +31,7 @@ index 887a513999c3974d02df99201f426133273a9811..d04a0bed160bcb61408c1fac207bec7a
      // Leaf start - Lithium - equipment tracking
      boolean shouldTickEnchantments = false;
      ItemStack recheckEnchantmentForStack = null;
-@@ -26,7 +34,16 @@ public class EntityEquipment implements net.caffeinemc.mods.lithium.common.entit
+@@ -27,7 +35,16 @@ public class EntityEquipment implements net.caffeinemc.mods.lithium.common.entit
      // Leaf end - Lithium - equipment tracking
  
      private EntityEquipment(final EnumMap<EquipmentSlot, ItemStack> items) {
@@ -49,7 +49,7 @@ index 887a513999c3974d02df99201f426133273a9811..d04a0bed160bcb61408c1fac207bec7a
      }
  
      public EntityEquipment() {
-@@ -35,18 +52,23 @@ public class EntityEquipment implements net.caffeinemc.mods.lithium.common.entit
+@@ -36,18 +53,23 @@ public class EntityEquipment implements net.caffeinemc.mods.lithium.common.entit
  
      public ItemStack set(final EquipmentSlot slot, final ItemStack itemStack) {
          // Leaf start - Lithium - equipment tracking
@@ -58,7 +58,7 @@ index 887a513999c3974d02df99201f426133273a9811..d04a0bed160bcb61408c1fac207bec7a
 +        final ItemStack[] items = this.items;
 +        final int slotIndex = slot.ordinal();
 +        ItemStack oldStack = items[slotIndex];
-+        items[slotIndex] = itemStack == null ? ItemStack.EMPTY : itemStack;
++        items[slotIndex] = itemStack;
 +        // Leaf end - Replace entity equipment items to array
          if (inLevel) this.onEquipmentReplaced(oldStack, itemStack);
          return oldStack;
@@ -76,7 +76,7 @@ index 887a513999c3974d02df99201f426133273a9811..d04a0bed160bcb61408c1fac207bec7a
              if (!item.isEmpty()) {
                  return false;
              }
-@@ -56,23 +78,25 @@ public class EntityEquipment implements net.caffeinemc.mods.lithium.common.entit
+@@ -57,23 +79,25 @@ public class EntityEquipment implements net.caffeinemc.mods.lithium.common.entit
      }
  
      public void tick(final Entity owner) {
@@ -105,10 +105,10 @@ index 887a513999c3974d02df99201f426133273a9811..d04a0bed160bcb61408c1fac207bec7a
      public void dropAll(final LivingEntity dropper) {
 -        for (ItemStack item : this.items.values()) {
 +        for (ItemStack item : this.items) { // Leaf - Replace entity equipment items to array
-             dropper.drop(item, true, false);
-         }
- 
-@@ -81,13 +105,13 @@ public class EntityEquipment implements net.caffeinemc.mods.lithium.common.entit
+             ItemEntity drop = dropper.createItemStackToDrop(item, true, false);
+             if (drop != null) {
+                 dropper.level().addFreshEntity(drop);
+@@ -85,13 +109,13 @@ public class EntityEquipment implements net.caffeinemc.mods.lithium.common.entit
  
      public void clear() {
          if (inLevel) this.invalidateData(); // Leaf - Lithium - equipment tracking
@@ -124,7 +124,7 @@ index 887a513999c3974d02df99201f426133273a9811..d04a0bed160bcb61408c1fac207bec7a
      }
      // Paper end - EntityDeathEvent
  
-@@ -210,7 +234,7 @@ public class EntityEquipment implements net.caffeinemc.mods.lithium.common.entit
+@@ -214,7 +238,7 @@ public class EntityEquipment implements net.caffeinemc.mods.lithium.common.entit
          this.recheckEnchantmentForStack = null;
          this.hasUnsentEquipmentChanges = true;
  
@@ -133,7 +133,7 @@ index 887a513999c3974d02df99201f426133273a9811..d04a0bed160bcb61408c1fac207bec7a
              if (!oldStack.isEmpty()) {
                  //noinspection unchecked
                  oldStack.lithium$unsubscribeWithData(this, 0);
-@@ -223,7 +247,7 @@ public class EntityEquipment implements net.caffeinemc.mods.lithium.common.entit
+@@ -227,7 +251,7 @@ public class EntityEquipment implements net.caffeinemc.mods.lithium.common.entit
          this.recheckEnchantmentForStack = null;
          this.hasUnsentEquipmentChanges = true;
  

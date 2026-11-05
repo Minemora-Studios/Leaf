@@ -5,10 +5,10 @@ Subject: [PATCH] Bulk writes to writeLongArray during chunk loading
 
 
 diff --git a/net/minecraft/network/FriendlyByteBuf.java b/net/minecraft/network/FriendlyByteBuf.java
-index 12cd230ebe97dab655f8546948f06b93f0babf1f..0d1f2ea282d8d1916102b27849771ae69fb6204a 100644
+index b63d24683f7b3b1f11e927cf4261ff2d05cdbd38..9af154e650563c100774f28c45ad0d3dc831604c 100644
 --- a/net/minecraft/network/FriendlyByteBuf.java
 +++ b/net/minecraft/network/FriendlyByteBuf.java
-@@ -347,7 +347,7 @@ public class FriendlyByteBuf extends ByteBuf {
+@@ -252,7 +252,7 @@ public class FriendlyByteBuf extends ByteBuf {
      }
  
      public FriendlyByteBuf writeLongArray(final long[] longs) {
@@ -17,7 +17,7 @@ index 12cd230ebe97dab655f8546948f06b93f0babf1f..0d1f2ea282d8d1916102b27849771ae6
          return this;
      }
  
-@@ -357,7 +357,7 @@ public class FriendlyByteBuf extends ByteBuf {
+@@ -262,7 +262,7 @@ public class FriendlyByteBuf extends ByteBuf {
      }
  
      public FriendlyByteBuf writeFixedSizeLongArray(final long[] longs) {
@@ -26,7 +26,7 @@ index 12cd230ebe97dab655f8546948f06b93f0babf1f..0d1f2ea282d8d1916102b27849771ae6
          return this;
      }
  
-@@ -367,6 +367,50 @@ public class FriendlyByteBuf extends ByteBuf {
+@@ -272,6 +272,50 @@ public class FriendlyByteBuf extends ByteBuf {
          }
      }
  

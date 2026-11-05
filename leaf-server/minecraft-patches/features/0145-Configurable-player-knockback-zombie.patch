@@ -5,7 +5,7 @@ Subject: [PATCH] Configurable player knockback zombie
 
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index c8c0693267dbe30aee3e3629a113f252830a9949..cd87d5ac79fd7c77118a91a73a1218e4c27e2923 100644
+index 77f95e3549e932fe8145a9be4ff39491588515d9..6e33dd3f5ab1acb808df38d444a175393fdd2ec6 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -2148,6 +2148,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

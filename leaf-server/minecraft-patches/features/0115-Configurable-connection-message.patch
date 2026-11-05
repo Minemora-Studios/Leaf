@@ -5,10 +5,10 @@ Subject: [PATCH] Configurable connection message
 
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 55e3d4883fe85761085f2ba85d88c530f9d2d330..da8b8d9ac3fb573d0812d6eefbdd2a89ec2e3874 100644
+index 5927ba28af48ee17b709eb3f0df43c5a0dd34cb3..64521b89130065c8350ba8c1187c73adfcad487e 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -363,7 +363,7 @@ public abstract class PlayerList {
+@@ -244,7 +244,7 @@ public abstract class PlayerList {
          // Ensure that player inventory is populated with its viewer
          player.containerMenu.transferTo(player.containerMenu, bukkitPlayer);
  
@@ -17,7 +17,7 @@ index 55e3d4883fe85761085f2ba85d88c530f9d2d330..da8b8d9ac3fb573d0812d6eefbdd2a89
          this.cserver.getPluginManager().callEvent(playerJoinEvent);
  
          if (!player.connection.isAcceptingMessages()) {
-@@ -376,7 +376,7 @@ public abstract class PlayerList {
+@@ -255,7 +255,7 @@ public abstract class PlayerList {
  
          final net.kyori.adventure.text.Component jm = playerJoinEvent.joinMessage();
  
@@ -26,7 +26,7 @@ index 55e3d4883fe85761085f2ba85d88c530f9d2d330..da8b8d9ac3fb573d0812d6eefbdd2a89
              joinMessage = io.papermc.paper.adventure.PaperAdventure.asVanilla(jm); // Paper - Adventure
              this.server.getPlayerList().broadcastSystemMessage(joinMessage, false); // Paper - Adventure
          }
-@@ -622,7 +622,7 @@ public abstract class PlayerList {
+@@ -463,7 +463,7 @@ public abstract class PlayerList {
              player.closeContainer(org.bukkit.event.inventory.InventoryCloseEvent.Reason.DISCONNECT); // Paper - Inventory close reason
          }
  
@@ -35,9 +35,9 @@ index 55e3d4883fe85761085f2ba85d88c530f9d2d330..da8b8d9ac3fb573d0812d6eefbdd2a89
          this.cserver.getPluginManager().callEvent(playerQuitEvent);
          player.getBukkitEntity().disconnect();
  
-@@ -1578,4 +1578,40 @@ public abstract class PlayerList {
-     public boolean isAllowCommandsForAllPlayers() {
-         return this.allowCommandsForAllPlayers;
+@@ -1408,4 +1408,40 @@ public abstract class PlayerList {
+             player.getRecipeBook().sendInitialRecipeBook(player);
+         }
      }
 +
 +    // Leaf start - Configurable connection message

@@ -6,10 +6,10 @@ Subject: [PATCH] reduce enchantment allocations
 reduce allocation of creating entity loot contexts and unmodifiable set boxing
 
 diff --git a/net/minecraft/world/item/enchantment/Enchantment.java b/net/minecraft/world/item/enchantment/Enchantment.java
-index 9c4158e134d321653e596d398ed8444e19e570a4..c7263a6fe6968c72b894d92bbe21a4c7a85dae54 100644
+index ebe405c0079081b67035f13979e500b15bd0e765..ca37ee9804020f1760bf7915a4471460fe6bfe36 100644
 --- a/net/minecraft/world/item/enchantment/Enchantment.java
 +++ b/net/minecraft/world/item/enchantment/Enchantment.java
-@@ -199,9 +199,15 @@ public record Enchantment(Component description, Enchantment.EnchantmentDefiniti
+@@ -198,9 +198,15 @@ public record Enchantment(Component description, Enchantment.EnchantmentDefiniti
      }
  
      public boolean isImmuneToDamage(final ServerLevel serverLevel, final int enchantmentLevel, final Entity victim, final DamageSource source) {
@@ -26,7 +26,7 @@ index 9c4158e134d321653e596d398ed8444e19e570a4..c7263a6fe6968c72b894d92bbe21a4c7
              if (filteredEffect.matches(context)) {
                  return true;
              }
-@@ -403,8 +409,14 @@ public record Enchantment(Component description, Enchantment.EnchantmentDefiniti
+@@ -402,8 +408,14 @@ public record Enchantment(Component description, Enchantment.EnchantmentDefiniti
      }
  
      public void tick(final ServerLevel serverLevel, final int enchantmentLevel, final EnchantedItemInUse item, final Entity entity) {
@@ -43,10 +43,10 @@ index 9c4158e134d321653e596d398ed8444e19e570a4..c7263a6fe6968c72b894d92bbe21a4c7
              e -> e.apply(serverLevel, enchantmentLevel, item, entity, entity.position())
          );
 diff --git a/net/minecraft/world/item/enchantment/EnchantmentHelper.java b/net/minecraft/world/item/enchantment/EnchantmentHelper.java
-index 10be004c98d608327c18fb07c3e9d114f60b2d21..8ae0b521e1483f6b304ac16762e3770d77890d97 100644
+index 32daa598a75affc810463cc170ea155d992a569b..ff7ae9b5afaa79081e98fb63427d5e6a875779be 100644
 --- a/net/minecraft/world/item/enchantment/EnchantmentHelper.java
 +++ b/net/minecraft/world/item/enchantment/EnchantmentHelper.java
-@@ -133,7 +133,7 @@ public class EnchantmentHelper {
+@@ -132,7 +132,7 @@ public class EnchantmentHelper {
      private static void runIterationOnItem(final ItemStack piece, final EnchantmentHelper.EnchantmentVisitor method) {
          ItemEnchantments enchantments = piece.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
  
@@ -55,7 +55,7 @@ index 10be004c98d608327c18fb07c3e9d114f60b2d21..8ae0b521e1483f6b304ac16762e3770d
              method.accept(entry.getKey(), entry.getIntValue());
          }
      }
-@@ -146,7 +146,7 @@ public class EnchantmentHelper {
+@@ -145,7 +145,7 @@ public class EnchantmentHelper {
              if (itemEnchantments != null && !itemEnchantments.isEmpty()) {
                  EnchantedItemInUse itemInUse = new EnchantedItemInUse(piece, slot, owner);
  

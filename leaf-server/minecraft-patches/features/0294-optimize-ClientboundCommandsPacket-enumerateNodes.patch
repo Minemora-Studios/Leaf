@@ -5,10 +5,10 @@ Subject: [PATCH] optimize ClientboundCommandsPacket#enumerateNodes
 
 
 diff --git a/net/minecraft/network/protocol/game/ClientboundCommandsPacket.java b/net/minecraft/network/protocol/game/ClientboundCommandsPacket.java
-index d8c5069c30d4453c2f71c22196610510ab315643..fc6ce6a8b3305405cd6a827d4e4e63b95b3122fd 100644
+index d2585a69b978e00cf3b9e8829807d63128fc0b55..278866fbec2090e72a595239e93991101bd4f7c6 100644
 --- a/net/minecraft/network/protocol/game/ClientboundCommandsPacket.java
 +++ b/net/minecraft/network/protocol/game/ClientboundCommandsPacket.java
-@@ -85,14 +85,17 @@ public class ClientboundCommandsPacket implements Packet<ClientGamePacketListene
+@@ -84,14 +84,17 @@ public class ClientboundCommandsPacket implements Packet<ClientGamePacketListene
  
          CommandNode<S> node;
          while ((node = queue.poll()) != null) {

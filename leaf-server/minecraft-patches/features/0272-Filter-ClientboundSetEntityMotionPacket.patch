@@ -25,16 +25,16 @@ The only entities needing this are:
 This filter helps keep unneeded packets reduced, but also ensures that we keep smooth visual gameplay
 
 diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
-index 6e84a8a44bfeef4ecc3c3f6dcd9d4769ba97446f..fdb9d357d3d5529341203cdd3f3185bedb5ce3e8 100644
+index 2a0e967aa6c665ffa08cf4c86f0eb69427847b19..edad1bd673c5913e2339cfa830b6684e21b091e2 100644
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -226,7 +226,13 @@ public class ServerEntity {
+@@ -211,7 +211,13 @@ public class ServerEntity {
                                          )
                                      )
                                  );
 -                        } else { // Leaf - Multithreaded tracker - diff on change
 +                        } else if (!org.dreeam.leaf.config.modules.opt.ReduceUselessPackets.filterClientboundSetEntityMotionPacket || // Canvas - filter ClientboundSetEntityMotionPacket
-+                            (this.entity instanceof net.minecraft.world.entity.item.ItemEntity && positionChanged) ||
++                            (this.entity instanceof net.minecraft.world.entity.item.ItemEntity && currentPosition.distanceToSqr(this.positionCodec.base) >= 7.62939453125E-6D) ||
 +                            this.entity instanceof net.minecraft.world.entity.projectile.EyeOfEnder ||
 +                            this.entity instanceof net.minecraft.world.entity.animal.squid.Squid ||
 +                            this.entity instanceof net.minecraft.world.entity.projectile.ShulkerBullet ||
@@ -43,13 +43,13 @@ index 6e84a8a44bfeef4ecc3c3f6dcd9d4769ba97446f..fdb9d357d3d5529341203cdd3f3185be
                              this.synchronizer.sendToTrackingPlayers(new ClientboundSetEntityMotionPacket(this.entity.getId(), this.lastSentMovement));
                          }
                      }
-@@ -562,7 +568,13 @@ public class ServerEntity {
+@@ -565,7 +571,13 @@ public class ServerEntity {
                                      new ClientboundSetEntityMotionPacket(this.entity.getId(), this.lastSentMovement),
                                      new ClientboundProjectilePowerPacket(projectile.getId(), projectile.accelerationPower)
                                  )));
 -                            } else {
 +                            } else if (!org.dreeam.leaf.config.modules.opt.ReduceUselessPackets.filterClientboundSetEntityMotionPacket || // Canvas - filter ClientboundSetEntityMotionPacket
-+                                (this.entity instanceof net.minecraft.world.entity.item.ItemEntity && positionChanged) ||
++                                (this.entity instanceof net.minecraft.world.entity.item.ItemEntity && currentPosition.distanceToSqr(this.positionCodec.base) >= 7.62939453125E-6D) ||
 +                                this.entity instanceof net.minecraft.world.entity.projectile.EyeOfEnder ||
 +                                this.entity instanceof net.minecraft.world.entity.animal.squid.Squid ||
 +                                this.entity instanceof net.minecraft.world.entity.projectile.ShulkerBullet ||

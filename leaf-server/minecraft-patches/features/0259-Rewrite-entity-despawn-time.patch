@@ -43,11 +43,11 @@ index 81e72a1cd2de1bfeb4c78999148dd2e95ed782c2..2b90941bf6824719531582c27e640514
                  PlatformHooks.get().unloadEntity(entity);
                  if (entity.isVehicle()) {
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
-index cc02a276e5de57667676e5c2cdb9358f684984ec..53d85b59964fad1ebbd32e939909bb408d969705 100644
+index 465169fd8bbfabbb2a22772d101519583dc2b470..e46001555d0a2086e834878e4d4f775093b13631 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
 @@ -51,6 +51,7 @@ public abstract class EntityLookup implements LevelEntityGetter<Entity> {
-     protected final ConcurrentChainedLong2ReferenceHashTable<Entity> entityById = new ConcurrentChainedLong2ReferenceHashTable<>();
+     protected final ConcurrentChainedInt2ReferenceHashTable<Entity> entityById = ConcurrentChainedInt2ReferenceHashTable.createWithCapacity(ConcurrentChainedInt2ReferenceHashTable.defaultCapacity(), 0.5f);
      protected final ConcurrentHashMap<UUID, Entity> entityByUUID = new ConcurrentHashMap<>();
      protected final EntityList accessibleEntities = new EntityList();
 +    public final it.unimi.dsi.fastutil.objects.ReferenceArrayList<Entity> weakEntityList = new it.unimi.dsi.fastutil.objects.ReferenceArrayList<>(); // Leaf - Rewrite entity despawn time
@@ -95,7 +95,7 @@ index cc02a276e5de57667676e5c2cdb9358f684984ec..53d85b59964fad1ebbd32e939909bb40
 +        for (int i = this.weakEntityList.size() - 1; i >= 0; i--) {
 +            Entity entity = this.weakEntityList.get(i);
 +
-+            if (entity == null || !entity.leaf$isWeakLoaded) {
++            if (!entity.leaf$isWeakLoaded) {
 +                removeAtIndex(this.weakEntityList, i);
 +                continue;
 +            }
@@ -120,40 +120,22 @@ index cc02a276e5de57667676e5c2cdb9358f684984ec..53d85b59964fad1ebbd32e939909bb40
  
          private final ChunkEntitySlices[] slices = new ChunkEntitySlices[REGION_SIZE * REGION_SIZE];
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index f8879a56495691aace1f4ee9310592440d8cdbc8..bc12d8dd24afc187112d2a6d1eae9deee9e34630 100644
+index 8a1a796bbf219686491e443db48af1f9ed3aa46f..3d7e7d5b028a855a70d6513367a06933acad8f76 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1131,6 +1131,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1136,6 +1136,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          this.debugSynchronizers.tick(this.server.debugSubscribers());
          profiler.pop();
-         this.environmentAttributes().invalidateTickCache();
+         this.chunkSource.randomState().garbageCollect();
 +        if (org.dreeam.leaf.config.modules.opt.DespawnTime.proactiveWeakLoading) this.moonrise$getEntityLookup().leaf$tickWeakEntities(); // Leaf - Rewrite entity despawn time
          if (org.dreeam.leaf.config.modules.async.MultithreadedTracker.enabled) { this.leaf$asyncTracker.onEntitiesTickEnd(); } // Leaf - Multithreaded tracker
      }
  
-@@ -1649,7 +1650,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
-         entity.setOldPosAndRot();
-         ProfilerFiller profiler = Profiler.get();
-         entity.tickCount++;
--        entity.totalEntityAge++; // Paper - age-like counter for all entities
-+        entity.updateEntityAge(); // Paper - age-like counter for all entities // Leaf - Rewrite entity despawn time
-         profiler.push(entity.typeHolder()::getRegisteredName);
-         profiler.incrementCounter("tickNonPassenger");
-         final boolean isActive = io.papermc.paper.entity.activation.ActivationRange.checkIfActive(entity); // Paper - EAR 2
-@@ -1670,7 +1671,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
-         } else if (entity instanceof Player || this.entityTickList.contains(entity)) {
-             entity.setOldPosAndRot();
-             entity.tickCount++;
--            entity.totalEntityAge++; // Paper - age-like counter for all entities
-+            entity.updateEntityAge(); // Paper - age-like counter for all entities // Leaf - Rewrite entity despawn time
-             ProfilerFiller profiler = Profiler.get();
-             profiler.push(entity.typeHolder()::getRegisteredName);
-             profiler.incrementCounter("tickPassenger");
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 9d01fe0b2d147a5cf11d99dfe07ca0caf34dbd0e..9356d3ee08523bbb72aaf6ac9233639d2d1cdfbb 100644
+index 79918edbd5a5a08d4810fe155a1fbf75c15fb839..5f5875cf2b67ce0c86c76b16d1228804a49a328f 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -383,12 +383,14 @@ public abstract class Entity
+@@ -388,12 +388,14 @@ public abstract class Entity
      // Paper end
      public boolean freezeLocked = false; // Paper - Freeze Tick Lock API
      public boolean fixedPose = false; // Paper - Expand Pose API
@@ -169,7 +151,7 @@ index 9d01fe0b2d147a5cf11d99dfe07ca0caf34dbd0e..9356d3ee08523bbb72aaf6ac9233639d
      // Paper start - EAR 2
      public final boolean defaultActivationState;
      public long activatedTick = Integer.MIN_VALUE;
-@@ -413,6 +415,7 @@ public abstract class Entity
+@@ -418,6 +420,7 @@ public abstract class Entity
      private int sectionY = Integer.MIN_VALUE;
      private int sectionZ = Integer.MIN_VALUE;
      private boolean updatingSectionStatus;
@@ -177,7 +159,7 @@ index 9d01fe0b2d147a5cf11d99dfe07ca0caf34dbd0e..9356d3ee08523bbb72aaf6ac9233639d
  
      @Override
      public final boolean moonrise$isHardColliding() {
-@@ -626,6 +629,7 @@ public abstract class Entity
+@@ -631,6 +634,7 @@ public abstract class Entity
          this.setPos(0.0, 0.0, 0.0);
          this.eyeHeight = this.dimensions.eyeHeight();
          this.despawnTime = level == null || type == EntityTypes.PLAYER ? -1 : level.paperConfig().entities.spawning.despawnTime.getOrDefault(type, io.papermc.paper.configuration.type.number.IntOr.Disabled.DISABLED).or(-1); // Paper - entity despawn time limit
@@ -185,7 +167,7 @@ index 9d01fe0b2d147a5cf11d99dfe07ca0caf34dbd0e..9356d3ee08523bbb72aaf6ac9233639d
      }
  
      public boolean isColliding(final BlockPos pos, final BlockState state) {
-@@ -909,15 +913,69 @@ public abstract class Entity
+@@ -915,12 +919,19 @@ public abstract class Entity
      }
  
      public void tick() {
@@ -205,6 +187,14 @@ index 9d01fe0b2d147a5cf11d99dfe07ca0caf34dbd0e..9356d3ee08523bbb72aaf6ac9233639d
          this.baseTick();
      }
  
+@@ -935,8 +946,55 @@ public abstract class Entity
+         }
+ 
+         this.tickCount++;
+-        this.totalEntityAge++; // Paper - age-like counter for all entities
++        this.updateEntityAge(); // Paper - age-like counter for all entities // Leaf - Rewrite entity despawn time
++    }
++
 +    // Leaf start - Rewrite entity despawn time
 +    private int calculateMissedTicks() {
 +        return net.minecraft.server.MinecraftServer.currentTick - this.lastTickTime;
@@ -249,13 +239,12 @@ index 9d01fe0b2d147a5cf11d99dfe07ca0caf34dbd0e..9356d3ee08523bbb72aaf6ac9233639d
 +
 +    protected void updateLastTick() {
 +        this.lastTickTime = net.minecraft.server.MinecraftServer.currentTick;
-+    }
+     }
 +    // Leaf end - Rewrite entity despawn time
-+
+ 
      // CraftBukkit start
      public void postTick() {
-         // No clean way to break out of ticking once the entity has been copied to a new world, so instead we move the portalling later in the tick cycle
-@@ -2784,7 +2842,7 @@ public abstract class Entity
+@@ -2858,7 +2916,7 @@ public abstract class Entity
              // Leaf end - Fix Pufferfish and Purpur patches - Use effective default value for max air supply
                  output.putInt("Bukkit.MaxAirSupply", this.getMaxAirSupply());
              }
@@ -264,7 +253,7 @@ index 9d01fe0b2d147a5cf11d99dfe07ca0caf34dbd0e..9356d3ee08523bbb72aaf6ac9233639d
              // CraftBukkit end
              output.storeNullable("CustomName", ComponentSerialization.CODEC, this.getCustomName());
              if (this.isCustomNameVisible()) {
-@@ -5440,7 +5498,8 @@ public abstract class Entity
+@@ -5603,7 +5661,8 @@ public abstract class Entity
      public boolean shouldBeSaved() {
          return (this.removalReason == null || this.removalReason.shouldSave())
              && !this.isPassenger()
@@ -275,10 +264,10 @@ index 9d01fe0b2d147a5cf11d99dfe07ca0caf34dbd0e..9356d3ee08523bbb72aaf6ac9233639d
  
      @Override
 diff --git a/net/minecraft/world/entity/projectile/ThrowableProjectile.java b/net/minecraft/world/entity/projectile/ThrowableProjectile.java
-index 6e015ea4227d4134e10dde569ec920f5c9a396b1..ccd0ed111fd84a14069403a1aa236892c0aa4f1c 100644
+index 787addf20375517333f2b75f20aff026c5b953d1..49df6d81ff3d1feb7ab2c392f7a52cad5e3d012a 100644
 --- a/net/minecraft/world/entity/projectile/ThrowableProjectile.java
 +++ b/net/minecraft/world/entity/projectile/ThrowableProjectile.java
-@@ -44,6 +44,11 @@ public abstract class ThrowableProjectile extends Projectile {
+@@ -42,6 +42,11 @@ public abstract class ThrowableProjectile extends Projectile {
  
      @Override
      public void tick() {

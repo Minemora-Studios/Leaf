@@ -5,10 +5,10 @@ Subject: [PATCH] Only update frozen ticks if changed
 
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index d9d2f94e8cce69109923133caa098588ba84039f..3a4808c2825b4e372747ef1822478c885904953e 100644
+index ecb0ce721bf2661be4d3e4f4cd69d23acb3bb099..f6c7744ed90928b906caf1ab4d87718d2ee48779 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -3921,7 +3921,13 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3909,7 +3909,13 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
          if (this.level() instanceof ServerLevel serverLevel) {
              profiler.push("freezing");
              if ((!this.isInPowderSnow || !this.canFreeze()) && !this.freezeLocked) { // Paper - Freeze Tick Lock API

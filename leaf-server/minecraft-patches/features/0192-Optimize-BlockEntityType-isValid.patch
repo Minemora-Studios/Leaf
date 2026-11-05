@@ -33,7 +33,7 @@ index 4c91a0cd674e23ae31e21ba7014fdbb15514cc45..d8e12059194985e5356153fc42ff21ed
  
      @Deprecated
 diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
-index 886b22fea779bfb432520956f596eefbebc8956c..24f9a6a3c48a72264c5edb4918cb7fabdb6a00d7 100644
+index a9afca646255d4918da8697f73da738eec85813a..69756aeae4252d06018eaaa00b6e3481820284aa 100644
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
 @@ -100,6 +100,7 @@ public abstract class BlockBehaviour implements FeatureElement {

@@ -26,7 +26,7 @@ As part of: Lithium (https://github.com/CaffeineMC/lithium)
 Licensed under: LGPL-3.0-only (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 // SYNC SOURCE START
-rev: 01597fb879b7a6d17c2420ec4e25a98df3bc8e7b
+rev: 11ea08adce6f94627d3eaaa65506a60e0451c8b6
 branch: develop
 repo: https://github.com/CaffeineMC/lithium.git
 track:
@@ -274,7 +274,7 @@ index 800843c5c63fa4476a58d8119928e1286f98d922..03cebc986e7dd54d8eb0ef1b6c667754
      protected boolean isValidTarget(final LevelReader level, final BlockPos pos) {
          ChunkAccess chunk = level.getChunkIfLoadedImmediately(pos.getX() >> 4, pos.getZ() >> 4); // Paper - Prevent AI rules from loading chunks
 diff --git a/net/minecraft/world/entity/ai/sensing/HoglinSpecificSensor.java b/net/minecraft/world/entity/ai/sensing/HoglinSpecificSensor.java
-index 7022679c84e184999b416e06d1af2cc2500cb12b..f3a42faf8e6b8d42e466ecc22bb24c35ebcb480a 100644
+index fd2dfb3079700f35579c2912dc828bc646d99470..83b23bfdcacb2dde099b4d88c971579898e45a14 100644
 --- a/net/minecraft/world/entity/ai/sensing/HoglinSpecificSensor.java
 +++ b/net/minecraft/world/entity/ai/sensing/HoglinSpecificSensor.java
 @@ -16,6 +16,8 @@ import net.minecraft.world.entity.monster.hoglin.Hoglin;
@@ -286,22 +286,28 @@ index 7022679c84e184999b416e06d1af2cc2500cb12b..f3a42faf8e6b8d42e466ecc22bb24c35
      @Override
      public Set<MemoryModuleType<?>> requires() {
          return ImmutableSet.of(
-@@ -58,6 +60,12 @@ public class HoglinSpecificSensor extends Sensor<Hoglin> {
-     }
- 
+@@ -31,7 +33,7 @@ public class HoglinSpecificSensor extends Sensor<Hoglin> {
+     @Override
+     protected void doTick(final ServerLevel level, final Hoglin body) {
+         Brain<?> brain = body.getBrain();
+-        brain.setMemory(MemoryModuleType.NEAREST_REPELLENT, this.findNearestRepellent(level, body));
++        brain.setMemory(MemoryModuleType.NEAREST_REPELLENT, net.caffeinemc.mods.lithium.common.ai.non_poi_block_search.CommonBlockSearchesCheckAndCache.hasNoMatch(level, body, 8, 4, IS_VALID_REPELLENT_PREDICATE, true) ? Optional.empty() : this.findNearestRepellent(level, body)); // Leaf - Lithium - optimize non-POI block searches
+         Optional<Piglin> adultPiglin = Optional.empty();
+         int adultPiglinCount = 0;
+         List<Hoglin> adultHoglins = Lists.newArrayList();
+@@ -60,4 +62,10 @@ public class HoglinSpecificSensor extends Sensor<Hoglin> {
      private Optional<BlockPos> findNearestRepellent(final ServerLevel level, final Hoglin body) {
--        return BlockPos.findClosestMatch(body.blockPosition(), 8, 4, pos -> level.getBlockState(pos).is(BlockTags.HOGLIN_REPELLENTS));
-+        return net.caffeinemc.mods.lithium.common.ai.non_poi_block_search.CommonBlockSearchesCheckAndCache.blockPosFindClosestMatch(level, body, 8, 4, IS_VALID_REPELLENT_PREDICATE, true); // Leaf - Lithium - optimize non-POI block searches
-+    }
+         return level.findBlocksInBoxByManhattanDistance(body.blockPosition(), 8, 4).filterState(state -> state.is(BlockTags.HOGLIN_REPELLENTS)).findFirst();
+     }
 +
 +    // Leaf start - Lithium - optimize non-POI block searches
 +    private static boolean lithium$isValidRepellent(final net.minecraft.world.level.block.state.BlockState blockState) {
 +        return blockState.is(BlockTags.HOGLIN_REPELLENTS);
-     }
++    }
 +    // Leaf end - Lithium - optimize non-POI block searches
  }
 diff --git a/net/minecraft/world/entity/ai/sensing/PiglinSpecificSensor.java b/net/minecraft/world/entity/ai/sensing/PiglinSpecificSensor.java
-index 060a53da799a3036a343cc6f1d73e3e5ca4b7af9..bff3a2e40dec2b4e1a8d6987bd96cc7f8ead49b3 100644
+index 89d330f44b5ed85072d04dce20d396f51a26b3d3..ff9115f307c6160ad46b726c5334da36ab5a84d6 100644
 --- a/net/minecraft/world/entity/ai/sensing/PiglinSpecificSensor.java
 +++ b/net/minecraft/world/entity/ai/sensing/PiglinSpecificSensor.java
 @@ -26,6 +26,8 @@ import net.minecraft.world.level.block.CampfireBlock;
@@ -313,20 +319,12 @@ index 060a53da799a3036a343cc6f1d73e3e5ca4b7af9..bff3a2e40dec2b4e1a8d6987bd96cc7f
      @Override
      public Set<MemoryModuleType<?>> requires() {
          return ImmutableSet.of(
-@@ -109,12 +111,13 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
-     }
- 
-     private static Optional<BlockPos> findNearestRepellent(final ServerLevel level, final LivingEntity body) {
--        return BlockPos.findClosestMatch(body.blockPosition(), 8, 4, pos -> isValidRepellent(level, pos));
-+        return net.caffeinemc.mods.lithium.common.ai.non_poi_block_search.CommonBlockSearchesCheckAndCache.blockPosFindClosestMatch(level, body, 8, 4, IS_VALID_REPELLENT_PREDICATE, true); // Leaf - Lithium - optimize non-POI block searches
-     }
- 
--    private static boolean isValidRepellent(final ServerLevel level, final BlockPos pos) {
--        BlockState blockState = level.getBlockState(pos);
-+    // Leaf start - Lithium - optimize non-POI block searches
-+    private static boolean isValidRepellent(final BlockState blockState) {
-         boolean isRepellent = blockState.is(BlockTags.PIGLIN_REPELLENTS);
-         return isRepellent && blockState.is(Blocks.SOUL_CAMPFIRE) ? CampfireBlock.isLitCampfire(blockState) : isRepellent;
-     }
-+    // Leaf end - Lithium - optimize non-POI block searches
- }
+@@ -47,7 +49,7 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
+     @Override
+     protected void doTick(final ServerLevel level, final LivingEntity body) {
+         Brain<?> brain = body.getBrain();
+-        brain.setMemory(MemoryModuleType.NEAREST_REPELLENT, findNearestRepellent(level, body));
++        brain.setMemory(MemoryModuleType.NEAREST_REPELLENT, net.caffeinemc.mods.lithium.common.ai.non_poi_block_search.CommonBlockSearchesCheckAndCache.hasNoMatch(level, body, 8, 4, IS_VALID_REPELLENT_PREDICATE, true) ? Optional.empty() : findNearestRepellent(level, body)); // Leaf - Lithium - optimize non-POI block searches
+         Optional<Mob> nemesis = Optional.empty();
+         Optional<Hoglin> huntableHoglin = Optional.empty();
+         Optional<Hoglin> babyHoglin = Optional.empty();

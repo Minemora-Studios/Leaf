@@ -5,10 +5,10 @@ Subject: [PATCH] Async switch connection state
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 9a58daece15a0435bc2faaccc9af713ee512ff12..fb7ea830be1460899306e9b7f4a9a41ae5b7e53f 100644
+index 6ccc4d2a9acce111fbcdaaf3590c8b09b31b2c1d..00e8e9502c848a990b3594a81fe849d43dfa52d0 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -320,6 +320,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -331,6 +331,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          if (protocol.flow() != this.getReceiving()) {
              throw new IllegalStateException("Invalid inbound protocol: " + protocol.id());
          }
@@ -20,13 +20,13 @@ index 9a58daece15a0435bc2faaccc9af713ee512ff12..fb7ea830be1460899306e9b7f4a9a41a
  
          this.packetListener = packetListener;
          this.disconnectListener = null;
-@@ -330,7 +335,14 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -341,7 +346,14 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
              configMessage = configMessage.andThen(ctx -> ctx.pipeline().addAfter(HandlerNames.DECODER, HandlerNames.BUNDLER, newBundler));
          }
  
 -        syncAfterConfigurationChange(this.channel.writeAndFlush(configMessage));
 +        // Leaf start - Async switch connection state
-+        var cf = this.channel.writeAndFlush(configMessage);
++        io.netty.channel.ChannelFuture cf = this.channel.writeAndFlush(configMessage);
 +        if (org.dreeam.leaf.config.modules.network.AlternativeJoin.enabled && ca.spottedleaf.moonrise.common.util.TickThread.isTickThread()) {
 +            cf.addListener((ChannelFutureListener) Connection::syncAfterConfigurationChange);
 +            return;
@@ -36,7 +36,7 @@ index 9a58daece15a0435bc2faaccc9af713ee512ff12..fb7ea830be1460899306e9b7f4a9a41a
      }
  
      public void setupOutboundProtocol(final ProtocolInfo<?> protocol) {
-@@ -349,6 +361,31 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -360,6 +372,31 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          syncAfterConfigurationChange(this.channel.writeAndFlush(configMessage.andThen(ctx -> this.sendLoginDisconnect = isLoginProtocol)));
      }
  
@@ -56,7 +56,7 @@ index 9a58daece15a0435bc2faaccc9af713ee512ff12..fb7ea830be1460899306e9b7f4a9a41a
 +        }
 +
 +        boolean isLoginProtocol = protocol.id() == ConnectionProtocol.LOGIN;
-+        var cf = this.channel.writeAndFlush(configMessage.andThen(ctx -> this.sendLoginDisconnect = isLoginProtocol));
++        io.netty.channel.ChannelFuture cf = this.channel.writeAndFlush(configMessage.andThen(ctx -> this.sendLoginDisconnect = isLoginProtocol));
 +        if (org.dreeam.leaf.config.modules.network.AlternativeJoin.enabled) {
 +            cf.addListener((ChannelFutureListener) Connection::syncAfterConfigurationChange);
 +            return cf;
@@ -107,10 +107,10 @@ index 6baa9d2a8af7901d47964e6d7ad53ea7963ceeef..b6fbcd4329d94af940b1aff50d9b1ae7
          try {
              PlayerList playerList = this.server.getPlayerList();
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 002084531c39b4d886fea89047a3e4dbdb95a890..b1762d316cc19613ff7461117a9adca18f455f45 100644
+index e50ed0fc29826eacf5aa03c05ea6a401fb1420d6..f738257d310b6fd02ca63e2d9475fd32560dd3af 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -458,11 +458,30 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -455,11 +455,30 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
          this.disconnect(ServerCommonPacketListenerImpl.DISCONNECT_UNEXPECTED_QUERY);
      }
  

@@ -7,10 +7,10 @@ Use direct impl for unknown commands message parse to prevent crash
 Filter control chars to prevent crash
 
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index 7a4a0df959ca9bf25156e180c6da2b0d46bc4898..41d801c1318ea6639432265d76956cdf2cc0c651 100644
+index bb0e4ea7e96d61dd2cf729d8541b6083e0dac04e..63851a65b9215f60efa68fcc584e03b63d382b8e 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
-@@ -680,7 +680,7 @@ public class Commands {
+@@ -687,7 +687,7 @@ public class Commands {
          net.kyori.adventure.text.Component detailComponent = null;
  
          if (rawMessage.contains("<message>")) {
@@ -19,7 +19,7 @@ index 7a4a0df959ca9bf25156e180c6da2b0d46bc4898..41d801c1318ea6639432265d76956cdf
          }
  
          final String input = e.getInput();
-@@ -700,9 +700,9 @@ public class Commands {
+@@ -707,9 +707,9 @@ public class Commands {
                  detail.append(net.kyori.adventure.text.Component.text("..."));
              }
  
@@ -31,7 +31,7 @@ index 7a4a0df959ca9bf25156e180c6da2b0d46bc4898..41d801c1318ea6639432265d76956cdf
                      .color(net.kyori.adventure.text.format.NamedTextColor.RED)
                      .decorate(net.kyori.adventure.text.format.TextDecoration.UNDERLINED);
  
-@@ -723,7 +723,7 @@ public class Commands {
+@@ -730,7 +730,7 @@ public class Commands {
      private static net.kyori.adventure.text.Component getVanillaUnknownCommandMessage(
          final net.kyori.adventure.text.TextComponent.Builder builder, final CommandSyntaxException e, final String commandString
      ) {
@@ -40,7 +40,7 @@ index 7a4a0df959ca9bf25156e180c6da2b0d46bc4898..41d801c1318ea6639432265d76956cdf
  
          if (e.getInput() != null && e.getCursor() >= 0) {
              int cursor = Math.min(e.getInput().length(), e.getCursor());
-@@ -734,9 +734,9 @@ public class Commands {
+@@ -741,9 +741,9 @@ public class Commands {
                  context.append(CommonComponents.ELLIPSIS);
              }
  

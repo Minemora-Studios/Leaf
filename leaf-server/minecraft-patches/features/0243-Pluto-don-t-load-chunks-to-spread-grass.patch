@@ -7,10 +7,10 @@ Original license: GPL-3.0-only
 Original project: https://github.com/Yive/Pluto
 
 diff --git a/net/minecraft/world/level/block/SpreadingSnowyBlock.java b/net/minecraft/world/level/block/SpreadingSnowyBlock.java
-index 96abb55ee4de5f17423f63865b9acef8fb8313c1..0cd8ac43984acf79e4efed2214a47f8b31dcb09c 100644
+index 905a4da00ac9f4e88776f1504e4b033cf9b5a0b9..92c84777afd80f00dff5480d892eb5b2aaa888f6 100644
 --- a/net/minecraft/world/level/block/SpreadingSnowyBlock.java
 +++ b/net/minecraft/world/level/block/SpreadingSnowyBlock.java
-@@ -83,21 +83,27 @@ public abstract class SpreadingSnowyBlock extends SnowyBlock {
+@@ -79,21 +79,27 @@ public abstract class SpreadingSnowyBlock extends SnowyBlock {
  
                      for (int i = 0; i < 4; i++) {
                          BlockPos testPos = pos.offset(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);

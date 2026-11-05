@@ -7,7 +7,7 @@ Skip the full inventory slot scan when the player has no
 pending advancement listener for this trigger.
 
 diff --git a/net/minecraft/advancements/triggers/InventoryChangeTrigger.java b/net/minecraft/advancements/triggers/InventoryChangeTrigger.java
-index db51d57ea1333d2f5c839a8a4df05e276fb15acd..a17e9acff9be836d2aa3886686dd3f1514417665 100644
+index 399203f83bd406c748708987a7de2cb4b0e9ee4d..b3dd483db1cc535cfd11b1a7c48ee2cfef6d3f3f 100644
 --- a/net/minecraft/advancements/triggers/InventoryChangeTrigger.java
 +++ b/net/minecraft/advancements/triggers/InventoryChangeTrigger.java
 @@ -24,6 +24,13 @@ public class InventoryChangeTrigger extends SimpleCriterionTrigger<InventoryChan
@@ -15,7 +15,7 @@ index db51d57ea1333d2f5c839a8a4df05e276fb15acd..a17e9acff9be836d2aa3886686dd3f15
  
      public void trigger(final ServerPlayer player, final Inventory inventory, final ItemStack changedItem) {
 +        // Leaf start - skip slot scan when nobody has a pending InventoryChangeTrigger listener
-+        var listeners = player.getAdvancements().getTriggerMapForType(this);
++        java.util.Map<net.minecraft.server.PlayerAdvancements.TriggerInstanceKey, InventoryChangeTrigger.TriggerInstance> listeners = player.getAdvancements().getTriggerMapForType(this);
 +        if (listeners == null || listeners.isEmpty()) {
 +            return;
 +        }
@@ -46,13 +46,13 @@ index db51d57ea1333d2f5c839a8a4df05e276fb15acd..a17e9acff9be836d2aa3886686dd3f15
 +    // Leaf end - skip slot scan when nobody has a pending InventoryChangeTrigger listener
 +
      public record TriggerInstance(
-         @Override Optional<ContextAwarePredicate> player, InventoryChangeTrigger.TriggerInstance.Slots slots, List<ItemPredicate> items
+         @Override Optional<Holder<LootItemCondition>> player, InventoryChangeTrigger.TriggerInstance.Slots slots, List<ItemPredicate> items
      ) implements SimpleCriterionTrigger.SimpleInstance {
 diff --git a/net/minecraft/advancements/triggers/SimpleCriterionTrigger.java b/net/minecraft/advancements/triggers/SimpleCriterionTrigger.java
-index d76a338ab4f326e6105adc451eee3d4601403c98..4926a3d0324c217eef1e6b1db01315ea8707cdae 100644
+index b938e10fe5b5f3aae1d18ee769827535ed543a9c..2ede5c48f4b58704667054ce910d927dacfd3687 100644
 --- a/net/minecraft/advancements/triggers/SimpleCriterionTrigger.java
 +++ b/net/minecraft/advancements/triggers/SimpleCriterionTrigger.java
-@@ -19,6 +19,12 @@ public abstract class SimpleCriterionTrigger<T extends SimpleCriterionTrigger.Si
+@@ -20,6 +20,12 @@ public abstract class SimpleCriterionTrigger<T extends SimpleCriterionTrigger.Si
      protected void trigger(final ServerPlayer player, final Predicate<T> matcher) {
          PlayerAdvancements advancements = player.getAdvancements();
          Map<PlayerAdvancements.TriggerInstanceKey, T> listenersForType = advancements.getTriggerMapForType(this);

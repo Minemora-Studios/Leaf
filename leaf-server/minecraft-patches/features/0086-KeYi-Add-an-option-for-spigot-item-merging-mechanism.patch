@@ -7,10 +7,10 @@ Original license: MIT
 Original project: https://github.com/KeYiMC/KeYi
 
 diff --git a/net/minecraft/world/entity/item/ItemEntity.java b/net/minecraft/world/entity/item/ItemEntity.java
-index cc6b346ca4beaae8d40a2b97e74c2cabafbfc8ad..e3b854f572b1b7797d86facccd422da3a5feba3c 100644
+index 25c2b8d3e29dee82a4a305af96b6ed805a38150e..cfc7c4cffddb844b967dc1b496b7dfbda3bab882 100644
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
-@@ -291,7 +291,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
+@@ -284,7 +284,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
          ItemStack thisItemStack = this.getItem();
          ItemStack otherItemStack = other.getItem();
          if (Objects.equals(this.target, other.target) && areMergable(thisItemStack, otherItemStack)) {

@@ -7,10 +7,10 @@ Original license: GPL-3.0-only
 Original project: https://github.com/Gensokyo-Reimagined/Nitori
 
 diff --git a/net/minecraft/world/level/storage/LevelStorageSource.java b/net/minecraft/world/level/storage/LevelStorageSource.java
-index 6f24eb34e0ecc2b03371c585a9538e9337a2295a..fcf09561b22e6253b2e27e4f9e1f3967b3702d1a 100644
+index 4bcec74c0b0301c4dd8475a04494c4fcdbe2ed70..3fa69608fbc348df64d4e08baf60b7a2d455a392 100644
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
-@@ -599,15 +599,26 @@ public class LevelStorageSource {
+@@ -625,15 +625,26 @@ public class LevelStorageSource {
          private void saveLevelData(final CompoundTag root) {
              Path worldDir = this.levelDirectory.path();
  
@@ -44,7 +44,7 @@ index 6f24eb34e0ecc2b03371c585a9538e9337a2295a..fcf09561b22e6253b2e27e4f9e1f3967
  
          public Optional<Path> getIconFile() {
 diff --git a/net/minecraft/world/level/storage/PlayerDataStorage.java b/net/minecraft/world/level/storage/PlayerDataStorage.java
-index eddb6ebe3fa50a818e54079b73ba117be0abd195..30a19e85f9f2a480443e1eb27b613c53b9a245bc 100644
+index 142a34eb046c87f16b73023c83218d8752922fbe..1c1117f3e674ddd009fb1e580670e0140a22b1c0 100644
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
 @@ -23,6 +23,7 @@ public class PlayerDataStorage {

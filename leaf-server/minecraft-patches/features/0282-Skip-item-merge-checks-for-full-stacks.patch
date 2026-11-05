@@ -5,10 +5,10 @@ Subject: [PATCH] Skip item merge checks for full stacks
 
 
 diff --git a/net/minecraft/world/entity/item/ItemEntity.java b/net/minecraft/world/entity/item/ItemEntity.java
-index e3b854f572b1b7797d86facccd422da3a5feba3c..f073e776c0853345e6f8b1b113c6ccff28c26a81 100644
+index be81853e39308b6cd22c4ef282d2145aa775a636..f05049580e412a1f98e9b3deef06c0fd111e4201 100644
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
-@@ -264,6 +264,12 @@ public class ItemEntity extends Entity implements TraceableEntity {
+@@ -257,6 +257,12 @@ public class ItemEntity extends Entity implements TraceableEntity {
              double radius = this.level().spigotConfig.itemMerge; // Spigot
              for (ItemEntity entity : this.level()
                  .getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(radius, this.level().paperConfig().entities.behavior.onlyMergeItemsHorizontally ? 0 : radius - 0.5D, radius), other -> other != this && other.isMergable())) { // Spigot // Paper - configuration to only merge items horizontally
@@ -21,7 +21,7 @@ index e3b854f572b1b7797d86facccd422da3a5feba3c..f073e776c0853345e6f8b1b113c6ccff
                  if (entity.isMergable()) {
                      // Paper start - Fix items merging through walls
                      if (this.level().paperConfig().fixes.fixItemsMergingThroughWalls) {
-@@ -273,10 +279,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
+@@ -266,10 +272,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
                          }
                      }
                      // Paper end - Fix items merging through walls
@@ -33,7 +33,7 @@ index e3b854f572b1b7797d86facccd422da3a5feba3c..f073e776c0853345e6f8b1b113c6ccff
                  }
              }
          }
-@@ -290,6 +293,11 @@ public class ItemEntity extends Entity implements TraceableEntity {
+@@ -283,6 +286,11 @@ public class ItemEntity extends Entity implements TraceableEntity {
      private void tryToMerge(final ItemEntity other) {
          ItemStack thisItemStack = this.getItem();
          ItemStack otherItemStack = other.getItem();

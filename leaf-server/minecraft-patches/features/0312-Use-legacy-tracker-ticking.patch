@@ -10,10 +10,10 @@ Paper pull request: https://github.com/PaperMC/Paper/pull/13094
 Related MC issue: https://mojira.dev/MC-297196
 
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index b3de0c91e4e53b8b554128ec866565972e93cb2b..3e593b17ead582b9d0c36c6fad51a0e0b10f0ed9 100644
+index 7ba08ffc25986343dd82e610940276211cfb2b29..1624e8792d6002b675e8bcfe5ccd5f0993f0d8d2 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -517,7 +517,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -532,7 +532,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
          if (tickChunks) {
              ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemServerLevel)this.level).moonrise$getPlayerChunkLoader().tick(); // Paper - rewrite chunk system
              this.tickChunks();
@@ -23,10 +23,10 @@ index b3de0c91e4e53b8b554128ec866565972e93cb2b..3e593b17ead582b9d0c36c6fad51a0e0
  
          profiler.popPush("unload");
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 11cb0f12ba1ef598e6ab075fec340cd4bda1aaa6..8ab5d05bd88acfa21bc0237e3556b441c5425dea 100644
+index f8ae4d5d4796f46a79a9393a092812da8ce6089b..7c73f5373d741c5703fff7f5e6eb66d6916b6d8f 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1153,6 +1153,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1158,6 +1158,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          profiler.push("entityManagement");
          // Paper - rewrite chunk system
          profiler.pop();

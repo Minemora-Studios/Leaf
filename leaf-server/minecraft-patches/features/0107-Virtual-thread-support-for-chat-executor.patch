@@ -5,10 +5,10 @@ Subject: [PATCH] Virtual thread support for chat executor
 
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 8f3b7095710e6460e68b57ec9b3ba7a77ed6fcc2..e5b7132b2b310d2e501c0a82ea6e7663f66bec65 100644
+index 55bece176210ffcf49f2c34e0383333807471dce..5907bcd9965542e6d96a7a2c684af9f7eac2a729 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -2963,8 +2963,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2931,8 +2931,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          }
      }
  

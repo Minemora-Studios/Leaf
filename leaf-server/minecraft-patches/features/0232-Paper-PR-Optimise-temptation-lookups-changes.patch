@@ -95,10 +95,10 @@ index c3339b22929cb4e3b216aadf1069daa1f792d74e..3a9fb2524df84fe332eb94c3efe22876
 +    // Leaf end - Paper PR: Optimise temptation lookups changes
  }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index a63d596474fff5531f1d0ca6a7e042956719bce2..a51087338856ad78708ed1bce3d86f204c37a66e 100644
+index edd493c43e426cc1218503953aa90f69aa4e412c..53b77c3af4dbcfe4de621bd8dc29d893f30c080a 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1067,7 +1067,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1072,7 +1072,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
  
              io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); // Paper - EAR
              boolean didDespawn = tickRateManager.runsNormally() && despawnMap.tick(this, this.entityTickList); // Leaf - optimize despawn
@@ -209,7 +209,7 @@ index b69b35999ed4ed7b5b1d00e1b0d19dcc6862c9bd..fbb3ed23f7cc9ca2e8af39258170ab73
                          d = d1;
                          nearestPlayer = player;
 diff --git a/net/minecraft/world/entity/animal/cow/AbstractCow.java b/net/minecraft/world/entity/animal/cow/AbstractCow.java
-index 2e06294ed7ab81106f6859b1187dbde01a0acef2..4f9ceae892d1c7e819d7b2b025e53f312e9b3347 100644
+index c0bf417e8f84d4995d9a64e25e3f731d267dbb83..bd0f8e364e23fc6283e126f968645b6ac7f90faa 100644
 --- a/net/minecraft/world/entity/animal/cow/AbstractCow.java
 +++ b/net/minecraft/world/entity/animal/cow/AbstractCow.java
 @@ -42,7 +42,7 @@ public abstract class AbstractCow extends Animal {
@@ -222,7 +222,7 @@ index 2e06294ed7ab81106f6859b1187dbde01a0acef2..4f9ceae892d1c7e819d7b2b025e53f31
          this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0));
          this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
 diff --git a/net/minecraft/world/entity/animal/happyghast/HappyGhast.java b/net/minecraft/world/entity/animal/happyghast/HappyGhast.java
-index f1fca05132a298de6964761f77291594b094e38c..fe6bb5f4f199d64460f8e6433b10b32e977c97ae 100644
+index 54ad7be059b7981e10c40ad56fb0ecaac6f04d90..504c0a936dd64bc4b03ea79d167d6536a352e83b 100644
 --- a/net/minecraft/world/entity/animal/happyghast/HappyGhast.java
 +++ b/net/minecraft/world/entity/animal/happyghast/HappyGhast.java
 @@ -104,12 +104,14 @@ public class HappyGhast extends Animal {
@@ -266,10 +266,10 @@ index f1fca05132a298de6964761f77291594b094e38c..fe6bb5f4f199d64460f8e6433b10b32e
 +    // Leaf end - Paper PR: Optimise temptation lookups changes
  }
 diff --git a/net/minecraft/world/entity/npc/villager/Villager.java b/net/minecraft/world/entity/npc/villager/Villager.java
-index 832fbd1e84efffd30592ceb794736fad19bc6d7b..5a5e2b8eeea5b3c6a21274ad2d6c136333a6b6b2 100644
+index 13cbc69eb894a1c4945bef6c88631dc9f1ed0945..b8440395c9f4ffaa3883b7fe9726315279c1d0e3 100644
 --- a/net/minecraft/world/entity/npc/villager/Villager.java
 +++ b/net/minecraft/world/entity/npc/villager/Villager.java
-@@ -263,7 +263,7 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
+@@ -260,7 +260,7 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
      @Override
      protected void registerGoals() {
          this.goalSelector.addGoal(0, new org.purpurmc.purpur.entity.ai.HasRider(this));
@@ -279,7 +279,7 @@ index 832fbd1e84efffd30592ceb794736fad19bc6d7b..5a5e2b8eeea5b3c6a21274ad2d6c1363
      // Purpur end - Ridables
  
 diff --git a/net/minecraft/world/entity/npc/wanderingtrader/WanderingTrader.java b/net/minecraft/world/entity/npc/wanderingtrader/WanderingTrader.java
-index 06f85792fea97e18b23f348728a772d5a2db65cc..6aa5e5169727d7dd654c8dd336b83f534efc61d5 100644
+index 8f67a2e50d2d52eedf6e9f5d5cdce9e5a7c68345..2ed79b97be5a7eb98f3d2da2a643c3d9c7cb0f6f 100644
 --- a/net/minecraft/world/entity/npc/wanderingtrader/WanderingTrader.java
 +++ b/net/minecraft/world/entity/npc/wanderingtrader/WanderingTrader.java
 @@ -143,7 +143,7 @@ public class WanderingTrader extends AbstractVillager implements Consumable.Over

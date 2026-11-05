@@ -5,10 +5,10 @@ Subject: [PATCH] Fix Pufferfish and Purpur patches
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-index 374d39057f4913ff9586205ee2cf305a99279bae..9efc174b48afe8548f5be11805c334e50173cf4d 100644
+index 021148b6d6fe7fc6bebea5536c35de5af9e4f3ad..3a21668e839c7bb3bc364666814c0447f3e6940b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-@@ -424,14 +424,16 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+@@ -434,14 +434,16 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
          BlockPos pos = CraftLocation.toBlockPos(location);
          // Paper start
          MenuProvider menuProvider = Blocks.ENCHANTING_TABLE.defaultBlockState().getMenuProvider(this.getHandle().level(), pos);
@@ -32,15 +32,15 @@ index 374d39057f4913ff9586205ee2cf305a99279bae..9efc174b48afe8548f5be11805c334e5
          // Paper end
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index afed34a9e0a5d16dae1690b97b8508bba7a188f3..7326940d1a7633db5f0e9ba36ec7015d18563f4e 100644
+index 42d8e5acbd90409a53e12145776686c181d0c349..487ffbc69ba10498047c509be3cd0bc19839d147 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -772,7 +772,7 @@ public class CraftEventFactory {
+@@ -778,7 +778,7 @@ public class CraftEventFactory {
+         // Spigot start - SPIGOT-7523: Merge after spawn event and only merge if the event was not cancelled (gets checked above)
          if (entity instanceof net.minecraft.world.entity.ExperienceOrb xp) {
              double radius = level.spigotConfig.expMerge;
-             event = CraftEventFactory.callEntitySpawnEvent(entity); // Call spawn event for ExperienceOrb entities
--            if (radius > 0 && !event.isCancelled() && !entity.isRemoved()) {
-+            if (radius > 0 && !event.isCancelled() && !entity.isRemoved() && !xp.leaf$skipInitialMerge) { // Leaf - Fix Pufferfish and Purpur patches - Improve Purpur shift-click mending
+-            if (radius > 0) {
++            if (radius > 0 && !xp.leaf$skipInitialMerge) { // Leaf - Fix Pufferfish and Purpur patches - Improve Purpur shift-click mending
                  // Paper start - Maximum exp value when merging; Whole section has been tweaked, see comments for specifics
                  final long maxValue = level.paperConfig().entities.behavior.experienceMergeMaxValue;
                  final boolean mergeUnconditionally = maxValue <= 0;

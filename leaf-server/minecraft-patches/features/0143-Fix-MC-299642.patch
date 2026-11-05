@@ -9,7 +9,7 @@ Minecraft uses 3D movement control for turtles to move in water, which makes the
 This direct manipulation of deltaMovement bypasses the standard move logic where the NoGravity tag is checked and applied.
 
 diff --git a/net/minecraft/world/entity/animal/turtle/Turtle.java b/net/minecraft/world/entity/animal/turtle/Turtle.java
-index 779ae828cee17430bfa5f469d88c69a8f121eb4e..b2d075d795a3be95cf60d53378fe97a6d0654611 100644
+index 0c56ca0ea4692fdbf2d1311a8bf8651bf0d561af..d1edd97b879333a9fee4e4e9ea3f3f6af39006af 100644
 --- a/net/minecraft/world/entity/animal/turtle/Turtle.java
 +++ b/net/minecraft/world/entity/animal/turtle/Turtle.java
 @@ -574,9 +574,15 @@ public class Turtle extends Animal {

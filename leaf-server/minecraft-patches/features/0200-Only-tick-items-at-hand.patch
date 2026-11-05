@@ -5,10 +5,10 @@ Subject: [PATCH] Only tick items at hand
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index dc1f4fcbd284735f8c98cd2f60095a892a875ce5..b7c83473cde3df58f966e183af92160e9fde0b51 100644
+index aad3c8ae06b1c4fac2637737e8678257c9926cea..ee3682cdea31532dfc5855e8f52ad891e8f7374e 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -851,12 +851,19 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -861,12 +861,19 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  } // Gale - Hydrinity - increase time statistics in intervals
              }
  
@@ -29,10 +29,10 @@ index dc1f4fcbd284735f8c98cd2f60095a892a875ce5..b7c83473cde3df58f966e183af92160e
              if (this.getHealth() != this.lastSentHealth
                  || this.lastSentFood != this.foodData.getFoodLevel()
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index e94aa8e70f66757f53276b751e73c64a47a0396e..bc88cd364cf8b214ba7fbfa03503f2d391698486 100644
+index ff44fe1481a8a4eb56acb347b2d03823af1cc9b6..d43bae98bff9bc6dcf4108ff4b5f59d1a4435894 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -527,7 +527,13 @@ public abstract class Player extends Avatar implements ContainerUser {
+@@ -528,7 +528,13 @@ public abstract class Player extends Avatar implements ContainerUser {
          }
  
          this.tickRegeneration();

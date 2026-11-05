@@ -5,10 +5,10 @@ Subject: [PATCH] Optimize checking nearby players for spawning
 
 
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index e8000d4ee264c4d0e81a1417a9cafe537a910f6f..7bc1636e8ae526e7ffbb8b34b3b777b6f407f0b4 100644
+index f3d70721598d548c8200cfd67d8769151fbf01af..c200f2903cb582af2414f7e011f6c50b5aa65406 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -800,7 +800,7 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
+@@ -799,7 +799,7 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
      }
  
      private boolean anyPlayerCloseEnoughForSpawningInternal(final ChunkPos pos, final boolean reducedRange) {
@@ -17,7 +17,7 @@ index e8000d4ee264c4d0e81a1417a9cafe537a910f6f..7bc1636e8ae526e7ffbb8b34b3b777b6
          // Spigot end
          // Paper start - chunk tick iteration optimisation
          final ca.spottedleaf.moonrise.common.list.ReferenceList<ServerPlayer> players = ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemServerLevel)this.level).moonrise$getNearbyPlayers().getPlayers(
-@@ -812,23 +812,35 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
+@@ -811,23 +811,35 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
  
          final ServerPlayer[] raw = players.getRawDataUnchecked();
          final int len = players.size();

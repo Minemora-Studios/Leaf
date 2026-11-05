@@ -106,7 +106,7 @@ index a3aa9128aeb17e9148a149e93fe514c7661a9e21..55e5d828640c94f5d24beba1a8d02b76
 +    // Leaf end - Use faster and thread-safe ban list date format parsing
  }
 diff --git a/net/minecraft/server/players/OldUsersConverter.java b/net/minecraft/server/players/OldUsersConverter.java
-index e38acabda1d2e49d88b94d46cc51f6602870d6b6..289ad06b563ede29152504370a0aadf1cb6caac5 100644
+index 6f18226ea5e01900d4d7683567e33d65a8baf384..f40ea57b1cf6d0cd85746119a1d29a6e6f67e264 100644
 --- a/net/minecraft/server/players/OldUsersConverter.java
 +++ b/net/minecraft/server/players/OldUsersConverter.java
 @@ -445,8 +445,10 @@ public class OldUsersConverter {

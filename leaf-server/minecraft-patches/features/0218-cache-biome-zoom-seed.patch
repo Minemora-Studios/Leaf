@@ -5,10 +5,10 @@ Subject: [PATCH] cache biome zoom seed
 
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 252279d71eb688ae79c330335b25976331925432..1775d681d77cdf2c6bea0e4451056b1f6c73d928 100644
+index 5a4988d3051b108eb43b90fc64a09bf87691e232..b508aca07f55b7181a9f59f3f72faf441a2f10b5 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -724,8 +724,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -718,8 +718,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          final ResourceKey<Level> dimensionKey = loading.info().dimensionKey();
          final SavedDataStorage savedDataStorage = new SavedDataStorage(this.storageSource.getDimensionPath(dimensionKey).resolve(LevelResource.DATA.id()), this.getFixerUpper(), this.registryAccess());
          savedDataStorage.set(WorldGenSettings.TYPE, new WorldGenSettings(worldDataAndGenSettings.genSettings().options(), worldDataAndGenSettings.genSettings().dimensions()));
@@ -19,26 +19,26 @@ index 252279d71eb688ae79c330335b25976331925432..1775d681d77cdf2c6bea0e4451056b1f
              new PhantomSpawner(), new PatrolSpawner(), new CatSpawner(), new VillageSiege(), new WanderingTraderSpawner(savedDataStorage) // Paper - save to world data
          );
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index c8a95d67dbe687fad6086e13fab0087b8ed715e1..4030776c3d12f8e797720180e141322b5d2cc548 100644
+index 6fd97104b69597b233b315aa73405452cbd7fcce..a9e39e90216a057fc2ea3f2650bb78f81f790a80 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -3055,7 +3055,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -3109,7 +3109,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          return new CommonPlayerSpawnInfo(
              level.dimensionTypeRegistration(),
              level.dimension(),
 -            BiomeManager.obfuscateSeed(level.getSeed()),
 +            level.worldGenSettings.options().biomeZoomSeed(), // Leaf - cache biome zoom seed
              this.gameMode.getGameModeForPlayer(),
-             this.gameMode.getPreviousGameModeForPlayer(),
+             Optional.ofNullable(this.gameMode.getPreviousGameModeForPlayer()),
              level.isDebug(),
 diff --git a/net/minecraft/server/level/WorldGenRegion.java b/net/minecraft/server/level/WorldGenRegion.java
-index 015539951e2a6af0e7b50c05512d1f6200ef2797..1049e948496fcbab5f3d5789ec1e975692309a36 100644
+index cc838464dbe2d2f060494ec913e589058bee24f3..2f01aa468f19a487e0c10db16000b7e71cbb74ad 100644
 --- a/net/minecraft/server/level/WorldGenRegion.java
 +++ b/net/minecraft/server/level/WorldGenRegion.java
-@@ -118,7 +118,7 @@ public class WorldGenRegion implements WorldGenLevel {
-         this.levelData = level.getLevelData();
-         this.random = level.getChunkSource().randomState().getOrCreateRandomFactory(WORLDGEN_REGION_RANDOM).at(this.center.getPos().getWorldPosition());
+@@ -131,7 +131,7 @@ public class WorldGenRegion implements WorldGenLevel {
+         this.random = randomState.getOrCreateRandomFactory(WORLDGEN_REGION_RANDOM).at(this.center.getPos().getWorldPosition());
          this.dimensionType = level.dimensionType();
+         this.uncachedBiomeResolver = level.uncachedBiomeResolver();
 -        this.biomeManager = new BiomeManager(this, BiomeManager.obfuscateSeed(this.seed));
 +        this.biomeManager = new BiomeManager(this, level.worldGenSettings.options().biomeZoomSeed()); // Leaf - cache biome zoom seed
          ChunkPos centerPos = center.getPos();

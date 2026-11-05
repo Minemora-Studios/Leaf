@@ -15,10 +15,10 @@ prominent legal notice accompanying the corresponding source:
 Original patch by HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 
 diff --git a/net/minecraft/world/entity/ExperienceOrb.java b/net/minecraft/world/entity/ExperienceOrb.java
-index 4f5ce9f1b19ea42abd682451af712c093f9e76f1..582511dee2da789710bd6a7bedc193e25a8c5547 100644
+index e7d4037e81e0e813aa1db8538d808533b4111240..d4a60cf70f949d6c5f84d60ec1736b7adea243ba 100644
 --- a/net/minecraft/world/entity/ExperienceOrb.java
 +++ b/net/minecraft/world/entity/ExperienceOrb.java
-@@ -248,9 +248,14 @@ public class ExperienceOrb extends Entity {
+@@ -246,9 +246,14 @@ public class ExperienceOrb extends Entity {
  
      private void scanForMerges() {
          if (this.level() instanceof ServerLevel) {
@@ -34,7 +34,7 @@ index 4f5ce9f1b19ea42abd682451af712c093f9e76f1..582511dee2da789710bd6a7bedc193e2
          }
      }
  
-@@ -276,8 +281,11 @@ public class ExperienceOrb extends Entity {
+@@ -274,8 +279,11 @@ public class ExperienceOrb extends Entity {
      private static boolean tryMergeToExisting(final ServerLevel level, final Vec3 pos, final int value) {
          // Paper - TODO some other event for this kind of merge
          AABB box = AABB.ofSize(pos, 1.0, 1.0, 1.0);
@@ -48,7 +48,7 @@ index 4f5ce9f1b19ea42abd682451af712c093f9e76f1..582511dee2da789710bd6a7bedc193e2
          if (!orbs.isEmpty()) {
              ExperienceOrb orb = orbs.get(0);
              orb.count++;
-@@ -288,13 +296,11 @@ public class ExperienceOrb extends Entity {
+@@ -286,13 +294,11 @@ public class ExperienceOrb extends Entity {
          }
      }
  

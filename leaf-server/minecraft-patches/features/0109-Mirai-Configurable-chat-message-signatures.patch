@@ -11,31 +11,31 @@ Original license: GPL-3.0-only
 Original project: https://github.com/etil2jz/Mirai
 
 diff --git a/net/minecraft/network/protocol/game/ClientboundLoginPacket.java b/net/minecraft/network/protocol/game/ClientboundLoginPacket.java
-index 8e3bfeca2dd23786030a4d98de5f0dc9bab421b6..cd9601b49bd07ec29047374eea2d865d20876721 100644
+index 389e7a85439d67a4a86fc94f2134075fb3fa6138..91c1f92f358d69752c8e4c8b193375abf293ee9f 100644
 --- a/net/minecraft/network/protocol/game/ClientboundLoginPacket.java
 +++ b/net/minecraft/network/protocol/game/ClientboundLoginPacket.java
-@@ -58,7 +58,7 @@ public record ClientboundLoginPacket(
-         output.writeBoolean(this.doLimitedCrafting);
-         this.commonPlayerSpawnInfo.write(output);
-         output.writeBoolean(this.onlineMode);
--        output.writeBoolean(this.enforcesSecureChat);
-+        output.writeBoolean(!org.dreeam.leaf.config.modules.network.ChatMessageSignature.enabled || this.enforcesSecureChat); // Leaf - Mirai - Configurable chat message signatures
-     }
+@@ -49,7 +49,7 @@ public record ClientboundLoginPacket(
+         ByteBufCodecs.BOOL,
+         ClientboundLoginPacket::onlineMode,
+         ByteBufCodecs.BOOL,
+-        ClientboundLoginPacket::enforcesSecureChat,
++        packet -> !org.dreeam.leaf.config.modules.network.ChatMessageSignature.enabled || packet.enforcesSecureChat(), // Leaf - Mirai - Configurable chat message signatures
+         ClientboundLoginPacket::new
+     );
  
-     @Override
 diff --git a/net/minecraft/network/protocol/game/ServerboundChatPacket.java b/net/minecraft/network/protocol/game/ServerboundChatPacket.java
-index c9623b551609c77e8f143e492fe07f80b5a07dc0..4312a71877f182580d47c17084217af9f80b2f48 100644
+index b758f2d913b5539362d228b04d4c9bb87e8c8482..e40c1356779c7293f240c7276e85d2a6ee217de2 100644
 --- a/net/minecraft/network/protocol/game/ServerboundChatPacket.java
 +++ b/net/minecraft/network/protocol/game/ServerboundChatPacket.java
-@@ -23,7 +23,7 @@ public record ServerboundChatPacket(String message, Instant timeStamp, long salt
-         output.writeUtf(this.message, 256);
-         output.writeInstant(this.timeStamp);
-         output.writeLong(this.salt);
--        output.writeNullable(this.signature, MessageSignature::write);
-+        if (org.dreeam.leaf.config.modules.network.ChatMessageSignature.enabled) output.writeNullable(this.signature, MessageSignature::write); // Leaf - Mirai - Configurable chat message signatures
-         this.lastSeenMessages.write(output);
-     }
- 
+@@ -20,7 +20,7 @@ public record ServerboundChatPacket(String message, Instant timeStamp, long salt
+         ByteBufCodecs.LONG,
+         ServerboundChatPacket::salt,
+         MessageSignature.STREAM_CODEC.apply(ByteBufCodecs::optional),
+-        ServerboundChatPacket::signature,
++        packet -> org.dreeam.leaf.config.modules.network.ChatMessageSignature.enabled ? packet.signature() : Optional.empty(), // Leaf - Mirai - Configurable chat message signatures
+         LastSeenMessages.Update.STREAM_CODEC,
+         ServerboundChatPacket::lastSeenMessages,
+         ServerboundChatPacket::new
 diff --git a/net/minecraft/network/protocol/status/ServerStatus.java b/net/minecraft/network/protocol/status/ServerStatus.java
 index 5eb7d46bf0d84720662125711fa7b544e9299446..69206f1670321d8908e75fd203760590b3751cfb 100644
 --- a/net/minecraft/network/protocol/status/ServerStatus.java
@@ -87,10 +87,10 @@ index 5eb7d46bf0d84720662125711fa7b544e9299446..69206f1670321d8908e75fd203760590
          private static final String PREFIX = "data:image/png;base64,";
          public static final Codec<ServerStatus.Favicon> CODEC = Codec.STRING.comapFlatMap(string -> {
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 1539f8a93e74e38e537b1cd2568b43d083e2a418..d69c08d277084b6ab3a74038156fb2490d46388d 100644
+index 64beedbc9e07642a20635a839446aa078619b88f..1465e07aab8a6b0c7fc0f4e244d524be78ed8274 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -823,6 +823,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -814,6 +814,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
  
      @Override
      public boolean enforceSecureProfile() {
@@ -99,10 +99,10 @@ index 1539f8a93e74e38e537b1cd2568b43d083e2a418..d69c08d277084b6ab3a74038156fb249
          // Paper start - Add setting for proxy online mode status
          return properties.enforceSecureProfile
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index b53278e15a843e9b663f00e658080da5196032a7..03d105866afdc7a4555d55f2e5fad6ec87107dd6 100644
+index ab8edce68134645d2ff02eeeb449eb7167ba6738..8df1594dee5aa80d4be5c12517a6f759a6c1ab65 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2903,10 +2903,22 @@ public class ServerGamePacketListenerImpl
+@@ -2957,10 +2957,22 @@ public class ServerGamePacketListenerImpl
  
      public void sendPlayerChatMessage(final PlayerChatMessage message, final ChatType.Bound chatType) {
          // CraftBukkit start - SPIGOT-7262: if hidden we have to send as disguised message. Query whether we should send at all (but changing this may not be expected).
@@ -128,10 +128,10 @@ index b53278e15a843e9b663f00e658080da5196032a7..03d105866afdc7a4555d55f2e5fad6ec
          // Paper start - Ensure that client receives chat packets in the same order that we add into the message signature cache
          synchronized (this.messageSignatureCache) {
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index fa8c4bc387e93c29839d38878468f65e14fd78a1..55e3d4883fe85761085f2ba85d88c530f9d2d330 100644
+index 8eba33f5e3f5312e29b83b8a4ccf9752d12d0fd6..5927ba28af48ee17b709eb3f0df43c5a0dd34cb3 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -1405,7 +1405,7 @@ public abstract class PlayerList {
+@@ -1240,7 +1240,7 @@ public abstract class PlayerList {
      public void broadcastChatMessage(final PlayerChatMessage message, final Predicate<ServerPlayer> isFiltered, final @Nullable ServerPlayer senderPlayer, final ChatType.Bound chatType, final @Nullable Function<net.kyori.adventure.audience.Audience, Component> unsignedFunction) {
          // Paper end
          boolean trusted = this.verifyChatTrusted(message);
@@ -140,7 +140,7 @@ index fa8c4bc387e93c29839d38878468f65e14fd78a1..55e3d4883fe85761085f2ba85d88c530
          OutgoingChatMessage tracked = OutgoingChatMessage.create(message);
          boolean wasFullyFiltered = false;
  
-@@ -1430,6 +1430,7 @@ public abstract class PlayerList {
+@@ -1265,6 +1265,7 @@ public abstract class PlayerList {
      }
  
      public boolean verifyChatTrusted(final PlayerChatMessage message) {

@@ -7,10 +7,10 @@ Related to https://github.com/PaperMC/Paper/issues/12441
 This patch is a similar solution as the part of https://github.com/PaperMC/Paper/pull/11840
 
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
-index deb52b739dc3d5ab6b45c94f958ce5aa31747f32..22021fd51a985a85744434c43a4b0e57bf335a51 100644
+index 41949cb4d0392844eb40b3d5bd3956da75b1cb5e..0d0ace1217f956401e938808253dfd33e24d366c 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
-@@ -663,6 +663,7 @@ public class ServerExplosion implements Explosion {
+@@ -661,6 +661,7 @@ public class ServerExplosion implements Explosion {
      }
  
      private void createFire(final List<BlockPos> targetBlocks) {

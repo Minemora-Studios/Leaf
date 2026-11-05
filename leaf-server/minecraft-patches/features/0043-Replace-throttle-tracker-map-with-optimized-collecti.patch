@@ -33,7 +33,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRA
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 diff --git a/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java b/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-index 2d4272b9ee3f9d034fe0585374f0962c67f03294..0a586e00320513bb97c01bf4f7fa97d385736b26 100644
+index 649f9646abb1bd84f1f22409aee09d2a4d27e581..d39379b2a9a087b38c96ebc31179c1bc6e6693ed 100644
 --- a/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 @@ -20,7 +20,7 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL

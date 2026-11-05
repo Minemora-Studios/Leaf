@@ -1,15 +1,15 @@
 --- a/paper-server/build.gradle.kts
 +++ b/paper-server/build.gradle.kts
-@@ -12,16 +_,30 @@
+@@ -12,16 +_,31 @@
  }
  
  val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
 +val leafMavenPublicUrl = "https://maven.leafmc.one/snapshots/" // Leaf - project setup - Add publish repo
  
  dependencies {
-     mache("io.papermc:mache:26.2+build.1")
--    paperclip("io.papermc:paperclip:3.0.4")
-+    paperclip("cn.dreeam:quantumleaper:1.0.0-SNAPSHOT") // Leaf - project setup - Use own paperclip fork
+     mache("io.papermc:mache:26.3+build.1")
+     paperclip("io.papermc:paperclip:3.0.4")
++    //paperclip("cn.dreeam:quantumleaper:1.0.0-SNAPSHOT") // Leaf - project setup - Use own paperclip fork
  }
  
  paperweight {
@@ -30,7 +30,7 @@
 +    // Leaf end - project setup
 +
      updatingMinecraft {
-         // oldPaperCommit = "d4fe85375af18bfa88f44d7c1e6a61904ae550cc"
+         //oldPaperCommit = "e5fe71723e2ffde7cc9fafc085ac3bb73e63175e"
      }
 @@ -31,6 +_,7 @@
      libraryRepositories.addAll(
@@ -64,7 +64,7 @@
  configurations.named(log4jPlugins.compileClasspathConfigurationName) {
      extendsFrom(configurations.compileClasspath.get())
  }
-@@ -109,8 +_,21 @@
+@@ -109,7 +_,17 @@
  }
  
  dependencies {
@@ -80,14 +80,10 @@
 +    implementation("com.github.ben-manes.caffeine:caffeine:3.2.4")
 +    // Leaf end - Libraries
 +
-     implementation("ca.spottedleaf:leafpile:1.2.0")
-+    // Leaf - Bump Dependencies
-+    // TODO: To check whether the error on shutdown on Windows gets fixed.
-+    // TODO: Introduced in jline3#1576, tested on jline 4.1.3
-     implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
-     implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-     implementation("net.minecrell:terminalconsoleappender:1.3.0")
-@@ -127,14 +_,20 @@
+     implementation(platform("ca.spottedleaf.leafpile:bom:1.3.2"))
+     implementation("ca.spottedleaf.leafpile:common")
+     implementation("ca.spottedleaf.leafpile:concurrentutil")
+@@ -130,14 +_,20 @@
      runtimeOnly(log4jPlugins.output)
      alsoShade(log4jPlugins.output)
  
@@ -95,7 +91,7 @@
 +    implementation("com.velocitypowered:velocity-native:4.1.1-SNAPSHOT") { // Leaf - Bump Dependencies
          isTransitive = false
      }
--    implementation("io.netty:netty-codec-haproxy:4.2.15.Final") // Add support for proxy protocol
+-    implementation("io.netty:netty-codec-haproxy:4.2.16.Final") // Add support for proxy protocol
 +    implementation("io.netty:netty-codec-haproxy:4.2.17.Final") // Add support for proxy protocol
      implementation("org.apache.logging.log4j:log4j-iostreams:2.26.0")
 -    implementation("org.ow2.asm:asm-commons:9.9.1")
@@ -111,7 +107,7 @@
      // Deps that were previously in the API but have now been moved here for backwards compat, eventually to be removed
      runtimeOnly("commons-lang:commons-lang:2.6")
      runtimeOnly("org.xerial:sqlite-jdbc:3.49.1.0")
-@@ -145,40 +_,57 @@
+@@ -148,40 +_,59 @@
      }
  
      testImplementation("io.github.classgraph:classgraph:4.8.184") // For mob goal test
@@ -135,11 +131,11 @@
  
 +    // Leaf start - Bump Dependencies
      // Spark
--    implementation("me.lucko:spark-api:0.1-20240720.200737-2")
--    implementation("me.lucko:spark-paper:1.10.180")
+     implementation("me.lucko:spark-api:0.1-20240720.200737-2")
+     implementation("me.lucko:spark-paper:1.10.191")
 -}
-+    implementation("me.lucko:spark-api:0.1-dev-284ead8-SNAPSHOT")
-+    implementation("me.lucko:spark-paper:1.10-dev-284ead8-SNAPSHOT")
++    //implementation("me.lucko:spark-api:0.1-dev-284ead8-SNAPSHOT")
++    //implementation("me.lucko:spark-paper:1.10-dev-284ead8-SNAPSHOT")
 +
 +    implementation("io.netty:netty-all:4.2.17.Final")
 +    // Leaf end - Bump Dependencies
@@ -185,8 +181,8 @@
              "Build-Number" to (build ?: ""),
              "Build-Time" to buildTime.toString(),
              "Git-Branch" to gitBranch,
-@@ -246,7 +_,7 @@
-     jvmArgumentProviders.add(provider)
+@@ -259,7 +_,7 @@
+     )
  }
  
 -val generatedDir: java.nio.file.Path = layout.projectDirectory.dir("src/generated/java").asFile.toPath()
@@ -194,7 +190,7 @@
  idea {
      module {
          generatedSourceDirs.add(generatedDir.toFile())
-@@ -296,6 +_,8 @@
+@@ -311,6 +_,8 @@
      val memoryGb = providers.gradleProperty("paper.runMemoryGb").getOrElse("2")
      minHeapSize = "${memoryGb}G"
      maxHeapSize = "${memoryGb}G"
@@ -203,7 +199,7 @@
  
      doFirst {
          workingDir.mkdirs()
-@@ -342,3 +_,78 @@
+@@ -357,3 +_,78 @@
          }
      }
  }

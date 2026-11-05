@@ -53,10 +53,10 @@ index 706f529a7d1064aad128b1ee8c82f6319daa8d01..512d39bf1e9d47788224e2ce1f1ae43c
      }
  
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java b/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
-index e418820359c430b91bb91eb65d137b9cdbe2db4b..211a0fe1debb6de37acbb7c97d89779787ea6450 100644
+index ef990079fe5214a2817f55249163548f601523de..8b56c0156ec0c21d1aee177238b30823c4c9c769 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
-@@ -550,7 +550,7 @@ public final class ChunkHolderManager {
+@@ -551,7 +551,7 @@ public final class ChunkHolderManager {
  
      public <T> boolean addTicketAtLevel(final TicketType type, final ChunkPos chunkPos, final int level,
                                          final T identifier) {
@@ -65,7 +65,7 @@ index e418820359c430b91bb91eb65d137b9cdbe2db4b..211a0fe1debb6de37acbb7c97d897797
      }
  
      public <T> boolean addTicketAtLevel(final TicketType type, final int chunkX, final int chunkZ, final int level,
-@@ -667,7 +667,7 @@ public final class ChunkHolderManager {
+@@ -668,7 +668,7 @@ public final class ChunkHolderManager {
      }
  
      public <T> boolean removeTicketAtLevel(final TicketType type, final ChunkPos chunkPos, final int level, final T identifier) {
@@ -74,7 +74,7 @@ index e418820359c430b91bb91eb65d137b9cdbe2db4b..211a0fe1debb6de37acbb7c97d897797
      }
  
      public <T> boolean removeTicketAtLevel(final TicketType type, final int chunkX, final int chunkZ, final int level, final T identifier) {
-@@ -1320,7 +1320,7 @@ public final class ChunkHolderManager {
+@@ -1360,7 +1360,7 @@ public final class ChunkHolderManager {
          }
  
          public static <T> TicketOperation<T, T> addOp(final ChunkPos chunk, final TicketType type, final int ticketLevel, final T identifier) {
@@ -83,7 +83,7 @@ index e418820359c430b91bb91eb65d137b9cdbe2db4b..211a0fe1debb6de37acbb7c97d897797
          }
  
          public static <T> TicketOperation<T, T> addOp(final int chunkX, final int chunkZ, final TicketType type, final int ticketLevel, final T identifier) {
-@@ -1332,7 +1332,7 @@ public final class ChunkHolderManager {
+@@ -1372,7 +1372,7 @@ public final class ChunkHolderManager {
          }
  
          public static <T> TicketOperation<T, T> removeOp(final ChunkPos chunk, final TicketType type, final int ticketLevel, final T identifier) {
@@ -119,10 +119,10 @@ index 63cc7970b9df5e84743084ca99650bc3d13b970e..022dd571623224fd87c4aa4a50ebdba4
          // Paper end - rewrite chunk system
      }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index e5f56f8a0c07dd899fff9ef31f2f5f4ff3ff3626..9c9fe2d79101adfc3db9b7ae49978c19f27ea863 100644
+index 4cc7412b525665ce1497a9026e8266e5ce51eeee..453987cae4be8ee5752ee12f757e2a317f26eb4b 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -549,7 +549,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -550,7 +550,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
      @Override
      public final void moonrise$markChunkForPlayerTicking(final LevelChunk chunk) {
          final ChunkPos pos = chunk.getPos();
@@ -131,7 +131,7 @@ index e5f56f8a0c07dd899fff9ef31f2f5f4ff3ff3626..9c9fe2d79101adfc3db9b7ae49978c19
              return;
          }
  
-@@ -2823,7 +2823,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -3091,7 +3091,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
  
      public boolean areEntitiesActuallyLoadedAndTicking(final ChunkPos pos) {
          // Paper start - rewrite chunk system
@@ -140,7 +140,7 @@ index e5f56f8a0c07dd899fff9ef31f2f5f4ff3ff3626..9c9fe2d79101adfc3db9b7ae49978c19
          return chunkHolder != null && chunkHolder.isEntityTickingReady();
          // Paper end - rewrite chunk system
      }
-@@ -2843,7 +2843,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -3111,7 +3111,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
  
      public boolean canSpawnEntitiesInChunk(final ChunkPos pos) {
          // Paper start - rewrite chunk system

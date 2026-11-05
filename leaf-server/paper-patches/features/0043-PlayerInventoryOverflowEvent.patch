@@ -5,10 +5,10 @@ Subject: [PATCH] PlayerInventoryOverflowEvent
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
-index 5e5a4e48b2a96c355256b8f8bfcc09225d562944..ebbb143547ba577ced90b353508feebfb0cb6e33 100644
+index a1e1c89786eb4278ff8ff2bfb4d97848b4da4702..9d121ea6af9143f2e567e97432288579cf4e7e33 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
-@@ -341,9 +341,48 @@ public class CraftInventory implements Inventory {
+@@ -339,9 +339,48 @@ public class CraftInventory implements Inventory {
                  }
              }
          }

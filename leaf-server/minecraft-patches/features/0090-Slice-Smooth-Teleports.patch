@@ -9,10 +9,10 @@ Original project: https://github.com/Cryptite/Slice
 Co-authored-by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index fed9ea8fc4a57b860c2b26093b0300c8a7d78134..ccee63d6b933cd9f2cc874dc2f78ebd79502ff02 100644
+index 9d0ccf42e69b41a47affafdf823909238b1f5d25..f23f9a52e43c74a3b7815d668270bc57e1fd2ec5 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -446,6 +446,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -451,6 +451,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      private boolean tpsBar = false; // Purpur - Implement TPSBar
      private boolean compassBar = false; // Purpur - Add compass command
      private boolean ramBar = false; // Purpur - Implement rambar commands
@@ -21,10 +21,10 @@ index fed9ea8fc4a57b860c2b26093b0300c8a7d78134..ccee63d6b933cd9f2cc874dc2f78ebd7
      // Paper start - rewrite chunk system
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index c5d258b99c441e5d8fe93200bf57cc7c1ed1ce03..053fc92d3626c0df0ae0528c9b155aee29459edc 100644
+index 2d6fa3f00fb583030c2b7105cf20aa48f5aa8f16..b6d7077264eeddeae2b60257b7c1a43c94fa43d7 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -657,8 +657,10 @@ public abstract class PlayerList {
+@@ -665,8 +665,10 @@ public abstract class PlayerList {
          byte dataToKeep = keepAllPlayerData ? ClientboundRespawnPacket.KEEP_ATTRIBUTE_MODIFIERS : 0;
          ServerLevel playerLevel = player.level();
          LevelData levelData = playerLevel.getLevelData();
@@ -35,7 +35,7 @@ index c5d258b99c441e5d8fe93200bf57cc7c1ed1ce03..053fc92d3626c0df0ae0528c9b155aee
          player.connection.send(new ClientboundSetDefaultSpawnPositionPacket(level.getRespawnData()));
          player.connection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
          player.connection.send(new ClientboundSetExperiencePacket(player.experienceProgress, player.totalExperience, player.experienceLevel));
-@@ -728,6 +730,8 @@ public abstract class PlayerList {
+@@ -737,6 +739,8 @@ public abstract class PlayerList {
          return player;
      }
  

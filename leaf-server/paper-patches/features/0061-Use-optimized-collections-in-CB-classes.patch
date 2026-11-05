@@ -5,10 +5,10 @@ Subject: [PATCH] Use optimized collections in CB classes
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
-index 74ea2618e8a7dc4fbfd62d9d83ace64fa6ae9f13..f2b055f8e986b5ad44cd67ebcaec3f77b02b9e42 100644
+index a848fa64659786818e74161a07d1fabcfe8978c4..5ce1636f866086d999da04082bdbca163fcc4bb2 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
-@@ -70,7 +70,7 @@ public final class CraftBlockStates {
+@@ -75,7 +75,7 @@ public final class CraftBlockStates {
          }
      }
  
@@ -16,8 +16,8 @@ index 74ea2618e8a7dc4fbfd62d9d83ace64fa6ae9f13..f2b055f8e986b5ad44cd67ebcaec3f77
 +    private static final Map<Material, BlockStateFactory<?>> FACTORIES = new java.util.EnumMap<>(Material.class); // Leaf - Use optimized collections in CB classes
      private static final BlockStateFactory<?> DEFAULT_FACTORY = new BlockStateFactory<>(CraftBlockState.class) {
          @Override
-         public CraftBlockState createBlockState(World world, BlockPos pos, net.minecraft.world.level.block.state.BlockState state, BlockEntity blockEntity) {
-@@ -80,7 +80,7 @@ public final class CraftBlockStates {
+         public CraftBlockState createBlockState(World world, BlockPos pos, net.minecraft.world.level.block.state.BlockState state, BlockEntity blockEntity, boolean useSnapshot) {
+@@ -85,7 +85,7 @@ public final class CraftBlockStates {
          }
      };
  
@@ -40,10 +40,10 @@ index f499c02b2ff2d436fbf7759f1e865e14f5268de7..fdbd4a89a8865c7f5c073a22c627e718
          this.flags.put(BarFlag.PLAY_BOSS_MUSIC, new FlagContainer(this.handle::shouldPlayBossMusic, this.handle::setPlayBossMusic));
          this.flags.put(BarFlag.CREATE_FOG, new FlagContainer(this.handle::shouldCreateWorldFog, this.handle::setCreateWorldFog));
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntityTypes.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntityTypes.java
-index 1449c73e4310d140918ad07cccb9d3b53b3bfb47..7af4e5726d504a9ab6b15bc1312e9329cf990b19 100644
+index 9b120dc67c9e530be8a63b10793cb4c93b7ca1cd..b5752b52aad720c112d4432c279eaddafd3667eb 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntityTypes.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntityTypes.java
-@@ -272,8 +272,10 @@ public final class CraftEntityTypes {
+@@ -278,8 +278,10 @@ public final class CraftEntityTypes {
          }
      };
      // Paper end - respect randomizeData

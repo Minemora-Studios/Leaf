@@ -23,10 +23,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 1f99adff25917a7b8a7cb47ec40b8d58b3e11c7d..ce697c3acf4d24036ee124875d4c6032e043df8e 100644
+index 1c65e3286f267f527e24ef662d60ee3f769decc7..82ce76e6c630e56550da85c7340a9cec86e608c1 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -360,17 +360,12 @@ public class ServerGamePacketListenerImpl
+@@ -365,17 +365,12 @@ public class ServerGamePacketListenerImpl
      // Paper end - configuration phase API
  
      // Purpur start - AFK API
@@ -48,7 +48,7 @@ index 1f99adff25917a7b8a7cb47ec40b8d58b3e11c7d..ce697c3acf4d24036ee124875d4c6032
      // Purpur end - AFK API
  
      @Override
-@@ -393,7 +388,7 @@ public class ServerGamePacketListenerImpl
+@@ -399,7 +394,7 @@ public class ServerGamePacketListenerImpl
                  && !this.player.wonGame) {
                  // Purpur start - AFK API
                  this.player.setAfk(true);

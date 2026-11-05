@@ -5,7 +5,7 @@ Subject: [PATCH] Virtual thread support for download pool
 
 
 diff --git a/net/minecraft/util/Util.java b/net/minecraft/util/Util.java
-index 41ada37505d45c4cd5b0ce4dd0eb80e427f12369..1bc55cf2459a7f7b4518c2196f4788a4a3d3dc2f 100644
+index 5b56955f925590ae10f11ebcd6c78292e8c8aacf..685ba7f2030e080f109a2b3d2351ae23a72faa26 100644
 --- a/net/minecraft/util/Util.java
 +++ b/net/minecraft/util/Util.java
 @@ -106,22 +106,7 @@ public class Util {

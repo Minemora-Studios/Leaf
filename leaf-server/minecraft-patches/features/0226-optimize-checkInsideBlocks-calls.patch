@@ -11,10 +11,10 @@ Subject: [PATCH] optimize checkInsideBlocks calls
 License: LGPL-3.0-only (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 6420286d3c6aad6a01fe34c5cd57afa430cc50d5..784a1c4c99b3c51b91aafdbea123877eca24e856 100644
+index f917c9ac011e0ecd10c7dffb156e73eb4b420337..68bb3db638360172bbc3d50cfc979a5181c18473 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1884,7 +1884,11 @@ public abstract class Entity
+@@ -1926,7 +1926,11 @@ public abstract class Entity
          final LongSet visitedBlocks,
          final int maxMovementIterations
      ) {
@@ -27,7 +27,7 @@ index 6420286d3c6aad6a01fe34c5cd57afa430cc50d5..784a1c4c99b3c51b91aafdbea123877e
          boolean movedFar = from.distanceToSqr(to) > Mth.square(0.9999900000002526);
          boolean debugEntityBlockIntersections = this.level instanceof ServerLevel serverLevel
              && serverLevel.getServer().debugSubscribers().hasAnySubscriberFor(DebugSubscriptions.ENTITY_BLOCK_INTERSECTIONS);
-@@ -1903,24 +1907,42 @@ public abstract class Entity
+@@ -1945,24 +1949,42 @@ public abstract class Entity
                  }
  
                  iterations.set(iteration);
@@ -75,7 +75,7 @@ index 6420286d3c6aad6a01fe34c5cd57afa430cc50d5..784a1c4c99b3c51b91aafdbea123877e
                                  this.onInsideBlock(state);
                              } catch (Throwable t) {
                                  CrashReport report = CrashReport.forThrowable(t, "Colliding entity with block");
-@@ -1934,11 +1956,11 @@ public abstract class Entity
+@@ -1976,11 +1998,11 @@ public abstract class Entity
  
                          if (insideFluid) {
                              effectCollector.advanceStep(iteration, blockIntersection); // Paper - track position inside effect was triggered on
@@ -89,7 +89,7 @@ index 6420286d3c6aad6a01fe34c5cd57afa430cc50d5..784a1c4c99b3c51b91aafdbea123877e
                          }
  
                          return true;
-@@ -1950,6 +1972,7 @@ public abstract class Entity
+@@ -1992,6 +2014,7 @@ public abstract class Entity
          );
          return iterations.get() + 1;
      }
@@ -98,7 +98,7 @@ index 6420286d3c6aad6a01fe34c5cd57afa430cc50d5..784a1c4c99b3c51b91aafdbea123877e
      private void debugBlockIntersection(final ServerLevel level, final BlockPos pos, final boolean insideBlock, final boolean insideFluid) {
          DebugEntityBlockIntersection type;
 diff --git a/net/minecraft/world/entity/InsideBlockEffectApplier.java b/net/minecraft/world/entity/InsideBlockEffectApplier.java
-index fc7cfc75e3e5c274f01498e4afd8693236b4e394..149e2a11534aaffe00b7304898c4f1eb932651c2 100644
+index c2f124383be06ae777c1ee7f0820c959c8359f87..10f76d324fc4b528bcafb70f76a258b10b90f770 100644
 --- a/net/minecraft/world/entity/InsideBlockEffectApplier.java
 +++ b/net/minecraft/world/entity/InsideBlockEffectApplier.java
 @@ -32,16 +32,19 @@ public interface InsideBlockEffectApplier {
@@ -210,4 +210,4 @@ index fc7cfc75e3e5c274f01498e4afd8693236b4e394..149e2a11534aaffe00b7304898c4f1eb
 +        // Leaf end - optimize checkInsideBlocks calls
  
          // Paper start - track position inside effect was triggered on
-         private net.minecraft.core.BlockPos currentBlockPos = null;
+         private net.minecraft.core.@org.jspecify.annotations.Nullable BlockPos currentBlockPos = null;

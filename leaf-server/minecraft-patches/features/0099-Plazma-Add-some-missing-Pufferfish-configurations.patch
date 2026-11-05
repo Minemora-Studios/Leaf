@@ -11,7 +11,7 @@ Armadillo, Camel, CopperGolem, HappyGhast, Nautilus, ZombieNautilus, Sniffer, Zo
 Resolved https://github.com/pufferfish-gg/Pufferfish/issues/83
 
 diff --git a/net/minecraft/world/entity/animal/armadillo/Armadillo.java b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
-index d3287e5fac29f41bf91b02c3e28effe267c7d7a1..237049e537096ac23cafd84165a6c083ddebcdea 100644
+index 91c74cf194c11f90954853b14dbdb08a178a36bf..9f5c072903651aa5f869525157db93aeb63557a2 100644
 --- a/net/minecraft/world/entity/animal/armadillo/Armadillo.java
 +++ b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
 @@ -187,10 +187,12 @@ public class Armadillo extends Animal {
@@ -28,7 +28,7 @@ index d3287e5fac29f41bf91b02c3e28effe267c7d7a1..237049e537096ac23cafd84165a6c083
          profiler.pop();
          profiler.push("armadilloActivityUpdate");
 diff --git a/net/minecraft/world/entity/animal/camel/Camel.java b/net/minecraft/world/entity/animal/camel/Camel.java
-index 98ec32699e9322714620f563842dabc0c2bc1e52..d79c6b95bbaac5360b0600357f51e4fe9724082a 100644
+index 8ecb679270b97c4b4d86794d992b5141ed423fe9..adab4fda552b66dfd3988e4b120cea41a0db9e77 100644
 --- a/net/minecraft/world/entity/animal/camel/Camel.java
 +++ b/net/minecraft/world/entity/animal/camel/Camel.java
 @@ -199,11 +199,13 @@ public class Camel extends AbstractHorse {
@@ -46,10 +46,10 @@ index 98ec32699e9322714620f563842dabc0c2bc1e52..d79c6b95bbaac5360b0600357f51e4fe
          profiler.pop();
          profiler.push("camelActivityUpdate");
 diff --git a/net/minecraft/world/entity/animal/golem/CopperGolem.java b/net/minecraft/world/entity/animal/golem/CopperGolem.java
-index 55bf908402a01f0f93538f2707d60dd1f59013bd..ea0c58c19eb38cd63385748a9f8011713289d816 100644
+index a1efa57441a3390b3606db92ad722a86d61e4768..e5dd8cb275f1b2f4449730f91dc33a4dc734f8e7 100644
 --- a/net/minecraft/world/entity/animal/golem/CopperGolem.java
 +++ b/net/minecraft/world/entity/animal/golem/CopperGolem.java
-@@ -239,11 +239,12 @@ public class CopperGolem extends AbstractGolem implements ContainerUser, Shearab
+@@ -238,11 +238,12 @@ public class CopperGolem extends AbstractGolem implements ContainerUser, Shearab
          this.setSummoner(input.read("Purpur.Summoner", net.minecraft.core.UUIDUtil.CODEC).orElse(null)); // Purpur - Summoner API
      }
  
@@ -64,7 +64,7 @@ index 55bf908402a01f0f93538f2707d60dd1f59013bd..ea0c58c19eb38cd63385748a9f801171
          profiler.pop();
          profiler.push("copperGolemActivityUpdate");
 diff --git a/net/minecraft/world/entity/animal/happyghast/HappyGhast.java b/net/minecraft/world/entity/animal/happyghast/HappyGhast.java
-index 0c56a19f0de0fa811a61b24a998fe2efce56d78a..9d9711755c913c56ccdd079d792a803eb9d1c64f 100644
+index bbfe281086cd5ba23c72525ea32115f6845d3d87..471a6a764646cc40761d320a54ff540d565b35d3 100644
 --- a/net/minecraft/world/entity/animal/happyghast/HappyGhast.java
 +++ b/net/minecraft/world/entity/animal/happyghast/HappyGhast.java
 @@ -442,11 +442,13 @@ public class HappyGhast extends Animal {
@@ -119,10 +119,10 @@ index 9aed9eb7a7c3b3fb653d6fed5f8d79f7c32b2b94..c7c90172067e727f03fc83cecf0e97bd
          profiler.pop();
          profiler.push("zombieNautilusActivityUpdate");
 diff --git a/net/minecraft/world/entity/animal/sniffer/Sniffer.java b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
-index 33eb3e6b312ef32c6ae94a7ef5333ab60bb4c4ad..38cee4a0448be4272a677628f5fefbc8a8709255 100644
+index 96426d7a2f30e7f06962009f8bf4be6cf62cdd4c..d5cd5b47920caae0cf08c5e7f207fc9011adbcf2 100644
 --- a/net/minecraft/world/entity/animal/sniffer/Sniffer.java
 +++ b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
-@@ -496,11 +496,12 @@ public class Sniffer extends Animal {
+@@ -493,11 +493,12 @@ public class Sniffer extends Animal {
          return (Brain<Sniffer>)super.getBrain();
      }
  
@@ -137,7 +137,7 @@ index 33eb3e6b312ef32c6ae94a7ef5333ab60bb4c4ad..38cee4a0448be4272a677628f5fefbc8
          profiler.popPush("snifferActivityUpdate");
          SnifferAi.updateActivity(this);
 diff --git a/net/minecraft/world/entity/monster/Zoglin.java b/net/minecraft/world/entity/monster/Zoglin.java
-index 35da647c8dad5da274ab8de857636d28e8cc8520..ee93e9d186a27b4afe16b73533a47b0da6c75905 100644
+index 782bd4188bf00a04264521f09fbdca3a9c1000a4..5d15d0a86b67f393de061d689cb53d0c7c8571a8 100644
 --- a/net/minecraft/world/entity/monster/Zoglin.java
 +++ b/net/minecraft/world/entity/monster/Zoglin.java
 @@ -275,11 +275,12 @@ public class Zoglin extends Monster implements HoglinBase {
@@ -155,7 +155,7 @@ index 35da647c8dad5da274ab8de857636d28e8cc8520..ee93e9d186a27b4afe16b73533a47b0d
          profiler.pop();
          this.updateActivity();
 diff --git a/net/minecraft/world/entity/monster/breeze/Breeze.java b/net/minecraft/world/entity/monster/breeze/Breeze.java
-index c46e4460d7bf27ced40e027c2b029d99c8098e27..16afcfe0c538185e38b1e5e0167b45578b54d536 100644
+index 1661e8d7a0a546c0f7bfc74425793c3469b28354..ffec46ac98deca1633b95f14e98347dc24b16124 100644
 --- a/net/minecraft/world/entity/monster/breeze/Breeze.java
 +++ b/net/minecraft/world/entity/monster/breeze/Breeze.java
 @@ -296,11 +296,12 @@ public class Breeze extends Monster {
@@ -173,7 +173,7 @@ index c46e4460d7bf27ced40e027c2b029d99c8098e27..16afcfe0c538185e38b1e5e0167b4557
          profiler.popPush("breezeActivityUpdate");
          BreezeAi.updateActivity(this);
 diff --git a/net/minecraft/world/entity/monster/creaking/Creaking.java b/net/minecraft/world/entity/monster/creaking/Creaking.java
-index bb0508e1273ff0ab8db37868b78d16f0c15e854d..82a10aa6e7e68303fd06c7f5fc0356bb3260efb5 100644
+index 42086ce1142d35a6799e20ca89dab649b71b6bd3..4136e8d45b06b1e0734d2a16102e2234b800f04f 100644
 --- a/net/minecraft/world/entity/monster/creaking/Creaking.java
 +++ b/net/minecraft/world/entity/monster/creaking/Creaking.java
 @@ -235,10 +235,12 @@ public class Creaking extends Monster {

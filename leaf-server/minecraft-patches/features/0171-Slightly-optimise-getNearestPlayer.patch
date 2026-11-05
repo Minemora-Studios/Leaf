@@ -17,7 +17,7 @@ One-time operation: Convert distance to squared distance
 Total operations: ~3 * n (in the no-predicate case) or ~4 * n (with predicate)
 
 diff --git a/net/minecraft/world/level/EntityGetter.java b/net/minecraft/world/level/EntityGetter.java
-index 205f54132650c9e166a88e563d279970d4b55b32..b3986abf7a4fd47182f088982b52440cc0489dd1 100644
+index 5b5bafef8dd1ea4cd1be3842eca7028915f8ee5b..d5e912020b5c409c9ed59a6737c54403adaccb00 100644
 --- a/net/minecraft/world/level/EntityGetter.java
 +++ b/net/minecraft/world/level/EntityGetter.java
 @@ -199,22 +199,42 @@ public interface EntityGetter extends ca.spottedleaf.moonrise.patches.chunk_syst

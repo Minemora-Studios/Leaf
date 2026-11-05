@@ -10,10 +10,10 @@ It's a kind of weird race condition, not sure what causes it,
 so just add a `isStopped` check, like the check under `handleChat`
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 3fadb165817ac03f97d9bd509156835e0513406d..e21f910700fcf01264a41b2c1594e56ba8067371 100644
+index fedfcca08f4f2e3a197dde60ea4e54764d3ed47e..dedcc939275146c294ceace37df472bbce05df08 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2463,7 +2463,7 @@ public class ServerGamePacketListenerImpl
+@@ -2517,7 +2517,7 @@ public class ServerGamePacketListenerImpl
          final boolean isAfkCommandCooldown = this.performAfkCooldown(packet.command()); // Leaf - Improve Purpur AFK system
          this.tryHandleChat(packet.command(), true, () -> {
              // CraftBukkit start - SPIGOT-7346: Prevent disconnected players from executing commands
@@ -22,7 +22,7 @@ index 3fadb165817ac03f97d9bd509156835e0513406d..e21f910700fcf01264a41b2c1594e56b
                  return;
              }
              // CraftBukkit end
-@@ -2505,7 +2505,7 @@ public class ServerGamePacketListenerImpl
+@@ -2559,7 +2559,7 @@ public class ServerGamePacketListenerImpl
              final boolean isAfkCommandCooldown = this.performAfkCooldown(packet.command()); // Leaf - Improve Purpur AFK system
              this.tryHandleChat(packet.command(), true, () -> {
                  // CraftBukkit start - SPIGOT-7346: Prevent disconnected players from executing commands

@@ -5,7 +5,7 @@ Subject: [PATCH] Reduce optimiseRandomTick new BlockPos instance create
 
 
 diff --git a/io/papermc/paper/redstone/RedstoneWireTurbo.java b/io/papermc/paper/redstone/RedstoneWireTurbo.java
-index ccc8a5b5a5353e624e86d69617599cc3ac118a9d..480031124848027a006f62a6bbf90c942af75341 100644
+index fd1fe87bb891ad66b6edb35e9d7c363f9efa5790..4fa1b9f2205ae0990561483372fb8091425782ca 100644
 --- a/io/papermc/paper/redstone/RedstoneWireTurbo.java
 +++ b/io/papermc/paper/redstone/RedstoneWireTurbo.java
 @@ -715,7 +715,7 @@ public final class RedstoneWireTurbo {
@@ -27,10 +27,10 @@ index ccc8a5b5a5353e624e86d69617599cc3ac118a9d..480031124848027a006f62a6bbf90c94
  
          // Perform the walk over all directly reachable redstone wire blocks, propagating wire value
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 3bcb287aa1d10c8eb3e30c8021051688d1a6c93f..244e14b16b76130dd37ad6abfe97b394ea150869 100644
+index 51286b96024af5d0530eb6b0463e05aa875a778f..84aed81dddbc89677193bb72ddb991ae1566929a 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1165,6 +1165,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1170,6 +1170,8 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          this.players.stream().filter(LivingEntity::isSleeping).collect(Collectors.toList()).forEach(player -> player.stopSleepInBed(false, false));
      }
  
@@ -39,7 +39,7 @@ index 3bcb287aa1d10c8eb3e30c8021051688d1a6c93f..244e14b16b76130dd37ad6abfe97b394
      // Paper start - optimise random ticking
      private void optimiseRandomTick(final LevelChunk chunk, final int tickSpeed) {
          final LevelChunkSection[] sections = chunk.getSections();
-@@ -1198,14 +1200,16 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1203,14 +1205,16 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
                  final int location = (int)tickList.getRaw(index) & 0xFFFF;
                  final BlockState state = states.get(location);
  
@@ -61,10 +61,10 @@ index 3bcb287aa1d10c8eb3e30c8021051688d1a6c93f..244e14b16b76130dd37ad6abfe97b394
                  }
              }
 diff --git a/net/minecraft/world/level/block/SculkSpreader.java b/net/minecraft/world/level/block/SculkSpreader.java
-index d6d3cb088d5d6ded75e97eaffa2baffc50fa2e26..9ef6d1634518949bbbe717e3c63c923e422fa165 100644
+index 9ac840cdb63e06d012540ef5393a4f7bb70145d1..e702c5cd0cda6f5ac7121121c8ae90e368ee5d65 100644
 --- a/net/minecraft/world/level/block/SculkSpreader.java
 +++ b/net/minecraft/world/level/block/SculkSpreader.java
-@@ -161,7 +161,7 @@ public class SculkSpreader {
+@@ -162,7 +162,7 @@ public class SculkSpreader {
                      if (cursor.charge <= 0) {
                          level.levelEvent(LevelEvent.PARTICLES_SCULK_CHARGE, cursor.getPos(), 0);
                      } else {
@@ -74,10 +74,10 @@ index d6d3cb088d5d6ded75e97eaffa2baffc50fa2e26..9ef6d1634518949bbbe717e3c63c923e
                          SculkSpreader.ChargeCursor existing = mergeableCursors.get(pos);
                          if (existing == null) {
 diff --git a/net/minecraft/world/level/block/TurtleEggBlock.java b/net/minecraft/world/level/block/TurtleEggBlock.java
-index 3e829a91b61003528258edc2ef10e29ba5627dd0..db54f18fae02b2845b8b2652bff61ca746953048 100644
+index 1264b28966c2afa23d142b51226d96f3006796bf..0af1a8343acb66a8fa8f845f15924aca217a3ac1 100644
 --- a/net/minecraft/world/level/block/TurtleEggBlock.java
 +++ b/net/minecraft/world/level/block/TurtleEggBlock.java
-@@ -137,7 +137,7 @@ public class TurtleEggBlock extends Block {
+@@ -131,7 +131,7 @@ public class TurtleEggBlock extends Block {
                      Turtle turtle = EntityTypes.TURTLE.create(level, EntitySpawnReason.BREEDING);
                      if (turtle != null) {
                          turtle.setAge(-24000);
@@ -87,13 +87,13 @@ index 3e829a91b61003528258edc2ef10e29ba5627dd0..db54f18fae02b2845b8b2652bff61ca7
                          level.addFreshEntity(turtle, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.EGG); // CraftBukkit
                          // Purpur start - Breedable mobs can have multiple babies
 diff --git a/net/minecraft/world/level/redstone/ExperimentalRedstoneWireEvaluator.java b/net/minecraft/world/level/redstone/ExperimentalRedstoneWireEvaluator.java
-index 7bbfa84ed3a148d9307d3637c99f5b1f7abd96f3..42ea646c4f80a21900202fe029794fa8e972ed74 100644
+index 7f2dfe7258de5e738e7651c1a4afa6546fd62139..5a13e92a9563c0992b6661d36e8fdaa5a36c2da6 100644
 --- a/net/minecraft/world/level/redstone/ExperimentalRedstoneWireEvaluator.java
 +++ b/net/minecraft/world/level/redstone/ExperimentalRedstoneWireEvaluator.java
 @@ -115,7 +115,7 @@ public class ExperimentalRedstoneWireEvaluator extends RedstoneWireEvaluator {
          BlockState initialState = level.getBlockState(initialPosition);
          if (initialState.is(this.wireBlock)) {
-             this.setPower(initialPosition, initialState.getValue(RedStoneWireBlock.POWER), initialOrientation);
+             this.setPower(initialPosition, initialState.getValue(RedstoneWireBlock.POWER), initialOrientation);
 -            this.wiresToTurnOff.add(initialPosition);
 +            this.wiresToTurnOff.add(initialPosition.immutable()); // Leaf - Reduce optimiseRandomTick new BlockPos instance create - immutable
          } else {

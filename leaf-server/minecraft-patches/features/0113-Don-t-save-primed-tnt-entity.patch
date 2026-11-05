@@ -5,10 +5,10 @@ Subject: [PATCH] Don't save primed tnt entity
 
 
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index 8055a123f0368733bf72fc7bd956a0523c10a8ca..65a4b5051411ae08d30886dac8dabe7154fe10dd 100644
+index 492121dc20c29e3798353c8bec289cda46deea44..18f5ef22e87f8c6efdf7d8ba63e47d49667950fa 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -272,4 +272,11 @@ public class PrimedTnt extends Entity implements TraceableEntity {
+@@ -280,4 +280,11 @@ public class PrimedTnt extends Entity implements TraceableEntity {
          return super.interact(player, hand, location);
      }
      // Purpur end - Shears can defuse TNT

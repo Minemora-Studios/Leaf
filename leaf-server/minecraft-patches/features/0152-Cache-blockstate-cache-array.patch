@@ -9,10 +9,10 @@ Cache values to reduce allocations.
 The JMH benchmark of this patch can be found in SunBox's `CachedEnumValuesForLoop`
 
 diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
-index 434ae6c48279d1b4b56c6abce1505aa2dcffafe7..886b22fea779bfb432520956f596eefbebc8956c 100644
+index 2865473782fa9a31600b82d612048f0d1f2cec17..a9afca646255d4918da8697f73da738eec85813a 100644
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -1061,6 +1061,10 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -1135,6 +1135,10 @@ public abstract class BlockBehaviour implements FeatureElement {
          private static final class Cache {
              private static final Direction[] DIRECTIONS = Direction.values();
              private static final int SUPPORT_TYPE_COUNT = SupportType.values().length;
@@ -23,7 +23,7 @@ index 434ae6c48279d1b4b56c6abce1505aa2dcffafe7..886b22fea779bfb432520956f596eefb
              public final VoxelShape collisionShape;
              public boolean largeCollisionShape;
              private final boolean[] faceSturdy;
-@@ -1080,7 +1084,7 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -1154,7 +1158,7 @@ public abstract class BlockBehaviour implements FeatureElement {
                  }
  
                  // Leaf start - Remove stream in BlockBehaviour cache blockstate
@@ -32,7 +32,7 @@ index 434ae6c48279d1b4b56c6abce1505aa2dcffafe7..886b22fea779bfb432520956f596eefb
                      if (this.collisionShape.min(axis) < 0.0 || this.collisionShape.max(axis) > 1.0) {
                          this.largeCollisionShape = true;
                          break;
-@@ -1090,7 +1094,7 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -1164,7 +1168,7 @@ public abstract class BlockBehaviour implements FeatureElement {
                  this.faceSturdy = new boolean[DIRECTIONS.length * SUPPORT_TYPE_COUNT];
  
                  for (Direction direction : DIRECTIONS) {

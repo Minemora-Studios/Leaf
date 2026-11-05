@@ -6,10 +6,10 @@ Subject: [PATCH] Use UUID for cure reputation
 Related MC issue: https://bugs.mojang.com/browse/MC/issues/MC-247647
 
 diff --git a/net/minecraft/world/entity/monster/zombie/ZombieVillager.java b/net/minecraft/world/entity/monster/zombie/ZombieVillager.java
-index 5d73c019691bdb1ca2f88a1816de0da23c566777..d89a83e8e6fb994982623952af9da90719e1abee 100644
+index cb9e7a437b00f19752745da6937eeacec29dab3c..1357d5e06b77d53d7dc79b4cb775e24eae7346b0 100644
 --- a/net/minecraft/world/entity/monster/zombie/ZombieVillager.java
 +++ b/net/minecraft/world/entity/monster/zombie/ZombieVillager.java
-@@ -335,9 +335,10 @@ public class ZombieVillager extends Zombie implements VillagerDataHolder {
+@@ -334,9 +334,10 @@ public class ZombieVillager extends Zombie implements VillagerDataHolder {
                  villager.refreshBrain(level);
                  if (this.conversionStarter != null) {
                      Player player = level.getGlobalPlayerByUUID(this.conversionStarter); // Paper - check global player list where appropriate
@@ -22,10 +22,10 @@ index 5d73c019691bdb1ca2f88a1816de0da23c566777..d89a83e8e6fb994982623952af9da907
                  }
  
 diff --git a/net/minecraft/world/entity/npc/villager/Villager.java b/net/minecraft/world/entity/npc/villager/Villager.java
-index d238aaa3abf7f4ff2fdb6eccc5e0a7ac2282bb36..832fbd1e84efffd30592ceb794736fad19bc6d7b 100644
+index 8ffe48b9e28145535aca96559e6eeb1e6318a382..13cbc69eb894a1c4945bef6c88631dc9f1ed0945 100644
 --- a/net/minecraft/world/entity/npc/villager/Villager.java
 +++ b/net/minecraft/world/entity/npc/villager/Villager.java
-@@ -1105,6 +1105,22 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
+@@ -1103,6 +1103,22 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
          }
      }
  

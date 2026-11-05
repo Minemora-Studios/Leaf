@@ -5,10 +5,10 @@ Subject: [PATCH] optimize LevelChunk#getBlockStateFinal
 
 
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 463fdb781194e2fa8c7831859322ca7d335bc021..c1a6b7d2f782967a7a46c871a98a2b3deace4bca 100644
+index 349f7fd0058301cf45477a4ce40693a9fd17610f..ddec29df088cbdf0a2a9f944db7de8867ee13f60 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -325,12 +325,18 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -329,12 +329,18 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
  
      public BlockState getBlockStateFinal(final int x, final int y, final int z) {
          // Copied and modified from below

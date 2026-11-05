@@ -5,7 +5,7 @@ Subject: [PATCH] optimize despawn
 
 
 diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-index fdc595434c825b0867b0a5e9dc227b029db62302..5668cdb48d389e1beb4ff4d367cfc6b02a82002c 100644
+index 16d3b177f396396d68afe039a707bb7469dd4e6f..50172e58ef612b9ba956ad2ac75077e2b5426c26 100644
 --- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
 @@ -181,7 +181,7 @@ public class WorldConfiguration extends ConfigurationPart {

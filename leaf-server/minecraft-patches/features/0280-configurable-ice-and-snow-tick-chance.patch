@@ -5,10 +5,10 @@ Subject: [PATCH] configurable ice and snow tick chance
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index b14376a9b3fe04adcb53baedbf639834bf6d3d45..c998241ac8f72a7f92bd5825f930c189cf5c2891 100644
+index 78f57e319c7f2760b027b9e7ffa2b7d42fa28840..fa2a2fb326349d4edc8d9d79dfdb49bff2d6bd07 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1264,9 +1264,10 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1269,9 +1269,10 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          ProfilerFiller profiler = Profiler.get();
          profiler.push("iceandsnow");
  

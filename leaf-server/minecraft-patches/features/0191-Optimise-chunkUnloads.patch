@@ -5,7 +5,7 @@ Subject: [PATCH] Optimise chunkUnloads
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/starlight/light/SWMRNibbleArray.java b/ca/spottedleaf/moonrise/patches/starlight/light/SWMRNibbleArray.java
-index 5c7b3804cdbcb0a873a0d195325c2658760a8914..057c8f3ec1ff993f650dbdee392c4aefde991185 100644
+index 240416aba0ad4649e1db401aff2565f972f5ca11..ce1cd4e455bd94ac3747a9288f306197f60875c1 100644
 --- a/ca/spottedleaf/moonrise/patches/starlight/light/SWMRNibbleArray.java
 +++ b/ca/spottedleaf/moonrise/patches/starlight/light/SWMRNibbleArray.java
 @@ -25,9 +25,15 @@ public final class SWMRNibbleArray {
@@ -39,8 +39,8 @@ index 5c7b3804cdbcb0a873a0d195325c2658760a8914..057c8f3ec1ff993f650dbdee392c4aef
      }
  
      public static SWMRNibbleArray fromVanilla(final DataLayer nibble) {
-@@ -134,15 +145,44 @@ public final class SWMRNibbleArray {
-     public SaveState getSaveState() {
+@@ -138,15 +149,44 @@ public final class SWMRNibbleArray {
+     public SaveState getSaveState(final boolean copy) {
          synchronized (this) {
              final int state = this.stateVisible;
 -            final byte[] data = this.storageVisible;
@@ -86,8 +86,8 @@ index 5c7b3804cdbcb0a873a0d195325c2658760a8914..057c8f3ec1ff993f650dbdee392c4aef
 +                // Leaf end - Optimize chunkUnload
                  return state == INIT_STATE_INIT ? new SaveState(null, INIT_STATE_UNINIT) : null;
              } else {
-                 return new SaveState(data.clone(), state);
-@@ -350,6 +390,7 @@ public final class SWMRNibbleArray {
+                 return new SaveState(copy ? data.clone() : data, state);
+@@ -354,6 +394,7 @@ public final class SWMRNibbleArray {
              }
              this.updatingDirty = false;
              this.stateVisible = this.stateUpdating;
@@ -95,7 +95,7 @@ index 5c7b3804cdbcb0a873a0d195325c2658760a8914..057c8f3ec1ff993f650dbdee392c4aef
          }
  
          return true;
-@@ -425,7 +466,16 @@ public final class SWMRNibbleArray {
+@@ -429,7 +470,16 @@ public final class SWMRNibbleArray {
          final int shift = (index & 1) << 2;
          final int i = index >>> 1;
  
@@ -114,10 +114,10 @@ index 5c7b3804cdbcb0a873a0d195325c2658760a8914..057c8f3ec1ff993f650dbdee392c4aef
  
      public static final class SaveState {
 diff --git a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
-index c23dac3a7cafe33e67b04cd913f592c5bedb677d..fd8ead168c7bb85a8599bcb5e1e997003aa76e49 100644
+index 9b7c3a57748d77b3773869b31ec3b83aa6bfba53..6d453411faa989785325caf8c259da7e52dbe3eb 100644
 --- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
 +++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
-@@ -471,12 +471,17 @@ public record SerializableChunkData(
+@@ -448,7 +448,6 @@ public record SerializableChunkData(
          }
  
          ChunkPos pos = chunk.getPos();
@@ -125,7 +125,9 @@ index c23dac3a7cafe33e67b04cd913f592c5bedb677d..fd8ead168c7bb85a8599bcb5e1e99700
          // Paper start - starlight
          final int minLightSection = ca.spottedleaf.moonrise.common.util.WorldUtil.getMinLightSection(level);
          final int maxLightSection = ca.spottedleaf.moonrise.common.util.WorldUtil.getMaxLightSection(level);
-         final int minBlockSection = ca.spottedleaf.moonrise.common.util.WorldUtil.getMinSection(level);
+@@ -456,6 +455,12 @@ public record SerializableChunkData(
+ 
+         final boolean copy = !ca.spottedleaf.moonrise.patches.chunk_system.scheduling.NewChunkHolder.DO_NOT_COPY_SAVED_DATA.get().booleanValue();
  
 +        // Leaf start - Optimize chunkUnload
 +        // Pre-allocate with correct capacity to avoid resizing
@@ -136,7 +138,7 @@ index c23dac3a7cafe33e67b04cd913f592c5bedb677d..fd8ead168c7bb85a8599bcb5e1e99700
          final LevelChunkSection[] chunkSections = chunk.getSections();
          final ca.spottedleaf.moonrise.patches.starlight.light.SWMRNibbleArray[] blockNibbles = ((ca.spottedleaf.moonrise.patches.starlight.chunk.StarlightChunk)chunk).starlight$getBlockNibbles();
          final ca.spottedleaf.moonrise.patches.starlight.light.SWMRNibbleArray[] skyNibbles = ((ca.spottedleaf.moonrise.patches.starlight.chunk.StarlightChunk)chunk).starlight$getSkyNibbles();
-@@ -493,10 +498,20 @@ public record SerializableChunkData(
+@@ -472,10 +477,20 @@ public record SerializableChunkData(
                  continue;
              }
  
@@ -160,7 +162,7 @@ index c23dac3a7cafe33e67b04cd913f592c5bedb677d..fd8ead168c7bb85a8599bcb5e1e99700
              );
  
              if (blockNibble != null) {
-@@ -507,12 +522,16 @@ public record SerializableChunkData(
+@@ -486,12 +501,16 @@ public record SerializableChunkData(
                  ((ca.spottedleaf.moonrise.patches.starlight.storage.StarlightSectionData)(Object)section).starlight$setSkyLightState(skyNibble.state);
              }
  
@@ -179,7 +181,7 @@ index c23dac3a7cafe33e67b04cd913f592c5bedb677d..fd8ead168c7bb85a8599bcb5e1e99700
          for (BlockPos blockPos : chunk.getBlockEntitiesPos()) {
              CompoundTag blockEntityTag = chunk.getBlockEntityNbtForSaving(blockPos, level.registryAccess());
              if (blockEntityTag != null) {
-@@ -520,15 +539,27 @@ public record SerializableChunkData(
+@@ -499,23 +518,42 @@ public record SerializableChunkData(
              }
          }
  
@@ -187,7 +189,6 @@ index c23dac3a7cafe33e67b04cd913f592c5bedb677d..fd8ead168c7bb85a8599bcb5e1e99700
 +        // Leaf start - Optimize chunkUnload
 +        // For entities, use an initial estimated capacity if it's a ProtoChunk
 +        List<CompoundTag> entities;
-         long[] carvingMask = null;
          if (chunk.getPersistedStatus().getChunkType() == ChunkType.PROTOCHUNK) {
              ProtoChunk protoChunk = (ProtoChunk)chunk;
 -            entities.addAll(protoChunk.getEntities());
@@ -200,22 +201,16 @@ index c23dac3a7cafe33e67b04cd913f592c5bedb677d..fd8ead168c7bb85a8599bcb5e1e99700
 +                entities = java.util.Collections.emptyList();
 +            }
 +            // Leaf end - Optimize chunkUnload
-             CarvingMask existingMask = protoChunk.getCarvingMask();
-             if (existingMask != null) {
-                 carvingMask = existingMask.toArray();
-             }
 +        } else {
 +            entities = java.util.Collections.emptyList(); // Leaf - Optimize chunkUnload
          }
  
          Map<Heightmap.Types, long[]> heightmaps = new EnumMap<>(Heightmap.Types.class);
-@@ -536,14 +567,21 @@ public record SerializableChunkData(
+ 
          for (Entry<Heightmap.Types, Heightmap> entry : chunk.getHeightmaps()) {
-             if (chunk.getPersistedStatus().heightmapsAfter().contains(entry.getKey())) {
-                 long[] data = entry.getValue().getRawData();
--                heightmaps.put(entry.getKey(), (long[])data.clone());
-+                heightmaps.put(entry.getKey(), Arrays.copyOf(data, data.length)); // Leaf - Optimize chunkUnload
-             }
+             long[] data = entry.getValue().getRawData();
+-            heightmaps.put(entry.getKey(), (long[])data.clone());
++            heightmaps.put(entry.getKey(), Arrays.copyOf(data, data.length)); // Leaf - Optimize chunkUnload
          }
  
          ChunkAccess.PackedTicks ticksForSerialization = chunk.getTicksForSerialization(level.getGameTime());

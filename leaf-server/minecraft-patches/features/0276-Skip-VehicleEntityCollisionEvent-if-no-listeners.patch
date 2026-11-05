@@ -5,10 +5,10 @@ Subject: [PATCH] Skip VehicleEntityCollisionEvent if no listeners
 
 
 diff --git a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
-index 2e4ee279e4a9afacdfdfb6e1ed99a66c08aee4c9..ad7b39f3583e1ac56d2bbdf7f7fd70ad34e01042 100644
+index 2dfea42d8716f877571b0bd35a3e8ea202ba22f1..be0fa44c33c6ea8c39e6dc5af0a4084ac8fd004f 100644
 --- a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
 +++ b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
-@@ -188,7 +188,7 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {
+@@ -190,7 +190,7 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {
          if (entity instanceof AbstractBoat) {
              if (entity.getBoundingBox().minY < this.getBoundingBox().maxY) {
                  // CraftBukkit start
@@ -17,7 +17,7 @@ index 2e4ee279e4a9afacdfdfb6e1ed99a66c08aee4c9..ad7b39f3583e1ac56d2bbdf7f7fd70ad
                      org.bukkit.event.vehicle.VehicleEntityCollisionEvent event = new org.bukkit.event.vehicle.VehicleEntityCollisionEvent(
                          (org.bukkit.entity.Vehicle) this.getBukkitEntity(),
                          entity.getBukkitEntity()
-@@ -200,7 +200,7 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {
+@@ -202,7 +202,7 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {
              }
          } else if (entity.getBoundingBox().minY <= this.getBoundingBox().minY) {
              // CraftBukkit start
@@ -27,10 +27,10 @@ index 2e4ee279e4a9afacdfdfb6e1ed99a66c08aee4c9..ad7b39f3583e1ac56d2bbdf7f7fd70ad
                      (org.bukkit.entity.Vehicle) this.getBukkitEntity(),
                      entity.getBukkitEntity()
 diff --git a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
-index e50dbf149fde9d52c3288e1ac27f38ec7580bfc4..03e029e9b0584b11ef38314e9e3c67bcc3b4cca8 100644
+index 487c13536fd1c57e6a140af2a9c4602c551edd08..0d24e0f238a329120bc179aa866aa87ee548954e 100644
 --- a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
-@@ -187,6 +187,7 @@ public abstract class AbstractMinecart extends VehicleEntity {
+@@ -188,6 +188,7 @@ public abstract class AbstractMinecart extends VehicleEntity {
              return false;
          }
  
@@ -38,7 +38,7 @@ index e50dbf149fde9d52c3288e1ac27f38ec7580bfc4..03e029e9b0584b11ef38314e9e3c67bc
          org.bukkit.event.vehicle.VehicleEntityCollisionEvent collisionEvent = new org.bukkit.event.vehicle.VehicleEntityCollisionEvent((org.bukkit.entity.Vehicle) this.getBukkitEntity(), entity.getBukkitEntity());
          return collisionEvent.callEvent();
          // Paper end - fix VehicleEntityCollisionEvent not called when colliding with player
-@@ -627,11 +628,13 @@ public abstract class AbstractMinecart extends VehicleEntity {
+@@ -633,11 +634,13 @@ public abstract class AbstractMinecart extends VehicleEntity {
                      if (io.papermc.paper.event.entity.EntityCollideWithEntityEvent.getHandlerList().getRegisteredListeners().length != 0 &&
                              !new io.papermc.paper.event.entity.EntityCollideWithEntityEvent(this.getBukkitEntity(), entity.getBukkitEntity()).callEvent()) return;
  
@@ -112,10 +112,10 @@ index f08def3b40ec970ea61fccdcd44041cbe7baf68a..683a71943a04047ab88c948ee80416c3
                      entity.push(this.minecart);
                      pushed = true;
 diff --git a/net/minecraft/world/entity/vehicle/minecart/OldMinecartBehavior.java b/net/minecraft/world/entity/vehicle/minecart/OldMinecartBehavior.java
-index f5e8b16825c617565768afd6b3e51d5cf0f36c50..799afb86019be0cc7ab502ad7b6ec457aa55688d 100644
+index 2e5ea2e0f0b0776d12ac29b5737871e6789ce0d9..4eac510c6ae54f922ef6c1e4c0c44dc2ab257fe0 100644
 --- a/net/minecraft/world/entity/vehicle/minecart/OldMinecartBehavior.java
 +++ b/net/minecraft/world/entity/vehicle/minecart/OldMinecartBehavior.java
-@@ -366,6 +366,7 @@ public class OldMinecartBehavior extends MinecartBehavior {
+@@ -358,6 +358,7 @@ public class OldMinecartBehavior extends MinecartBehavior {
      @Override
      public boolean pushAndPickupEntities() {
          AABB hitbox = this.minecart.getBoundingBox().inflate(0.2F, 0.0, 0.2F);
@@ -123,7 +123,7 @@ index f5e8b16825c617565768afd6b3e51d5cf0f36c50..799afb86019be0cc7ab502ad7b6ec457
          if (this.minecart.isRideable() && this.getDeltaMovement().horizontalDistanceSqr() >= 0.01) {
              List<Entity> entities = this.level().getEntities(this.minecart, hitbox, EntitySelector.pushableBy(this.minecart));
              if (!entities.isEmpty()) {
-@@ -376,15 +377,17 @@ public class OldMinecartBehavior extends MinecartBehavior {
+@@ -368,15 +369,17 @@ public class OldMinecartBehavior extends MinecartBehavior {
                          && !this.minecart.isVehicle()
                          && !entity.isPassenger()) {
                          // CraftBukkit start
@@ -142,7 +142,7 @@ index f5e8b16825c617565768afd6b3e51d5cf0f36c50..799afb86019be0cc7ab502ad7b6ec457
                              org.bukkit.event.vehicle.VehicleEntityCollisionEvent collisionEvent = new org.bukkit.event.vehicle.VehicleEntityCollisionEvent(
                                  (org.bukkit.entity.Vehicle) this.minecart.getBukkitEntity(), entity.getBukkitEntity()
                              );
-@@ -399,10 +402,12 @@ public class OldMinecartBehavior extends MinecartBehavior {
+@@ -391,10 +394,12 @@ public class OldMinecartBehavior extends MinecartBehavior {
              for (Entity entity : this.level().getEntities(this.minecart, hitbox)) {
                  if (!this.minecart.hasPassenger(entity) && entity.isPushable() && entity instanceof AbstractMinecart) {
                      // CraftBukkit start

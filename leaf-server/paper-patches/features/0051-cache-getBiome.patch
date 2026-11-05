@@ -5,7 +5,7 @@ Subject: [PATCH] cache getBiome
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/DelegatedLevelAccessor.java b/src/main/java/org/bukkit/craftbukkit/util/DelegatedLevelAccessor.java
-index 280b95047b645385f3fe792aea9d4156dbd8fd5e..b69bcb11ec71c4bd8f8fc2ecb26aab757d0a1f11 100644
+index f4c9f8fcc1dd0899186f7d940f4b68329c289b57..1dbbfa51226c69e61564d40a804a82c184d6f3ef 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/DelegatedLevelAccessor.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/DelegatedLevelAccessor.java
 @@ -265,6 +265,13 @@ public abstract class DelegatedLevelAccessor implements WorldGenLevel {

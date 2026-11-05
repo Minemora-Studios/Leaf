@@ -71,10 +71,10 @@ index 987bbafa8033f0b7bd80856d9187d1ea8a0d3103..922c95a3bbdc27ff86ce74ecedb0bc63
              }
          }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 64569f68e363535ab751dee2b6bc8d72c28b31b9..00fbf02191936eed8ba55a8b4f50343aadc1bf88 100644
+index 58337f140ad3da9c2cfde216470e5323ed870a15..1e47c842fcdf844aeeccff126b2d3c58b35c6f60 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -903,6 +903,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -910,6 +910,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
              this.entityTickList
                  .forEach(
                      entity -> {
@@ -83,10 +83,10 @@ index 64569f68e363535ab751dee2b6bc8d72c28b31b9..00fbf02191936eed8ba55a8b4f50343a
                              if (!tickRateManager.isEntityFrozen(entity)) {
                                  profiler.push("checkDespawn");
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 18f332ba6380643362650cdb9327130a813cb3f6..c371c7cfb1125721d5c1302b12b2f91f789b2ceb 100644
+index 94a747389ab849252ce8a52df45284619d868f16..7a2d4b0cefcd7fa8e598c58bef410079d59dc7ac 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -385,6 +385,8 @@ public abstract class Entity
+@@ -390,6 +390,8 @@ public abstract class Entity
      public boolean fixedPose = false; // Paper - Expand Pose API
      private final int despawnTime; // Paper - entity despawn time limit
      public int totalEntityAge; // Paper - age-like counter for all entities
@@ -96,10 +96,10 @@ index 18f332ba6380643362650cdb9327130a813cb3f6..c371c7cfb1125721d5c1302b12b2f91f
      public @Nullable Boolean immuneToFire = null; // Purpur - Fire immune API
      // Paper start - EAR 2
 diff --git a/net/minecraft/world/entity/EntityType.java b/net/minecraft/world/entity/EntityType.java
-index 5d1f51c594300f05560cbfbd851a6b291a8d2f92..8355bce24a1334e234228698ca81c16ffd7c1f1f 100644
+index e4fd3727cdf99bebed91ac195034e988cdc9951b..af7ae155a43f20d48538aa82053f6b9f3781c620 100644
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
-@@ -66,6 +66,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
+@@ -67,6 +67,7 @@ public class EntityType<T extends Entity> implements EntityTypeTest<Entity, T>,
      private final boolean canSpawnFarFromPlayer;
      private final int clientTrackingRange;
      private final int updateInterval;
@@ -125,7 +125,7 @@ index bb037ea27688a06bb0d8141ef25d2543d34aba80..a841999aceb9bcdff8de7b052aaddc0a
          }
      }
 diff --git a/net/minecraft/world/entity/animal/allay/Allay.java b/net/minecraft/world/entity/animal/allay/Allay.java
-index 489e09f26aa3595317e70a26e14ff3018636911e..f94cf5bf55e6e4a4755bd27bec7512d11b846045 100644
+index aa53a618ca6b575bfbb10089010d689846cf9baf..e4ed7ba795eec06f270849a84bc0733123f7ab23 100644
 --- a/net/minecraft/world/entity/animal/allay/Allay.java
 +++ b/net/minecraft/world/entity/animal/allay/Allay.java
 @@ -256,11 +256,12 @@ public class Allay extends PathfinderMob implements InventoryCarrier, VibrationS
@@ -197,7 +197,7 @@ index 30b538a10497d7808217cdcc161161a0feea505e..f60d313dbfa8d0ae4718cb3a5c263cc8
          profiler.pop();
          profiler.push("tadpoleActivityUpdate");
 diff --git a/net/minecraft/world/entity/animal/goat/Goat.java b/net/minecraft/world/entity/animal/goat/Goat.java
-index 36b5b826e617072161dc07478d407b12463d12f2..46742e58e9e0dc49821608a13ab7b91cdf1a9502 100644
+index b80f77a3b46737a46a053de197832aae35b31d58..30d9800bd4a0e4a0a6a2bd0e95151cbf3d6eaea5 100644
 --- a/net/minecraft/world/entity/animal/goat/Goat.java
 +++ b/net/minecraft/world/entity/animal/goat/Goat.java
 @@ -227,11 +227,12 @@ public class Goat extends Animal {
@@ -215,7 +215,7 @@ index 36b5b826e617072161dc07478d407b12463d12f2..46742e58e9e0dc49821608a13ab7b91c
          profiler.pop();
          profiler.push("goatActivityUpdate");
 diff --git a/net/minecraft/world/entity/monster/hoglin/Hoglin.java b/net/minecraft/world/entity/monster/hoglin/Hoglin.java
-index b2f048f6ac4c88b123ecdb0303b89760206525a9..d0a9f98b797388bd4afd3ac7fcc226d6a10f38fd 100644
+index 1f242320d34a4679b96022be1c72a7c015f63451..30b801532d45afaa39a6462e34a8e29617d25dd4 100644
 --- a/net/minecraft/world/entity/monster/hoglin/Hoglin.java
 +++ b/net/minecraft/world/entity/monster/hoglin/Hoglin.java
 @@ -203,11 +203,12 @@ public class Hoglin extends Animal implements Enemy, HoglinBase {
@@ -233,10 +233,10 @@ index b2f048f6ac4c88b123ecdb0303b89760206525a9..d0a9f98b797388bd4afd3ac7fcc226d6
          profiler.pop();
          HoglinAi.updateActivity(this);
 diff --git a/net/minecraft/world/entity/monster/piglin/Piglin.java b/net/minecraft/world/entity/monster/piglin/Piglin.java
-index 61a1c9ab2daf48722678633deec94dc702776b8d..2eadc3b6680066581a496a0fed38575428d741eb 100644
+index 860c079013507852aa9d6b0aaeb5970e9d693fcb..ce0f6871057e386ada6f5e12b4001f54d3105847 100644
 --- a/net/minecraft/world/entity/monster/piglin/Piglin.java
 +++ b/net/minecraft/world/entity/monster/piglin/Piglin.java
-@@ -331,11 +331,12 @@ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, Invento
+@@ -326,11 +326,12 @@ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, Invento
          return !this.cannotHunt;
      }
  
@@ -251,7 +251,7 @@ index 61a1c9ab2daf48722678633deec94dc702776b8d..2eadc3b6680066581a496a0fed385754
          profiler.pop();
          PiglinAi.updateActivity(this);
 diff --git a/net/minecraft/world/entity/monster/warden/Warden.java b/net/minecraft/world/entity/monster/warden/Warden.java
-index 4354b55e4aaca68a3f5be71cbf811255c1d5fc65..35f9aa1d8276f07dea4e21c01eba8b5ec1c0e7c4 100644
+index 9302e5ba66e9cedec25b868ff51954c888b76a22..4ffc5962a5e1b3a7f8f1fbda3479af82001771ae 100644
 --- a/net/minecraft/world/entity/monster/warden/Warden.java
 +++ b/net/minecraft/world/entity/monster/warden/Warden.java
 @@ -310,11 +310,12 @@ public class Warden extends Monster implements VibrationSystem {
@@ -269,10 +269,10 @@ index 4354b55e4aaca68a3f5be71cbf811255c1d5fc65..35f9aa1d8276f07dea4e21c01eba8b5e
          profiler.pop();
          super.customServerAiStep(level);
 diff --git a/net/minecraft/world/entity/npc/villager/Villager.java b/net/minecraft/world/entity/npc/villager/Villager.java
-index 4f48dfcc8c83aca621f926b0fea4c058a2d2241b..25764f64a4b11c2231b8fb47046dadb4686ad0d7 100644
+index b7d5037ebfd306f37f689df161406a72645d1e9a..5cf9b3caa7b06b947f5314b0eab2d8ed1b180d32 100644
 --- a/net/minecraft/world/entity/npc/villager/Villager.java
 +++ b/net/minecraft/world/entity/npc/villager/Villager.java
-@@ -183,6 +183,7 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
+@@ -180,6 +180,7 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
      );
      private boolean isLobotomized = false; public boolean isLobotomized() { return this.isLobotomized; } // Purpur - Lobotomize stuck villagers
      private int notLobotomizedCount = 0; // Purpur - Lobotomize stuck villagers
@@ -280,7 +280,7 @@ index 4f48dfcc8c83aca621f926b0fea4c058a2d2241b..25764f64a4b11c2231b8fb47046dadb4
  
      public Villager(final EntityType<? extends Villager> entityType, final Level level) {
          super(entityType, level);
-@@ -377,6 +378,7 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
+@@ -370,6 +371,7 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
      }
      // Paper end - EAR 2
  
@@ -288,7 +288,7 @@ index 4f48dfcc8c83aca621f926b0fea4c058a2d2241b..25764f64a4b11c2231b8fb47046dadb4
      @Override
      protected void customServerAiStep(final ServerLevel level) {
          // Paper start - EAR 2
-@@ -393,7 +395,7 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
+@@ -386,7 +388,7 @@ public class Villager extends AbstractVillager implements VillagerDataHolder, Re
          } else {
              this.isLobotomized = false;
          }

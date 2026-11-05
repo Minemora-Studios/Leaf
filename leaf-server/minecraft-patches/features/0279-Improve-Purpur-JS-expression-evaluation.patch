@@ -10,7 +10,7 @@ Actually, we can also replace the Rhino with GraalJS to achieve better performan
 there are many people who will use this Purpur feature, we can do it if really needed.
 
 diff --git a/net/minecraft/world/entity/monster/Phantom.java b/net/minecraft/world/entity/monster/Phantom.java
-index c6eecc3928664672d3e191b621d3daec735e70c9..30bc9061478cf826275f54dc574184837f139efd 100644
+index 5da6b882a2f42330d7d912dd6edf76ab5f970acb..df9f7ea921601693130ea9d4bd7f6a9438945fa5 100644
 --- a/net/minecraft/world/entity/monster/Phantom.java
 +++ b/net/minecraft/world/entity/monster/Phantom.java
 @@ -182,10 +182,10 @@ public class Phantom extends Mob implements Enemy {
@@ -54,10 +54,10 @@ index c6eecc3928664672d3e191b621d3daec735e70c9..30bc9061478cf826275f54dc57418483
      public void tick() {
          super.tick();
 diff --git a/net/minecraft/world/entity/monster/Shulker.java b/net/minecraft/world/entity/monster/Shulker.java
-index 5b218748d6f0375267a0570cc7a66f8131598d26..3cc11bfc988b4699e44da9206d3349960f237a6b 100644
+index 4c578c6890b636eab674bb1f18100b14beb10d10..e135fc4985b8de14523b7cfa4d331c7ee55708ea 100644
 --- a/net/minecraft/world/entity/monster/Shulker.java
 +++ b/net/minecraft/world/entity/monster/Shulker.java
-@@ -529,7 +529,7 @@ public class Shulker extends AbstractGolem implements Enemy {
+@@ -536,7 +536,7 @@ public class Shulker extends AbstractGolem implements Enemy {
              if (!this.level().purpurConfig.shulkerSpawnFromBulletNearbyEquation.isBlank()) {
                  int shulkerCount = this.level().getEntities(EntityTypes.SHULKER, oldAabb.inflate(this.level().purpurConfig.shulkerSpawnFromBulletNearbyRange), Entity::isAlive).size();
                  try {
@@ -67,12 +67,12 @@ index 5b218748d6f0375267a0570cc7a66f8131598d26..3cc11bfc988b4699e44da9206d334996
                      e.printStackTrace();
                      failureChance -= (shulkerCount - 1) / 5.0F;
 diff --git a/net/minecraft/world/entity/monster/cubemob/Slime.java b/net/minecraft/world/entity/monster/cubemob/Slime.java
-index e9ccb195426b7d5631920c13f45a5611c8490f48..c3ae5900e18167e5865a130ae27a75dd21417339 100644
+index 2472fce146b9122098e9954757b0687b68122404..0e582eab13bfbfa3e973b8308eb01ba1ba1b00ab 100644
 --- a/net/minecraft/world/entity/monster/cubemob/Slime.java
 +++ b/net/minecraft/world/entity/monster/cubemob/Slime.java
 @@ -212,8 +212,26 @@ public class Slime extends AbstractCubeMob implements Enemy {
      @Override
-     protected void setcubeMobHealth(final int actualSize) {
+     protected void setCubeMobHealth(final int actualSize) {
          // Purpur start - Configurable entity base attributes
 -        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(getFromCache(this::getMaxHealthEquation, this::getMaxHealthCache, () -> (double) (actualSize * actualSize)));
 -        this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(getFromCache(this::getAttackDamageEquation, this::getAttackDamageCache, () -> (double) actualSize));
@@ -100,15 +100,15 @@ index e9ccb195426b7d5631920c13f45a5611c8490f48..c3ae5900e18167e5865a130ae27a75dd
 +    // Leaf end - Improve Purpur JS expression evaluation
  }
 diff --git a/net/minecraft/world/entity/monster/skeleton/AbstractSkeleton.java b/net/minecraft/world/entity/monster/skeleton/AbstractSkeleton.java
-index 8f30f9f0f12e5fd6ddcb1809195f0823ea3ebd51..1cf50c7f3d32270f3cbfa36eb2ac79f46e9012b9 100644
+index d236658c67feaf0563e47411ceab366a61346523..ea54b1d881abb45a166efb6a632027b1ff6c50b9 100644
 --- a/net/minecraft/world/entity/monster/skeleton/AbstractSkeleton.java
 +++ b/net/minecraft/world/entity/monster/skeleton/AbstractSkeleton.java
 @@ -187,7 +187,7 @@ public abstract class AbstractSkeleton extends Monster implements RangedAttackMo
          double distanceToTarget = Math.sqrt(xd * xd + zd * zd);
          if (this.level() instanceof ServerLevel serverLevel) {
              Projectile.Delayed<AbstractArrow> delayedEntity = Projectile.spawnProjectileUsingShootDelayed( // Paper - delayed
--                arrow, serverLevel, projectile, xd, yd + distanceToTarget * 0.2F, zd, 1.6F, serverLevel.purpurConfig.skeletonBowAccuracyMap.getOrDefault(serverLevel.getDifficulty().getId(), (float) (14 - serverLevel.getDifficulty().getId() * 4))  // Purpur - skeleton bow accuracy option
-+                arrow, serverLevel, projectile, xd, yd + distanceToTarget * 0.2F, zd, 1.6F, leaf$getBowAccuracy(serverLevel) // Leaf - Improve Purpur JS expression evaluation
+-                arrow, serverLevel, projectile, xd, yd + distanceToTarget * 0.2F, zd, 1.6F, serverLevel.purpurConfig.skeletonBowAccuracyMap.getOrDefault(serverLevel.getDifficulty().getId(), this.rangedAttackUncertainty(serverLevel))  // Purpur - skeleton bow accuracy option
++                arrow, serverLevel, projectile, xd, yd + distanceToTarget * 0.2F, zd, 1.6F, this.leaf$getBowAccuracy(serverLevel) // Leaf - Improve Purpur JS expression evaluation
              );
  
              // Paper start - call EntityShootBowEvent
@@ -117,11 +117,11 @@ index 8f30f9f0f12e5fd6ddcb1809195f0823ea3ebd51..1cf50c7f3d32270f3cbfa36eb2ac79f4
      }
  
 +    // Leaf start - Improve Purpur JS expression evaluation
-+    private static float leaf$getBowAccuracy(final ServerLevel serverLevel) {
++    private float leaf$getBowAccuracy(final ServerLevel serverLevel) {
 +        if (serverLevel.purpurConfig.skeletonBowAccuracyEnabled) {
-+            return serverLevel.purpurConfig.skeletonBowAccuracyMap.getOrDefault(serverLevel.getDifficulty().getId(), (float) (14 - serverLevel.getDifficulty().getId() * 4)); // Purpur - skeleton bow accuracy option
++            return serverLevel.purpurConfig.skeletonBowAccuracyMap.getOrDefault(serverLevel.getDifficulty().getId(), this.rangedAttackUncertainty(serverLevel)); // Purpur - skeleton bow accuracy option
 +        }
-+        return 14 - serverLevel.getDifficulty().getId() * 4;
++        return this.rangedAttackUncertainty(serverLevel);
 +    }
 +    // Leaf end - Improve Purpur JS expression evaluation
 +
@@ -129,10 +129,10 @@ index 8f30f9f0f12e5fd6ddcb1809195f0823ea3ebd51..1cf50c7f3d32270f3cbfa36eb2ac79f4
          return ProjectileUtil.getMobArrow(this, projectile, power, firingWeapon);
      }
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index bc88cd364cf8b214ba7fbfa03503f2d391698486..6cbbfadaa6dd3ddecb215ecea85c08d81eb02185 100644
+index d43bae98bff9bc6dcf4108ff4b5f59d1a4435894..0599d3172fba2dad74ac834db36a34a57b496fef 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -1814,7 +1814,10 @@ public abstract class Player extends Avatar implements ContainerUser {
+@@ -1809,7 +1809,10 @@ public abstract class Player extends Avatar implements ContainerUser {
      protected int getBaseExperienceReward(final ServerLevel level) {
          // Purpur start - Add player death exp control options
          if (!level.getGameRules().get(GameRules.KEEP_INVENTORY) && !this.isSpectator()) {
@@ -144,7 +144,7 @@ index bc88cd364cf8b214ba7fbfa03503f2d391698486..6cbbfadaa6dd3ddecb215ecea85c08d8
              try {
                  toDrop = Math.round(((Number) scriptEngine.eval("let expLevel = " + experienceLevel + "; " +
                      "let expTotal = " + totalExperience + "; " +
-@@ -1824,6 +1827,7 @@ public abstract class Player extends Avatar implements ContainerUser {
+@@ -1819,6 +1822,7 @@ public abstract class Player extends Avatar implements ContainerUser {
                  e.printStackTrace();
                  toDrop = experienceLevel * 7;
              }
@@ -153,10 +153,10 @@ index bc88cd364cf8b214ba7fbfa03503f2d391698486..6cbbfadaa6dd3ddecb215ecea85c08d8
          } else {
              return 0;
 diff --git a/org/purpurmc/purpur/PurpurWorldConfig.java b/org/purpurmc/purpur/PurpurWorldConfig.java
-index dea1fda45126866cddfd4114fde04bbfcc6e0eb5..8f2c8398e6a5e1600e13c0df64b00cc13c0db66d 100644
+index 43fb8c658a0532cd48047599daff87a8b57898f2..a04374f534e4a419776b4cabf32c17077e7847e7 100644
 --- a/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/org/purpurmc/purpur/PurpurWorldConfig.java
-@@ -479,6 +479,7 @@ public class PurpurWorldConfig {
+@@ -473,6 +473,7 @@ public class PurpurWorldConfig {
      public boolean idleTimeoutUpdateTabList = false;
      public boolean idleTimeoutTargetPlayer = true;
      public String playerDeathExpDropEquation = "expLevel * 7";
@@ -164,7 +164,7 @@ index dea1fda45126866cddfd4114fde04bbfcc6e0eb5..8f2c8398e6a5e1600e13c0df64b00cc1
      public int playerDeathExpDropMax = 100;
      public boolean teleportIfOutsideBorder = false;
      public boolean teleportOnNetherCeilingDamage = false;
-@@ -527,6 +528,7 @@ public class PurpurWorldConfig {
+@@ -521,6 +522,7 @@ public class PurpurWorldConfig {
          shiftRightClickRepairsMendingPoints = getInt("gameplay-mechanics.player.shift-right-click-repairs-mending-points", shiftRightClickRepairsMendingPoints);
          playerExpPickupDelay = getInt("gameplay-mechanics.player.exp-pickup-delay-ticks", playerExpPickupDelay);
          playerVoidTrading = getBoolean("gameplay-mechanics.player.allow-void-trading", playerVoidTrading);
@@ -172,7 +172,7 @@ index dea1fda45126866cddfd4114fde04bbfcc6e0eb5..8f2c8398e6a5e1600e13c0df64b00cc1
      }
  
      public boolean silkTouchEnabled = false;
-@@ -2810,6 +2812,10 @@ public class PurpurWorldConfig {
+@@ -2434,6 +2436,10 @@ public class PurpurWorldConfig {
      public boolean phantomAllowGriefing = false;
      public String phantomMaxHealth = "20.0";
      public String phantomAttackDamage = "6 + size";
@@ -183,7 +183,7 @@ index dea1fda45126866cddfd4114fde04bbfcc6e0eb5..8f2c8398e6a5e1600e13c0df64b00cc1
      public Map<Integer, Double> phantomMaxHealthCache = new HashMap<>();
      public Map<Integer, Double> phantomAttackDamageCache = new HashMap<>();
      public double phantomAttackedByCrystalRadius = 0.0D;
-@@ -2848,6 +2854,10 @@ public class PurpurWorldConfig {
+@@ -2472,6 +2478,10 @@ public class PurpurWorldConfig {
          }
          phantomMaxHealth = getString("mobs.phantom.attributes.max_health", phantomMaxHealth);
          phantomAttackDamage = getString("mobs.phantom.attributes.attack_damage", phantomAttackDamage);
@@ -194,7 +194,7 @@ index dea1fda45126866cddfd4114fde04bbfcc6e0eb5..8f2c8398e6a5e1600e13c0df64b00cc1
          phantomMaxHealthCache.clear();
          phantomAttackDamageCache.clear();
          phantomAttackedByCrystalRadius = getDouble("mobs.phantom.attacked-by-crystal-range", phantomAttackedByCrystalRadius);
-@@ -3258,6 +3268,7 @@ public class PurpurWorldConfig {
+@@ -2880,6 +2890,7 @@ public class PurpurWorldConfig {
      public boolean shulkerSpawnFromBulletRequireOpenLid = true;
      public double shulkerSpawnFromBulletNearbyRange = 8.0D;
      public String shulkerSpawnFromBulletNearbyEquation = "(nearby - 1) / 5.0";
@@ -202,7 +202,7 @@ index dea1fda45126866cddfd4114fde04bbfcc6e0eb5..8f2c8398e6a5e1600e13c0df64b00cc1
      public boolean shulkerSpawnFromBulletRandomColor = false;
      public boolean shulkerChangeColorWithDye = false;
      public boolean shulkerAlwaysDropExp = false;
-@@ -3277,6 +3288,7 @@ public class PurpurWorldConfig {
+@@ -2899,6 +2910,7 @@ public class PurpurWorldConfig {
          shulkerSpawnFromBulletRequireOpenLid = getBoolean("mobs.shulker.spawn-from-bullet.require-open-lid", shulkerSpawnFromBulletRequireOpenLid);
          shulkerSpawnFromBulletNearbyRange = getDouble("mobs.shulker.spawn-from-bullet.nearby-range", shulkerSpawnFromBulletNearbyRange);
          shulkerSpawnFromBulletNearbyEquation = getString("mobs.shulker.spawn-from-bullet.nearby-equation", shulkerSpawnFromBulletNearbyEquation);
@@ -210,8 +210,8 @@ index dea1fda45126866cddfd4114fde04bbfcc6e0eb5..8f2c8398e6a5e1600e13c0df64b00cc1
          shulkerSpawnFromBulletRandomColor = getBoolean("mobs.shulker.spawn-from-bullet.random-color", shulkerSpawnFromBulletRandomColor);
          shulkerChangeColorWithDye = getBoolean("mobs.shulker.change-color-with-dye", shulkerChangeColorWithDye);
          shulkerAlwaysDropExp = getBoolean("mobs.shulker.always-drop-exp", shulkerAlwaysDropExp);
-@@ -3325,7 +3337,8 @@ public class PurpurWorldConfig {
-     public double skeletonHeadVisibilityPercent = 0.5D;
+@@ -2946,7 +2958,8 @@ public class PurpurWorldConfig {
+     public boolean skeletonAlwaysDropExp = false;
      public int skeletonFeedWitherRoses = 0;
      public String skeletonBowAccuracy = "14 - difficulty * 4";
 -    public Map<Integer, Float> skeletonBowAccuracyMap = new HashMap<>();
@@ -220,7 +220,7 @@ index dea1fda45126866cddfd4114fde04bbfcc6e0eb5..8f2c8398e6a5e1600e13c0df64b00cc1
      public Boolean skeletonCanPickUpLoot = null;
      private void skeletonSettings() {
          skeletonRidable = getBoolean("mobs.skeleton.ridable", skeletonRidable);
-@@ -3344,6 +3357,7 @@ public class PurpurWorldConfig {
+@@ -2964,6 +2977,7 @@ public class PurpurWorldConfig {
          skeletonFeedWitherRoses = getInt("mobs.skeleton.feed-wither-roses", skeletonFeedWitherRoses);
          final String defaultSkeletonBowAccuracy = skeletonBowAccuracy;
          skeletonBowAccuracy = getString("mobs.skeleton.bow-accuracy", skeletonBowAccuracy);
@@ -228,7 +228,7 @@ index dea1fda45126866cddfd4114fde04bbfcc6e0eb5..8f2c8398e6a5e1600e13c0df64b00cc1
          for (int i = 1; i < 4; i++) {
              final float divergence;
              try {
-@@ -3393,8 +3407,12 @@ public class PurpurWorldConfig {
+@@ -3013,8 +3027,12 @@ public class PurpurWorldConfig {
      public boolean slimeControllable = true;
      public String slimeMaxHealth = "size * size";
      public String slimeAttackDamage = "size";
@@ -243,7 +243,7 @@ index dea1fda45126866cddfd4114fde04bbfcc6e0eb5..8f2c8398e6a5e1600e13c0df64b00cc1
      public boolean slimeTakeDamageFromWater = false;
      public boolean slimeAlwaysDropExp = false;
      private void slimeSettings() {
-@@ -3408,6 +3426,10 @@ public class PurpurWorldConfig {
+@@ -3028,6 +3046,10 @@ public class PurpurWorldConfig {
          }
          slimeMaxHealth = getString("mobs.slime.attributes.max_health", slimeMaxHealth);
          slimeAttackDamage = getString("mobs.slime.attributes.attack_damage", slimeAttackDamage);

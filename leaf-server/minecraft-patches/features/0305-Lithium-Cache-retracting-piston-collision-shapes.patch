@@ -16,7 +16,7 @@ As part of: Lithium (https://github.com/CaffeineMC/lithium)
 Licensed under: LGPL-3.0-only (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 // SYNC SOURCE START
-rev: 01597fb879b7a6d17c2420ec4e25a98df3bc8e7b
+rev: 11ea08adce6f94627d3eaaa65506a60e0451c8b6
 branch: develop
 repo: https://github.com/CaffeineMC/lithium.git
 track:
@@ -24,10 +24,10 @@ track:
 // SYNC SOURCE END
 
 diff --git a/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java b/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
-index 3fcb1a45a547681740d6ec8946b274539448cf95..900d4c57cd98272455f379119165765ba5ac4480 100644
+index 2126385a1fb5c89e01920f3a8cc77eb4ac78c87e..e78daa03b22621ed1ef94f1516af52cb33847537 100644
 --- a/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
 +++ b/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
-@@ -42,6 +42,7 @@ public class PistonMovingBlockEntity extends BlockEntity {
+@@ -40,6 +40,7 @@ public class PistonMovingBlockEntity extends BlockEntity {
      private boolean extending = false;
      private boolean isSourcePiston = false;
      private static final ThreadLocal<Direction> NOCLIP = ThreadLocal.withInitial(() -> null);
@@ -35,7 +35,7 @@ index 3fcb1a45a547681740d6ec8946b274539448cf95..900d4c57cd98272455f379119165765b
      private float progress = 0.0F;
      private float progressO = 0.0F;
      private long lastTicked;
-@@ -368,18 +369,30 @@ public class PistonMovingBlockEntity extends BlockEntity {
+@@ -352,18 +353,30 @@ public class PistonMovingBlockEntity extends BlockEntity {
      }
  
      public VoxelShape getCollisionShape(final BlockGetter level, final BlockPos pos) {
@@ -72,7 +72,7 @@ index 3fcb1a45a547681740d6ec8946b274539448cf95..900d4c57cd98272455f379119165765b
          BlockState blockState;
          if (this.isSourcePiston()) {
              blockState = Blocks.PISTON_HEAD
-@@ -390,13 +403,49 @@ public class PistonMovingBlockEntity extends BlockEntity {
+@@ -374,13 +387,49 @@ public class PistonMovingBlockEntity extends BlockEntity {
              blockState = this.movedState;
          }
  

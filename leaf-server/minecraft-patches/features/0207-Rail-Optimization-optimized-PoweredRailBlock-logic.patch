@@ -12,10 +12,10 @@ powered rail logic from a single rail instead of each block iterating separately
 expensive but also completely unnecessary and with a lot of massive overhead
 
 diff --git a/net/minecraft/world/level/block/PoweredRailBlock.java b/net/minecraft/world/level/block/PoweredRailBlock.java
-index c579d79ca32a6e35e64b4884c8b55ff254c08d24..f4a1fd04cec7cd982a3332f28d0062618d627005 100644
+index 7ae0fbe20cccfd8fff5f9d00b2232cd09cd44e27..a47571545a36972cb2a7fa06b36e55471ff744a8 100644
 --- a/net/minecraft/world/level/block/PoweredRailBlock.java
 +++ b/net/minecraft/world/level/block/PoweredRailBlock.java
-@@ -116,6 +116,12 @@ public class PoweredRailBlock extends BaseRailBlock {
+@@ -109,6 +109,12 @@ public class PoweredRailBlock extends BaseRailBlock {
  
      @Override
      protected void updateState(final BlockState state, final Level level, final BlockPos pos, final Block block) {
