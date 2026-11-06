@@ -17,10 +17,10 @@ constructor set() is therefore a no-op. ServerPlayer keeps going through the
 Bukkit scaled-health path untouched.
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index f61dac983c5e7cfa86173112d9731c26d6769bd5..efc35d473dd72a97df0638fa94163a4469d78f53 100644
+index a630d7c4c1b0014c0dc1f9a518a728308ad9d8a5..841165e5fece664b115a790c99dfbdd042df1e7b 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -1437,13 +1437,21 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -1428,13 +1428,21 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
          }
      }
  
@@ -43,7 +43,7 @@ index f61dac983c5e7cfa86173112d9731c26d6769bd5..efc35d473dd72a97df0638fa94163a44
      }
  
      // Paper start - Check for NaN
-@@ -4505,6 +4513,11 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -4484,6 +4492,11 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
      @Override
      public void onSyncedDataUpdated(final EntityDataAccessor<?> accessor) {
          super.onSyncedDataUpdated(accessor);

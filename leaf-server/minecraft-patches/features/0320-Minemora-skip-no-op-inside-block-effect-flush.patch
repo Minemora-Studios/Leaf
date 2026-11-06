@@ -15,7 +15,7 @@ was called since the last flush therefore makes the skip exactly equivalent
 rather than a heuristic.
 
 diff --git a/net/minecraft/world/entity/InsideBlockEffectApplier.java b/net/minecraft/world/entity/InsideBlockEffectApplier.java
-index 149e2a11534aaffe00b7304898c4f1eb932651c2..b9a99d1da43093b524283f2c93f3f8ef1514dc44 100644
+index 10f76d324fc4b528bcafb70f76a258b10b90f770..b6b70f9e88893fd5fba9cfe7164847b768375311 100644
 --- a/net/minecraft/world/entity/InsideBlockEffectApplier.java
 +++ b/net/minecraft/world/entity/InsideBlockEffectApplier.java
 @@ -38,6 +38,13 @@ public interface InsideBlockEffectApplier {

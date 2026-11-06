@@ -5,12 +5,12 @@ Subject: [PATCH] Minemora Patch
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java b/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
-index a2bccd6a339a5faf64f2b5d47b7aacc3f848e541..8017cdec1bd5493546ac90d84622f9ee08b0ac0f 100644
+index 4c028e589a7c2034d18936e6fe24ef4ac65c2434..cd53f4d4825961892a733732fb98380ed173d684 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
-@@ -111,6 +111,9 @@ public final class ChunkHolderManager {
+@@ -112,6 +112,9 @@ public final class ChunkHolderManager {
      // mapping of counter id -> (mapping of pos->count)
-     private final ConcurrentChainedLong2ReferenceHashTable<ConcurrentChainedLong2LongHashTable> ticketCounters = new ConcurrentChainedLong2ReferenceHashTable<>();
+     private final ConcurrentChainedLong2ReferenceHashTable<ConcurrentChainedLong2LongHashTable> ticketCounters = ConcurrentChainedLong2ReferenceHashTable.createWithCapacity(ConcurrentChainedLong2ReferenceHashTable.defaultCapacity(), 0.5f);
  
 +    // MoraPaper - Limit chunk unloads per tick
 +    private static final int MAX_CHUNK_UNLOADS_PER_TICK = 180;
@@ -18,7 +18,7 @@ index a2bccd6a339a5faf64f2b5d47b7aacc3f848e541..8017cdec1bd5493546ac90d84622f9ee
      public ChunkHolderManager(final ServerLevel world, final ChunkTaskScheduler taskScheduler) {
          this.world = world;
          this.taskScheduler = taskScheduler;
-@@ -1208,10 +1211,10 @@ public final class ChunkHolderManager {
+@@ -1248,10 +1251,10 @@ public final class ChunkHolderManager {
          // We do need to process updates here so that any addTicket that is synchronised before this call does not go missed.
          this.processTicketUpdates();
  
@@ -58,10 +58,10 @@ index 259cbcbdd3cd47907629772dc7565212bb434729..61b03a0a05179591a91d7768a068e174
              this.sendToPlayer(player, filtered, chatType, null);
          }
 diff --git a/net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket.java b/net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket.java
-index aaa497096f07f2ef9da62b9760f5c9aa0b0263d3..58cfca970db9b2f045e00cc012741208fbdab5b1 100644
+index 30ad3b38b329fb8118ca3ce39f5959bc09c4540f..413fb87a4e1b99f72595647d347a39050d0a3b1b 100644
 --- a/net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket.java
 +++ b/net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket.java
-@@ -226,7 +226,7 @@ public class ClientboundPlayerInfoUpdatePacket implements Packet<ClientGamePacke
+@@ -245,7 +245,7 @@ public class ClientboundPlayerInfoUpdatePacket implements Packet<ClientGamePacke
                  player.getUUID(),
                  player.getGameProfile(),
                  listed, // Paper - Add Listing API for Player
@@ -71,10 +71,10 @@ index aaa497096f07f2ef9da62b9760f5c9aa0b0263d3..58cfca970db9b2f045e00cc012741208
                  player.getTabListDisplayName(),
                  player.isModelPartShown(PlayerModelPart.HAT),
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 8ab5d05bd88acfa21bc0237e3556b441c5425dea..f832b368f916d80a4092c9ab2482ddf8858ffc93 100644
+index 7c73f5373d741c5703fff7f5e6eb66d6916b6d8f..0bc1854ec5945dfad94d2b31d7abb78917db5158 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -3368,4 +3368,11 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -3617,4 +3617,11 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          return globalTemptationLookup;
      }
      // Paper end - optimise temptation lookups
@@ -87,10 +87,10 @@ index 8ab5d05bd88acfa21bc0237e3556b441c5425dea..f832b368f916d80a4092c9ab2482ddf8
 +
  }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 4030776c3d12f8e797720180e141322b5d2cc548..703bb24fea1df09f04326c2b4976313c4641a760 100644
+index a9e39e90216a057fc2ea3f2650bb78f81f790a80..9a977eb736f46756fada7d7f4d4564f5fdca37dd 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -452,6 +452,12 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -457,6 +457,12 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
      private final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder viewDistanceHolder = new ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder();
  
@@ -103,7 +103,7 @@ index 4030776c3d12f8e797720180e141322b5d2cc548..703bb24fea1df09f04326c2b4976313c
      @Override
      public final boolean moonrise$isRealPlayer() {
          return this.isRealPlayer;
-@@ -499,6 +505,23 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -504,6 +510,23 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          // CraftBukkit end
      }
  
@@ -127,7 +127,7 @@ index 4030776c3d12f8e797720180e141322b5d2cc548..703bb24fea1df09f04326c2b4976313c
      @Override
      public BlockPos adjustSpawnLocation(final ServerLevel level, final BlockPos spawnSuggestion) {
          CompletableFuture<Vec3> future = PlayerSpawnFinder.findSpawn(level, spawnSuggestion);
-@@ -2513,6 +2536,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2571,6 +2594,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
  
      public void sendSystemMessage(final Component message, final boolean overlay) {
@@ -137,7 +137,7 @@ index 4030776c3d12f8e797720180e141322b5d2cc548..703bb24fea1df09f04326c2b4976313c
          if (this.acceptsSystemMessages(overlay)) {
              this.connection
                  .send(
-@@ -2540,6 +2566,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2598,6 +2624,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.sendChatMessage(message, filtered, chatType, null);
      }
      public void sendChatMessage(final OutgoingChatMessage message, final boolean filtered, final ChatType.Bound chatType, @Nullable Component unsigned) {
@@ -148,34 +148,34 @@ index 4030776c3d12f8e797720180e141322b5d2cc548..703bb24fea1df09f04326c2b4976313c
          if (this.acceptsChatMessages()) {
              message.sendToPlayer(this, filtered, chatType, unsigned); // Paper
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index e21f910700fcf01264a41b2c1594e56ba8067371..b901e79a8488a1f4e2e70fa8b4a7180d7165507b 100644
+index 4c3d981d1d6a63cafe4b8350ad527cb81f9b8d1f..87048b7a7739d090f75bb3b5b8484814f3bcc251 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2682,8 +2682,9 @@ public class ServerGamePacketListenerImpl
+@@ -2736,8 +2736,9 @@ public class ServerGamePacketListenerImpl
                  LastSeenMessages result = this.lastSeenMessages.applyUpdate(update);
                  var10000 = Optional.of(result);
              } catch (LastSeenMessagesValidator.ValidationException e) {
--                LOGGER.error("Failed to validate message acknowledgements from {}: {}", this.player.getPlainTextName(), e.getMessage());
+-                LOGGER.error("Failed to validate message acknowledgements from {}", this.player.getPlainTextName(), e);
 -                this.disconnectAsync(CHAT_VALIDATION_FAILED, org.bukkit.event.player.PlayerKickEvent.Cause.CHAT_VALIDATION_FAILED); // Paper - kick event causes & add proper async disconnect
 +                // MoraPaper - Ignore kicks for invalid messages
-+                // LOGGER.error("Failed to validate message acknowledgements from {}: {}", this.player.getPlainTextName(), e.getMessage());
++                // LOGGER.error("Failed to validate message acknowledgements from {}", this.player.getPlainTextName(), e);
 +                // this.disconnectAsync(CHAT_VALIDATION_FAILED, org.bukkit.event.player.PlayerKickEvent.Cause.CHAT_VALIDATION_FAILED); // Paper - kick event causes & add proper async disconnect
                  return Optional.empty();
              }
  
-@@ -2794,8 +2795,9 @@ public class ServerGamePacketListenerImpl
+@@ -2848,8 +2849,9 @@ public class ServerGamePacketListenerImpl
              try {
                  this.lastSeenMessages.applyOffset(packet.offset());
              } catch (LastSeenMessagesValidator.ValidationException e) {
--                LOGGER.error("Failed to validate message acknowledgement offset from {}: {}", this.player.getPlainTextName(), e.getMessage());
+-                LOGGER.error("Failed to validate message acknowledgement offset from {}", this.player.getPlainTextName(), e);
 -                this.disconnectAsync(ServerGamePacketListenerImpl.CHAT_VALIDATION_FAILED, org.bukkit.event.player.PlayerKickEvent.Cause.CHAT_VALIDATION_FAILED); // Paper - kick event causes & add proper async disconnect
 +                // MoraPaper - Ignore kicks for invalid messages
-+                // LOGGER.error("Failed to validate message acknowledgement offset from {}: {}", this.player.getPlainTextName(), e.getMessage());
++                // LOGGER.error("Failed to validate message acknowledgement offset from {}", this.player.getPlainTextName(), e);
 +                // this.disconnectAsync(ServerGamePacketListenerImpl.CHAT_VALIDATION_FAILED, org.bukkit.event.player.PlayerKickEvent.Cause.CHAT_VALIDATION_FAILED); // Paper - kick event causes & add proper async disconnect
              }
          }
      }
-@@ -2915,6 +2917,10 @@ public class ServerGamePacketListenerImpl
+@@ -2969,6 +2971,10 @@ public class ServerGamePacketListenerImpl
          }
          // Leaf end - Mirai - Configurable chat message signatures
          // CraftBukkit end
@@ -187,10 +187,10 @@ index e21f910700fcf01264a41b2c1594e56ba8067371..b901e79a8488a1f4e2e70fa8b4a7180d
          synchronized (this.messageSignatureCache) {
          this.send(
 diff --git a/net/minecraft/world/entity/EntityFluidInteraction.java b/net/minecraft/world/entity/EntityFluidInteraction.java
-index d896eac6d9641f87dcd5357bbeaaef535fac4712..56e344ca4e9ecade990062d27840f1ff288bf3f2 100644
+index 87efdfcebb3a622d92e809d894a14ba0c037b29d..19cd2ff728473e20a9ce095ade2ecf06be7e1498 100644
 --- a/net/minecraft/world/entity/EntityFluidInteraction.java
 +++ b/net/minecraft/world/entity/EntityFluidInteraction.java
-@@ -139,12 +139,22 @@ public class EntityFluidInteraction {
+@@ -169,12 +169,22 @@ public class EntityFluidInteraction {
          return null;
      }
  
@@ -198,27 +198,27 @@ index d896eac6d9641f87dcd5357bbeaaef535fac4712..56e344ca4e9ecade990062d27840f1ff
 +    private static final double FARM_PIGLIN_WATER_PUSH_MULTIPLIER = 3.0;
 +
      public void applyCurrentTo(final TagKey<Fluid> fluid, final Entity entity, final double scale) {
-         EntityFluidInteraction.Tracker tracker = this.trackerByFluid.get(fluid);
-         if (tracker != null) {
--            tracker.applyCurrentTo(entity, scale);
+         EntityFluidInteraction.CurrentAccumulator current = this.currentAccumulators.get(fluid);
+         if (current != null) {
+-            current.applyTo(entity, scale);
 +            double appliedScale = scale;
 +            if (fluid == net.minecraft.tags.FluidTags.WATER
 +                && entity instanceof net.minecraft.world.entity.monster.zombie.ZombifiedPiglin zombifiedPiglin
 +                && !zombifiedPiglin.collides) {
 +                appliedScale *= FARM_PIGLIN_WATER_PUSH_MULTIPLIER;
 +            }
-+            tracker.applyCurrentTo(entity, appliedScale);
++            current.applyTo(entity, appliedScale);
          }
      }
 +    // MoraPaper End - Farm Piglin Water Push Multiplier
  
      public double getFluidHeight(final TagKey<Fluid> fluid) {
-         EntityFluidInteraction.Tracker tracker = this.trackerByFluid.get(fluid);
+         double height = 0.0;
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 549bd2811ee8a0b46e1aae4409bc3b9d38ed90b1..f61dac983c5e7cfa86173112d9731c26d6769bd5 100644
+index e1a8bed3e9489ea579fc10e9c2f45e77b2521b7c..a630d7c4c1b0014c0dc1f9a518a728308ad9d8a5 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -3015,6 +3015,11 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -2997,6 +2997,11 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
          return this.equipment.get(slot);
      }
  
@@ -227,14 +227,14 @@ index 549bd2811ee8a0b46e1aae4409bc3b9d38ed90b1..f61dac983c5e7cfa86173112d9731c26
 +        return this.equipment;
 +    }
 +
-     // Leaf start - Multithreaded tracker
-     public boolean hasItemInSlots() {
-         return !this.equipment.isEmpty();
+     public void setItemSlot(final EquipmentSlot slot, final ItemStack itemStack) {
+         // Paper start
+         this.setItemSlot(slot, itemStack, false);
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 67b701368949f09c7c63c7e4315f1266074acf58..22e187eae1e49c12f8da538ed94a97d6cc52f7fe 100644
+index 1add5ca9829a07f09fde4bc4eb0964e9103612b1..cd6f01b87b06397e936b5da01adcad592d8727af 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -139,7 +139,7 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
+@@ -140,7 +140,7 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
      protected JumpControl jumpControl;
      private final BodyRotationControl bodyRotationControl;
      protected PathNavigation navigation;
@@ -261,107 +261,12 @@ index 683a71943a04047ab88c948ee80416c3236dc466..e9ff5cdb34d6e6502764f7d0e12c9964
                  Vec3 riderMovement = moveIntent.normalize();
                  double ownDist = deltaMovement.horizontalDistanceSqr();
                  if (riderMovement.lengthSqr() > 0.0 && ownDist < 0.01) {
-diff --git a/net/minecraft/world/level/biome/MultiNoiseBiomeSource.java b/net/minecraft/world/level/biome/MultiNoiseBiomeSource.java
-index eb177fcef92d9bc1d1a2268b5c5ace566f57b1d2..255b995167f06d36f1b7c6af317de3ccbbb07cd7 100644
---- a/net/minecraft/world/level/biome/MultiNoiseBiomeSource.java
-+++ b/net/minecraft/world/level/biome/MultiNoiseBiomeSource.java
-@@ -16,6 +16,45 @@ import net.minecraft.util.VisibleForDebug;
- import net.minecraft.world.level.levelgen.NoiseRouterData;
- 
- public class MultiNoiseBiomeSource extends BiomeSource {
-+
-+    // MoraPaper Start - Biome Generation Data
-+    public class GenerationData {
-+
-+        private final int x, z;
-+        private final Holder<Biome> originalBiome;
-+        private ResourceKey<Biome> newBiome;
-+
-+        public GenerationData(final int x, final int z, final Holder<net.minecraft.world.level.biome.Biome> originalBiome) {
-+            this.x = x;
-+            this.z = z;
-+            this.originalBiome = originalBiome;
-+        }
-+
-+        public int getX() {
-+            return this.x;
-+        }
-+
-+        public int getZ() {
-+            return this.z;
-+        }
-+
-+        public Holder<Biome>  getOriginalBiome() {
-+            return originalBiome;
-+        }
-+
-+        public net.minecraft.resources.ResourceKey<net.minecraft.world.level.biome.Biome> getNewBiome() {
-+            return newBiome;
-+        }
-+
-+        public void setNewBiome(final net.minecraft.resources.ResourceKey<net.minecraft.world.level.biome.Biome> newBiome) {
-+            this.newBiome = newBiome;
-+        }
-+    }
-+
-+    public static java.util.function.Consumer<GenerationData> INTERCEPTOR;
-+    private java.util.Map<ResourceKey<Biome>, Holder<Biome>> BIOMES_CACHE = new java.util.HashMap<>();
-+    // MoraPaper Ends
-+
-     private static final MapCodec<Holder<Biome>> ENTRY_CODEC = Biome.CODEC.fieldOf("biome");
-     public static final MapCodec<Climate.ParameterList<Holder<Biome>>> DIRECT_CODEC = Climate.ParameterList.codec(ENTRY_CODEC).fieldOf("biomes");
-     private static final MapCodec<Holder<MultiNoiseBiomeSourceParameterList>> PRESET_CODEC = MultiNoiseBiomeSourceParameterList.CODEC
-@@ -57,8 +96,43 @@ public class MultiNoiseBiomeSource extends BiomeSource {
- 
-     @Override
-     public Holder<Biome> getNoiseBiome(final int quartX, final int quartY, final int quartZ, final Climate.Sampler sampler) {
--        return this.getNoiseBiome(sampler.sample(quartX, quartY, quartZ));
-+        Holder<Biome> biome = this.getNoiseBiome(sampler.sample(quartX, quartY, quartZ));
-+
-+        // MoraSpigot Starts - Add interceptor for biome modification
-+        int blockX = quartX << 2;
-+        int blockZ = quartZ << 2;
-+
-+        if (INTERCEPTOR != null) {
-+            final net.minecraft.world.level.biome.MultiNoiseBiomeSource.GenerationData data = new net.minecraft.world.level.biome.MultiNoiseBiomeSource.GenerationData(blockX, blockZ, biome);
-+            INTERCEPTOR.accept(data);
-+
-+            if (data.getNewBiome() != null) {
-+                biome = findBiome(data.getNewBiome());
-+            }
-+        }
-+
-+        return biome;
-+    }
-+
-+    private Holder<Biome> findBiome(ResourceKey<Biome> key) {
-+        if (BIOMES_CACHE.isEmpty()) {
-+            for (Pair<Climate.ParameterPoint, Holder<Biome>> pair : this.parameters().values()) {
-+                Holder<Biome> otherHolder = pair.getSecond();
-+                final java.util.Optional<net.minecraft.resources.ResourceKey<Biome>> otherKey = otherHolder.unwrapKey();
-+                if (otherKey.isEmpty()) continue;
-+
-+                BIOMES_CACHE.put(otherKey.get(), otherHolder);
-+            }
-+        }
-+
-+        final net.minecraft.core.Holder<net.minecraft.world.level.biome.Biome> cachedBiome = BIOMES_CACHE.get(key);
-+        if (cachedBiome != null) {
-+            return cachedBiome;
-+        }
-+
-+        throw new IllegalStateException("Couldn't find biome " + key);
-     }
-+    // MoraSpigot Ends
- 
-     @VisibleForDebug
-     public Holder<Biome> getNoiseBiome(final Climate.TargetPoint target) {
 diff --git a/net/minecraft/world/level/levelgen/feature/OreFeature.java b/net/minecraft/world/level/levelgen/feature/OreFeature.java
-index f38bdffd7734fab297979d38abd168b2b82e16e3..998e85baf676eb67f7710b91a87958e2be89c59e 100644
+index 7e902e3d4d25f808e4907d051942cb8d2aa1e515..1e953ed2e27b0d3db8935eb6703ab7d92ed7ab74 100644
 --- a/net/minecraft/world/level/levelgen/feature/OreFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/OreFeature.java
-@@ -19,6 +19,49 @@ public class OreFeature extends Feature<OreConfiguration> {
-         super(codec);
+@@ -35,6 +35,49 @@ public class OreFeature extends AbstractOreFeature {
+         return CODEC;
      }
  
 +    public static class PlacedOre {
@@ -408,13 +313,13 @@ index f38bdffd7734fab297979d38abd168b2b82e16e3..998e85baf676eb67f7710b91a87958e2
 +    public static java.util.function.Consumer<PlacedOre> LISTENER;
 +
      @Override
-     public boolean place(final FeaturePlaceContext<OreConfiguration> context) {
-         RandomSource random = context.random();
-@@ -144,10 +187,31 @@ public class OreFeature extends Feature<OreConfiguration> {
+     public boolean place(final WorldGenLevel level, final ChunkGenerator chunkGenerator, final RandomSource random, final BlockPos origin) {
+         float dir = random.nextFloat() * (float) Math.PI;
+@@ -154,8 +197,27 @@ public class OreFeature extends AbstractOreFeature {
  
-                                                         for (OreConfiguration.TargetBlockState targetState : config.targetStates) {
-                                                             if (canPlaceOre(blockState, sectionGetter::getBlockState, random, config, targetState, orePos)) {
-+                                                                BlockState toPlace = targetState.state;
+                                                         for (BlockReplacement targetState : this.targetStates) {
+                                                             if (this.canPlaceOre(blockState, sectionGetter::getBlockState, random, targetState, orePos)) {
++                                                                BlockState toPlace = targetState.state();
 +
 +                                                                if (LISTENER != null) {
 +                                                                    boolean exposed = isExposed(level, orePos);
@@ -422,7 +327,7 @@ index f38bdffd7734fab297979d38abd168b2b82e16e3..998e85baf676eb67f7710b91a87958e2
 +                                                                    final net.minecraft.world.level.levelgen.feature.OreFeature.PlacedOre placedOre = new net.minecraft.world.level.levelgen.feature.OreFeature.PlacedOre(
 +                                                                        level,
 +                                                                        orePos.immutable(),
-+                                                                        targetState.state,
++                                                                        targetState.state(),
 +                                                                        exposed
 +                                                                    );
 +
@@ -434,20 +339,15 @@ index f38bdffd7734fab297979d38abd168b2b82e16e3..998e85baf676eb67f7710b91a87958e2
 +                                                                }
 +
                                                                  section.setBlockState(
--                                                                    sectionRelativeX, sectionRelativeY, sectionRelativeZ, targetState.state, false
+-                                                                    sectionRelativeX, sectionRelativeY, sectionRelativeZ, targetState.state(), false
 +                                                                    sectionRelativeX, sectionRelativeY, sectionRelativeZ, toPlace, false
                                                                  );
                                                                  placed++;
-+
-+
                                                                  break;
-                                                             }
-                                                         }
-@@ -182,4 +246,26 @@ public class OreFeature extends Feature<OreConfiguration> {
-     protected static boolean shouldSkipAirCheck(final RandomSource random, final float discardChanceOnAirExposure) {
-         return discardChanceOnAirExposure <= 0.0F || !(discardChanceOnAirExposure >= 1.0F) && random.nextFloat() >= discardChanceOnAirExposure;
+@@ -176,4 +238,24 @@ public class OreFeature extends AbstractOreFeature {
+ 
+         return placed > 0;
      }
-+
 +
 +    private static final net.minecraft.core.Direction[] DIRECTIONS = {
 +        net.minecraft.core.Direction.UP,
@@ -468,18 +368,17 @@ index f38bdffd7734fab297979d38abd168b2b82e16e3..998e85baf676eb67f7710b91a87958e2
 +
 +        return false;
 +    }
-+
  }
 diff --git a/net/minecraft/world/level/levelgen/feature/ScatteredOreFeature.java b/net/minecraft/world/level/levelgen/feature/ScatteredOreFeature.java
-index ecfc483a4e75d8c926cd2727b7021ce9881347ac..08ef68475cd312889afcf5d9ee15efaf82fae07d 100644
+index 9f7136b753cef41ddaaf8005bc93a5856f9e1614..5e0d49189fedaeedda1fb756729cb9a678d1b5c5 100644
 --- a/net/minecraft/world/level/levelgen/feature/ScatteredOreFeature.java
 +++ b/net/minecraft/world/level/levelgen/feature/ScatteredOreFeature.java
-@@ -30,7 +30,26 @@ public class ScatteredOreFeature extends Feature<OreConfiguration> {
+@@ -38,7 +38,26 @@ public class ScatteredOreFeature extends AbstractOreFeature {
  
-             for (OreConfiguration.TargetBlockState targetState : config.targetStates) {
-                 if (OreFeature.canPlaceOre(blockState, level::getBlockState, random, config, targetState, targetPos)) {
--                    level.setBlock(targetPos, targetState.state, Block.UPDATE_CLIENTS);
-+                    net.minecraft.world.level.block.state.BlockState toPlace = targetState.state;
+             for (BlockReplacement targetState : this.targetStates) {
+                 if (this.canPlaceOre(blockState, level::getBlockState, random, targetState, targetPos)) {
+-                    level.setBlock(targetPos, targetState.state(), Block.UPDATE_CLIENTS);
++                    net.minecraft.world.level.block.state.BlockState toPlace = targetState.state();
 +
 +                    if (net.minecraft.world.level.levelgen.feature.OreFeature.LISTENER != null) {
 +                        boolean exposed = OreFeature.isExposed(level, targetPos);
@@ -487,7 +386,7 @@ index ecfc483a4e75d8c926cd2727b7021ce9881347ac..08ef68475cd312889afcf5d9ee15efaf
 +                        final net.minecraft.world.level.levelgen.feature.OreFeature.PlacedOre placedOre = new net.minecraft.world.level.levelgen.feature.OreFeature.PlacedOre(
 +                            level,
 +                            targetPos.immutable(),
-+                            targetState.state,
++                            targetState.state(),
 +                            exposed
 +                        );
 +

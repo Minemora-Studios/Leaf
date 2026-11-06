@@ -22,10 +22,10 @@ close itself is already in flight in both cases. The details are now recorded
 before the close so the reason survives regardless of which path runs.
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 46bd47d370eee854bb7dcbe40be5488dfc6ef02f..7ced4ce0f9fda5d2b490888ea036892eab0fbf34 100644
+index fb0e965c8f5211d5b82d13a0ee8a7a4882b8037a..2afbbde7a10f2a2a41288d2dd34229a1be6c9f09 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -712,8 +712,24 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -723,8 +723,24 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          }
  
          if (this.isConnected()) {
