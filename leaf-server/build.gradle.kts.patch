@@ -56,14 +56,28 @@
      updatingMinecraft {
          //oldPaperCommit = "e5fe71723e2ffde7cc9fafc085ac3bb73e63175e"
      }
-@@ -31,6 +_,7 @@
+@@ -31,8 +_,21 @@
      libraryRepositories.addAll(
          "https://repo.maven.apache.org/maven2/",
          paperMavenPublicUrl,
 +        leafMavenPublicUrl // Leaf - project setup - Add publish repo
      )
  }
++
++// Mora start - upstream paperclip for the dev bundle only
++// QuantumLeaper 1.0.0 loads config/leaf-loader.yml before checking paperclip.patchonly and exits(0) on first run,
++// so paperweight-userdev never gets the patched server jar. The server jar (createPaperclipJar) keeps QuantumLeaper.
++val devBundlePaperclip = configurations.register("devBundlePaperclip") { isTransitive = false }
++dependencies {
++    devBundlePaperclip("io.papermc:paperclip:3.0.4")
++}
++tasks.named<io.papermc.paperweight.tasks.CreateBundlerJar>("serverBundlerForDevBundle") {
++    paperclip.setFrom(devBundlePaperclip)
++}
++// Mora end - upstream paperclip for the dev bundle only
  
+ abstract class Services {
+     @get:Inject
 @@ -86,7 +_,22 @@
      }
  }
