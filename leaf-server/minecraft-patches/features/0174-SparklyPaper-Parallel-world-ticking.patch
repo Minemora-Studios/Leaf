@@ -58,29 +58,78 @@ index 8d0fc4df60a1afbae31a6b222ff217624d4471c8..f6491da4948060d587e208888a2ce1d8
          if (!PlatformHooks.get().allowAsyncTicketUpdates() && !isTickThread) {
              TickThread.ensureTickThread("Cannot asynchronously process ticket updates");
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
-index 922c95a3bbdc27ff86ce74ecedb0bc63d4018f93..22d24882621a6e2184ef1c95bd45518267b9edf2 100644
+index 922c95a3bbdc27ff86ce74ecedb0bc63d4018f93..4d8d90b1e6c088bcfe45c8fb4cddefd30678884f 100644
 --- a/io/papermc/paper/entity/activation/ActivationRange.java
 +++ b/io/papermc/paper/entity/activation/ActivationRange.java
-@@ -133,7 +133,19 @@ public final class ActivationRange {
+@@ -94,6 +94,7 @@ public final class ActivationRange {
+     // Gale end - variable entity wake-up duration
+ 
+     static AABB maxBB = new AABB(0, 0, 0, 0, 0, 0);
++    private static final int ACTIVATION_TYPE_COUNT = ActivationType.values().length; // Leaf - SparklyPaper - parallel world ticking
+ 
+     /**
+      * These entities are excluded from Activation range checks.
+@@ -154,6 +155,7 @@ public final class ActivationRange {
+         maxRange = Math.max(maxRange, villagerActivationRange);
+         maxRange = Math.min((world.spigotConfig.simulationDistance << 4) - 8, maxRange);
+ 
++        final AABB[] activationBoxes = new AABB[ACTIVATION_TYPE_COUNT]; // Leaf - SparklyPaper - parallel world ticking
+         for (final Player player : world.players()) {
+             player.activatedTick = MinecraftServer.currentTick;
+             if (world.spigotConfig.ignoreSpectatorActivation && player.isSpectator()) {
+@@ -163,23 +165,26 @@ public final class ActivationRange {
+             if (!player.level().purpurConfig.idleTimeoutTickNearbyEntities && player.isAfk()) continue; // Purpur - AFK API
+ 
+             final int worldHeight = world.getHeight();
+-            ActivationRange.maxBB = player.getBoundingBox().inflate(maxRange, worldHeight, maxRange);
+-            ActivationType.MISC.boundingBox = player.getBoundingBox().inflate(miscActivationRange, worldHeight, miscActivationRange);
+-            ActivationType.RAIDER.boundingBox = player.getBoundingBox().inflate(raiderActivationRange, worldHeight, raiderActivationRange);
+-            ActivationType.ANIMAL.boundingBox = player.getBoundingBox().inflate(animalActivationRange, worldHeight, animalActivationRange);
+-            ActivationType.MONSTER.boundingBox = player.getBoundingBox().inflate(monsterActivationRange, worldHeight, monsterActivationRange);
+-            ActivationType.WATER.boundingBox = player.getBoundingBox().inflate(waterActivationRange, worldHeight, waterActivationRange);
+-            ActivationType.FLYING_MONSTER.boundingBox = player.getBoundingBox().inflate(flyingActivationRange, worldHeight, flyingActivationRange);
+-            ActivationType.VILLAGER.boundingBox = player.getBoundingBox().inflate(villagerActivationRange, worldHeight, villagerActivationRange);
++            // Leaf start - SparklyPaper - parallel world ticking
++            final AABB playerBox = player.getBoundingBox();
++            final AABB maxBB = playerBox.inflate(maxRange, worldHeight, maxRange);
++            activationBoxes[ActivationType.MISC.ordinal()] = playerBox.inflate(miscActivationRange, worldHeight, miscActivationRange);
++            activationBoxes[ActivationType.RAIDER.ordinal()] = playerBox.inflate(raiderActivationRange, worldHeight, raiderActivationRange);
++            activationBoxes[ActivationType.ANIMAL.ordinal()] = playerBox.inflate(animalActivationRange, worldHeight, animalActivationRange);
++            activationBoxes[ActivationType.MONSTER.ordinal()] = playerBox.inflate(monsterActivationRange, worldHeight, monsterActivationRange);
++            activationBoxes[ActivationType.WATER.ordinal()] = playerBox.inflate(waterActivationRange, worldHeight, waterActivationRange);
++            activationBoxes[ActivationType.FLYING_MONSTER.ordinal()] = playerBox.inflate(flyingActivationRange, worldHeight, flyingActivationRange);
++            activationBoxes[ActivationType.VILLAGER.ordinal()] = playerBox.inflate(villagerActivationRange, worldHeight, villagerActivationRange);
+ 
+-            final List<Entity> entities = world.getEntities((Entity) null, ActivationRange.maxBB, e -> true);
++            final List<Entity> entities = world.getEntities((Entity) null, maxBB, e -> true);
++            // Leaf end - SparklyPaper - parallel world ticking
+             final boolean tickMarkers = world.paperConfig().entities.markers.tick;
+             for (final Entity entity : entities) {
+                 if (!tickMarkers && entity instanceof Marker) {
+                     continue;
+                 }
+ 
+-                ActivationRange.activateEntity(entity);
++                ActivationRange.activateEntity(entity, activationBoxes); // Leaf - SparklyPaper - parallel world ticking
+ 
+                 // Pufferfish start
+                 if (org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.enabled && entity.getType().dabEnabled &&
+@@ -205,13 +210,13 @@ public final class ActivationRange {
       *
-      * @param world
+      * @param entity
       */
-+    // Leaf start - SparklyPaper - parallel world ticking
-     public static void activateEntities(final Level world) {
-+        if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) {
-+            synchronized (ActivationRange.class) {
-+                activateEntitiesInternal(world);
-+            }
-+        } else {
-+            activateEntitiesInternal(world);
-+        }
-+    }
-+
-+    private static void activateEntitiesInternal(final Level world) {
-+        // Leaf end - SparklyPaper - parallel world ticking
-         final int miscActivationRange = world.spigotConfig.miscActivationRange;
-         final int raiderActivationRange = world.spigotConfig.raiderActivationRange;
-         final int animalActivationRange = world.spigotConfig.animalActivationRange;
+-    private static void activateEntity(final Entity entity) {
++    private static void activateEntity(final Entity entity, final AABB[] activationBoxes) { // Leaf - SparklyPaper - parallel world ticking
+         if (MinecraftServer.currentTick > entity.activatedTick) {
+             if (entity.defaultActivationState) { // Pufferfish - diff on change
+                 entity.activatedTick = MinecraftServer.currentTick;
+                 return;
+             }
+-            if (entity.activationType.boundingBox.intersects(entity.getBoundingBox())) { // Pufferfish - diff on change
++            if (activationBoxes[entity.activationType.ordinal()].intersects(entity.getBoundingBox())) { // Pufferfish - diff on change // Leaf - SparklyPaper - parallel world ticking
+                 entity.activatedTick = MinecraftServer.currentTick;
+             }
+         }
 diff --git a/io/papermc/paper/redstone/RedstoneWireTurbo.java b/io/papermc/paper/redstone/RedstoneWireTurbo.java
 index f7820568b78f630e4d234d3dfb36c2167149777a..fd1fe87bb891ad66b6edb35e9d7c363f9efa5790 100644
 --- a/io/papermc/paper/redstone/RedstoneWireTurbo.java
@@ -132,7 +181,7 @@ index ca046e44445c68f430ac1936b1f6312386cd5569..a518b7f52b93fecf034d7695a766b75a
                  // Paper end
                  // CraftBukkit start
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 099cf0bc7436866abff63ae00056ce972d581db4..f710b9e3b9942040fe77991999ce2ce188afd88e 100644
+index 099cf0bc7436866abff63ae00056ce972d581db4..8895678a17f8a4233cab004e337e0df82d8b24b3 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -336,6 +336,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -143,10 +192,25 @@ index 099cf0bc7436866abff63ae00056ce972d581db4..f710b9e3b9942040fe77991999ce2ce1
      // Paper start - improve tick loop
      public final ca.spottedleaf.common.time.TickData tickTimes1s  = new ca.spottedleaf.common.time.TickData(java.util.concurrent.TimeUnit.SECONDS.toNanos(1L));
      public final ca.spottedleaf.common.time.TickData tickTimes5s  = new ca.spottedleaf.common.time.TickData(java.util.concurrent.TimeUnit.SECONDS.toNanos(5L));
-@@ -483,21 +484,32 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -483,21 +484,47 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      private long lastMidTickExecute;
      private long lastMidTickExecuteFailure;
  
++    // Leaf start - SparklyPaper - parallel world ticking - Submit heaviest worlds first when worlds exceed PWT threads
++    private static final java.util.Comparator<ServerLevel> PWT$HEAVIEST_FIRST = (a, b) -> Long.compare(b.pwt$lastTickNanos, a.pwt$lastTickNanos);
++    private final java.util.ArrayList<ServerLevel> pwt$submitOrder = new java.util.ArrayList<>();
++
++    private Iterable<ServerLevel> pwt$levelsHeaviestFirst() {
++        final java.util.ArrayList<ServerLevel> sorted = this.pwt$submitOrder;
++        sorted.clear();
++        for (final ServerLevel level : this.getAllLevels()) {
++            sorted.add(level);
++        }
++        sorted.sort(PWT$HEAVIEST_FIRST);
++        return sorted;
++    }
++    // Leaf end - SparklyPaper - parallel world ticking - Submit heaviest worlds first when worlds exceed PWT threads
++
 +    // Leaf start - SparklyPaper - parallel world ticking
 +    private boolean pwt$tickLevelMidTickTasks(final ServerLevel world) {
 +        long currTime = System.nanoTime();
@@ -186,7 +250,7 @@ index 099cf0bc7436866abff63ae00056ce972d581db4..f710b9e3b9942040fe77991999ce2ce1
          }
  
          return executed;
-@@ -987,6 +999,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -987,6 +1014,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              }
  
              level.save(null, flush, SharedConstants.DEBUG_DONT_SAVE_WORLD || level.noSave && !force, close); // Paper - add close param
@@ -199,14 +263,17 @@ index 099cf0bc7436866abff63ae00056ce972d581db4..f710b9e3b9942040fe77991999ce2ce1
              result = true;
          }
  
-@@ -1828,6 +1846,20 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1828,6 +1861,23 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      public final io.papermc.paper.threadedregions.EntityScheduler.EntitySchedulerTickList entitySchedulerTickList = new io.papermc.paper.threadedregions.EntityScheduler.EntitySchedulerTickList(); // Paper - optimise Folia entity scheduler
  
 +    // Leaf start - SparklyPaper - parallel world ticking - move level ticking logic out for branch convergence
 +    private void tickLevel(final ServerLevel level, final BooleanSupplier haveTime) {
 +        try {
++            final long levelTickStart = Util.getNanos();
 +            level.tick(haveTime);
++            final long lastLevelTickTime = Util.getNanos() - levelTickStart;
++            level.pwt$lastTickNanos = lastLevelTickTime; // Submit heaviest worlds first when worlds exceed PWT threads
 +        } catch (Throwable t) {
 +            CrashReport report = CrashReport.forThrowable(t, "Exception ticking world");
 +            level.fillReportDetails(report);
@@ -220,15 +287,19 @@ index 099cf0bc7436866abff63ae00056ce972d581db4..f710b9e3b9942040fe77991999ce2ce1
      protected void tickChildren(final BooleanSupplier haveTime) {
          ProfilerFiller profiler = Profiler.get();
          this.getPlayerList().getPlayers().forEach(playerx -> playerx.connection.suspendFlushing());
-@@ -1878,27 +1910,48 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1878,27 +1928,52 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          this.updateEffectiveRespawnData();
  
          this.isIteratingOverLevels = true; // Paper - Throw exception on world create while being ticked
+-        for (ServerLevel level : this.getAllLevels()) {
 +        // Leaf start - SparklyPaper - parallel world ticking
 +        final boolean parallelWorldTicking = org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled; // Leaf - Avoid allocating world tick queue without PWT
 +        final java.util.ArrayDeque<java.util.concurrent.Future<ServerLevel>> tasks = parallelWorldTicking ? new java.util.ArrayDeque<>() : null; // Leaf - Avoid allocating world tick queue without PWT
++        // Leaf start - SparklyPaper - parallel world ticking - Submit heaviest worlds first when worlds exceed PWT threads
++        final Iterable<ServerLevel> levelsToTick = parallelWorldTicking && this.levels.size() > org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.threads ? this.pwt$levelsHeaviestFirst() : this.getAllLevels();
++        // Leaf end - SparklyPaper - parallel world ticking - Submit heaviest worlds first when worlds exceed PWT threads
 +        try {
-         for (ServerLevel level : this.getAllLevels()) {
++        for (ServerLevel level : levelsToTick) { // Leaf - SparklyPaper - parallel world ticking - Submit heaviest worlds first when worlds exceed PWT threads
              level.hasPhysicsEvent = org.bukkit.event.block.BlockPhysicsEvent.getHandlerList().getRegisteredListeners().length > 0; // Paper - BlockPhysicsEvent
              level.hasEntityMoveEvent = io.papermc.paper.event.entity.EntityMoveEvent.getHandlerList().getRegisteredListeners().length > 0; // Paper - Add EntityMoveEvent
              level.hasRidableMoveEvent = org.purpurmc.purpur.event.entity.RidableMoveEvent.getHandlerList().getRegisteredListeners().length > 0; // Purpur - Ridables
@@ -274,10 +345,11 @@ index 099cf0bc7436866abff63ae00056ce972d581db4..f710b9e3b9942040fe77991999ce2ce1
 +            throw new RuntimeException(e); // Propagate exception
 +        }
 +        // Leaf end - SparklyPaper - parallel world ticking
++        this.pwt$submitOrder.clear(); // Leaf - SparklyPaper - parallel world ticking - Submit heaviest worlds first when worlds exceed PWT threads
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
          profiler.popPush("connection");
-@@ -1989,6 +2042,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1989,6 +2064,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          Map<ResourceKey<Level>, ServerLevel> oldLevels = this.levels;
          Map<ResourceKey<Level>, ServerLevel> newLevels = Maps.newLinkedHashMap(oldLevels);
          newLevels.remove(level.dimension());
@@ -384,7 +456,7 @@ index e543b992e18c9eb12dd2032aacbf30dcb9dcf412..598e382d5f6c4a243c4e7eff2e06838c
                  continue;
              }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 66bca6ce0b1f51a3782f675f186908b9d5348b29..8abb7765a68118e13a18013f4da1a5de9deec66f 100644
+index 66bca6ce0b1f51a3782f675f186908b9d5348b29..28e6b67c3b7658563edd16b625bab6ddba81be25 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -197,7 +197,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -408,7 +480,15 @@ index 66bca6ce0b1f51a3782f675f186908b9d5348b29..8abb7765a68118e13a18013f4da1a5de
  
      // CraftBukkit start
      private final ResourceKey<LevelStem> typeKey;
-@@ -763,6 +768,15 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -322,6 +327,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+     private final ca.spottedleaf.moonrise.patches.chunk_system.io.datacontroller.ChunkDataController chunkDataController;
+     private final ca.spottedleaf.moonrise.patches.chunk_system.scheduling.ChunkTaskScheduler chunkTaskScheduler;
+     private long lastMidTickFailure;
++    public long pwt$lastTickNanos; // Leaf - SparklyPaper - parallel world ticking - Submit heaviest worlds first when worlds exceed PWT threads
+     private long tickedBlocksOrFluids;
+     private final ca.spottedleaf.moonrise.common.misc.NearbyPlayers nearbyPlayers = new ca.spottedleaf.moonrise.common.misc.NearbyPlayers((ServerLevel)(Object)this);
+     private static final LevelChunk[] EMPTY_LEVEL_CHUNKS = new LevelChunk[0];
+@@ -763,6 +769,15 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          this.chunkDataController = new ca.spottedleaf.moonrise.patches.chunk_system.io.datacontroller.ChunkDataController((ServerLevel)(Object)this, this.chunkTaskScheduler);
          // Paper end - rewrite chunk system
          this.getCraftServer().addWorld(this.getWorld()); // CraftBukkit
@@ -424,7 +504,7 @@ index 66bca6ce0b1f51a3782f675f186908b9d5348b29..8abb7765a68118e13a18013f4da1a5de
      }
  
      // Paper start
-@@ -820,10 +834,147 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -820,10 +835,147 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          return previous;
      }
  
@@ -572,7 +652,7 @@ index 66bca6ce0b1f51a3782f675f186908b9d5348b29..8abb7765a68118e13a18013f4da1a5de
          TickRateManager tickRateManager = this.tickRateManager();
          boolean runs = tickRateManager.runsNormally();
          if (runs) {
-@@ -834,6 +985,12 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -834,6 +986,12 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
              profiler.pop();
          }
  
@@ -585,7 +665,7 @@ index 66bca6ce0b1f51a3782f675f186908b9d5348b29..8abb7765a68118e13a18013f4da1a5de
          int percentage = this.getGameRules().get(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
          if (this.purpurConfig.playersSkipNight && this.sleepStatus.areEnoughSleeping(percentage) && this.sleepStatus.areEnoughDeepSleeping(percentage, this.players)) { // Purpur - Config for skipping night
              Optional<Holder<WorldClock>> defaultClock = this.dimensionType().defaultClock();
-@@ -941,6 +1098,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -941,6 +1099,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
                                          entity.discard(org.bukkit.event.entity.EntityRemoveEvent.Cause.DISCARD);
                                          // Paper end - Prevent block entity and entity crashes
                                      }
@@ -593,7 +673,7 @@ index 66bca6ce0b1f51a3782f675f186908b9d5348b29..8abb7765a68118e13a18013f4da1a5de
                                      this.moonrise$midTickTasks(); // Paper - rewrite chunk system
                                      // Gale end - Airplane - remove lambda from ticking guard - copied from guardEntityTick
                                      profiler.pop();
-@@ -1449,7 +1607,10 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1449,7 +1608,10 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
              fluidState.tick(this, pos, blockState);
          }
          // Paper start - rewrite chunk system
@@ -605,7 +685,7 @@ index 66bca6ce0b1f51a3782f675f186908b9d5348b29..8abb7765a68118e13a18013f4da1a5de
              ((ca.spottedleaf.moonrise.patches.chunk_system.server.ChunkSystemMinecraftServer)this.server).moonrise$executeMidTickTasks();
          }
          // Paper end - rewrite chunk system
-@@ -1462,7 +1623,10 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1462,7 +1624,10 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
              state.tick(this, pos, this.random);
          }
          // Paper start - rewrite chunk system
@@ -617,7 +697,7 @@ index 66bca6ce0b1f51a3782f675f186908b9d5348b29..8abb7765a68118e13a18013f4da1a5de
              ((ca.spottedleaf.moonrise.patches.chunk_system.server.ChunkSystemMinecraftServer)this.server).moonrise$executeMidTickTasks();
          }
          // Paper end - rewrite chunk system
-@@ -1710,6 +1874,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1710,6 +1875,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
      }
  
      private void addPlayer(final ServerPlayer player) {
@@ -625,7 +705,7 @@ index 66bca6ce0b1f51a3782f675f186908b9d5348b29..8abb7765a68118e13a18013f4da1a5de
          Entity existing = this.getEntity(player.getUUID());
          if (existing != null) {
              LOGGER.warn("Force-added player with duplicate UUID {}", player.getUUID());
-@@ -1722,7 +1887,13 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1722,7 +1888,13 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
  
      // CraftBukkit start
      private boolean addEntity(final Entity entity, final org.bukkit.event.entity.CreatureSpawnEvent.@Nullable SpawnReason spawnReason) {
@@ -805,7 +885,7 @@ index b9748a392c9f76e61a1b673085b4dd74c007c70d..6774051521794990278d5ef5cf6b3dab
          for (ServerPlayer player : this.players) {
              this.createConnection(player, waypoint);
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index c8865b68c034388eff7871d2be723b67a762fe2f..0448de4afd2db0c56139cc4fced04f9106a61ea2 100644
+index 860caa682df240cb61dd8fce05310105b8d5d7b2..c2a4f9f93c8c9ea31807d08995f2ce7e1f034548 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -3771,10 +3771,7 @@ public abstract class Entity
@@ -1218,18 +1298,27 @@ index fefb4e7a3bf922be16cf7fb6b70c0689867dd963..ea2023b9f4511d47968521a9b6686f3d
                  return value;
              })
 diff --git a/net/minecraft/world/level/block/RedstoneWireBlock.java b/net/minecraft/world/level/block/RedstoneWireBlock.java
-index ede64a0afbcdc41e60c3f2f5917c89f09b888433..2afcc3ee9438bd09eec452e28bc5dc92e4a74927 100644
+index ede64a0afbcdc41e60c3f2f5917c89f09b888433..ddb90dc37106c39c210c595eab45456516c7223f 100644
 --- a/net/minecraft/world/level/block/RedstoneWireBlock.java
 +++ b/net/minecraft/world/level/block/RedstoneWireBlock.java
-@@ -64,6 +64,7 @@ public class RedstoneWireBlock extends Block {
+@@ -64,6 +64,16 @@ public class RedstoneWireBlock extends Block {
      private final BlockState crossState;
      private final RedstoneWireEvaluator evaluator = new DefaultRedstoneWireEvaluator(this);
      public boolean shouldSignal = true;
 +    private final ThreadLocal<Boolean> shouldSignalTL = ThreadLocal.withInitial(() -> true); // Leaf - SparklyPaper - parallel world ticking
++
++    // Leaf start - SparklyPaper - parallel world ticking - Per world thread redstone signal flag
++    private boolean currentShouldSignal() {
++        if (Thread.currentThread() instanceof ca.spottedleaf.moonrise.common.util.TickThread.ServerLevelTickThread thread) {
++            return thread.redstoneShouldSignal;
++        }
++        return org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled ? this.shouldSignalTL.get() : this.shouldSignal;
++    }
++    // Leaf end - SparklyPaper - parallel world ticking - Per world thread redstone signal flag
  
      public RedstoneWireBlock(final BlockBehaviour.Properties properties) {
          super(properties);
-@@ -280,7 +281,13 @@ public class RedstoneWireBlock extends Block {
+@@ -280,7 +290,13 @@ public class RedstoneWireBlock extends Block {
              if (orientation != null) {
                  source = pos.relative(orientation.getFront().getOpposite());
              }
@@ -1244,7 +1333,7 @@ index ede64a0afbcdc41e60c3f2f5917c89f09b888433..2afcc3ee9438bd09eec452e28bc5dc92
              return;
          }
          updatePowerStrength(worldIn, pos, state, orientation, blockAdded);
-@@ -304,7 +311,13 @@ public class RedstoneWireBlock extends Block {
+@@ -304,7 +320,13 @@ public class RedstoneWireBlock extends Block {
                  // [Space Walker] suppress shape updates and emit those manually to
                  // bypass the new neighbor update stack.
                  if (level.setBlock(pos, state, Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_CLIENTS)) {
@@ -1259,7 +1348,7 @@ index ede64a0afbcdc41e60c3f2f5917c89f09b888433..2afcc3ee9438bd09eec452e28bc5dc92
                  }
              }
          }
-@@ -327,10 +340,19 @@ public class RedstoneWireBlock extends Block {
+@@ -327,10 +349,24 @@ public class RedstoneWireBlock extends Block {
      }
  
      public int getBlockSignal(final Level level, final BlockPos pos) {
@@ -1268,7 +1357,12 @@ index ede64a0afbcdc41e60c3f2f5917c89f09b888433..2afcc3ee9438bd09eec452e28bc5dc92
 -        this.shouldSignal = true;
 -        return blockSignal;
 +        // Leaf start - SparklyPaper - parallel world ticking
-+        if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) {
++        if (Thread.currentThread() instanceof ca.spottedleaf.moonrise.common.util.TickThread.ServerLevelTickThread thread) { // Leaf - SparklyPaper - parallel world ticking - Per world thread redstone signal flag
++            thread.redstoneShouldSignal = false;
++            final int blockSignal = level.getBestNeighborSignal(pos);
++            thread.redstoneShouldSignal = true;
++            return blockSignal;
++        } else if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) {
 +            this.shouldSignalTL.set(false);
 +            int blockSignal = level.getBestNeighborSignal(pos);
 +            this.shouldSignalTL.set(true);
@@ -1283,13 +1377,13 @@ index ede64a0afbcdc41e60c3f2f5917c89f09b888433..2afcc3ee9438bd09eec452e28bc5dc92
      }
  
      private void checkCornerChangeAt(final Level level, final BlockPos pos) {
-@@ -423,12 +445,18 @@ public class RedstoneWireBlock extends Block {
+@@ -423,12 +459,18 @@ public class RedstoneWireBlock extends Block {
  
      @Override
      protected int getDirectSignal(final BlockState state, final BlockGetter level, final BlockPos pos, final Direction direction) {
 -        return !this.shouldSignal ? Redstone.SIGNAL_MIN : state.getSignal(level, pos, direction);
 +        // Leaf start - SparklyPaper - parallel world ticking
-+        boolean signal = org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled ? this.shouldSignalTL.get() : this.shouldSignal;
++        boolean signal = this.currentShouldSignal(); // Leaf - SparklyPaper - parallel world ticking - Per world thread redstone signal flag
 +        return !signal ? Redstone.SIGNAL_MIN : state.getSignal(level, pos, direction);
 +        // Leaf end - SparklyPaper - parallel world ticking
      }
@@ -1298,18 +1392,18 @@ index ede64a0afbcdc41e60c3f2f5917c89f09b888433..2afcc3ee9438bd09eec452e28bc5dc92
      protected int getSignal(final BlockState state, final BlockGetter level, final BlockPos pos, final Direction direction) {
 -        if (this.shouldSignal && direction != Direction.DOWN) {
 +        // Leaf start - SparklyPaper - parallel world ticking
-+        final boolean signal = org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled ? this.shouldSignalTL.get() : this.shouldSignal;
++        final boolean signal = this.currentShouldSignal(); // Leaf - SparklyPaper - parallel world ticking - Per world thread redstone signal flag
 +        if (signal && direction != Direction.DOWN) {
 +            // Leaf end - SparklyPaper - parallel world ticking
              int power = this.ownSignal(state, level, pos);
              if (power == 0) {
                  return Redstone.SIGNAL_MIN;
-@@ -463,7 +491,7 @@ public class RedstoneWireBlock extends Block {
+@@ -463,7 +505,7 @@ public class RedstoneWireBlock extends Block {
  
      @Override
      protected boolean isSignalSource(final BlockState state) {
 -        return this.shouldSignal;
-+        return org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled ? this.shouldSignalTL.get() : this.shouldSignal; // Leaf - SparklyPaper - parallel world ticking
++        return this.currentShouldSignal(); // Leaf - SparklyPaper - parallel world ticking // Leaf - SparklyPaper - parallel world ticking - Per world thread redstone signal flag
      }
  
      public static int getColorForPower(final int power) {
