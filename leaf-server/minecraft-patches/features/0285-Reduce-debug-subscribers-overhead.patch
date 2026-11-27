@@ -5,10 +5,10 @@ Subject: [PATCH] Reduce debug subscribers overhead
 
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 63fbf02e0e9ca718d293f2895748988fc09c4617..8e866d5ad64584808f2ee185c1c965e8b9ca77cb 100644
+index 43653d3f62d5798755bea07d2c7a5bf1b06e1521..d3ac9c7cdcea622d9ded614838d319148e705b92 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1971,7 +1971,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1974,7 +1974,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          profiler.popPush("players");
          this.playerList.tick();
          profiler.popPush("debugSubscribers");
